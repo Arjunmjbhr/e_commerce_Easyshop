@@ -73,7 +73,12 @@ const Products = ({ title, products }) => {
                   />
                   <div className="px-3 flex justify-start items-start gap-1 flex-col mt-2">
                     <h2 className="text-sm">{pl.name} </h2>
-                    <span className="text-md font-bold">₹ {pl.price}</span>
+                    <span className="text-md font-bold">
+                      ₹{" "}
+                      {pl.discount
+                        ? pl.price - Math.floor((pl.price * pl.discount) / 100)
+                        : pl.price}
+                    </span>
                   </div>
                 </Link>
               ))}

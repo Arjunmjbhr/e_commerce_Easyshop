@@ -57,7 +57,13 @@ const FeaturedProducts = ({ products }) => {
               {/* details */}
               <div className="px-3 text-black font-semibold m-3 flex flex-col gap-2">
                 <h2 className="text-sm">{product.name}</h2>
-                <span className="font-bold">₹{product.price}</span>
+                <span className="font-bold">
+                  ₹
+                  {product.discount
+                    ? product.price -
+                      Math.floor((product.price * product.discount) / 100)
+                    : product.price}
+                </span>
                 <div className="flex">
                   <Ratings ratings={product.rating} />
                 </div>

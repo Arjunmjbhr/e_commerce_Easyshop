@@ -9,10 +9,10 @@ import { BsGridFill } from "react-icons/bs";
 import { FaListUl } from "react-icons/fa";
 import ShopProducts from "../componets/products/ShopProducts";
 import Pagination from "../componets/Pagination";
-import { Link } from "react-router-dom";
-import { FaAngleRight } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { get_products, get_categories } from "../store/reducers/homeReducer";
+import { Link } from "react-router-dom";
+import { FaAngleRight } from "react-icons/fa6";
 
 const Shops = () => {
   const [filter, setFilter] = useState(true);
@@ -36,7 +36,7 @@ const Shops = () => {
     <div>
       <Header categories={categories} />
       {/* Breadcrumbs  */}
-      {/* <section className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left w-full  '>
+      <section className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left w-full  '>
         <div className="bg-[#2422228a] w-full h-full ">
           <div className="flex flex-col justify-center items-center text-white h-full w-full gap-2 text-xl ">
             <h1 className="font-extrabold">Shop Your Dream Products</h1>
@@ -49,7 +49,7 @@ const Shops = () => {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
       {/* filter layout and product side layout */}
       <section className="py-16 ">
         <div className="w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto">
