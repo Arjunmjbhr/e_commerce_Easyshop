@@ -7,6 +7,7 @@ import { overRideStyle } from "../../utils/spinnerProperty";
 import { seller_register } from "../../store/Reducers/authReducer";
 import toast from "react-hot-toast";
 import { messageClear } from "../../store/Reducers/authReducer";
+import { validateUserDetails } from "../../utils/validation";
 
 const Register = () => {
   const [state, setState] = useState({
@@ -34,8 +35,15 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const error = validateUserDetails(
+      state.username,
+      state.password,
+      state.email
+    );
+    if (error) {
+      toast(error);
+    }
     dispatch(seller_register(state));
-    console.log(state);
   };
   useEffect(() => {
     if (successMessage) {
