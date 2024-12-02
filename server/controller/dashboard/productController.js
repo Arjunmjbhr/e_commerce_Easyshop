@@ -171,8 +171,6 @@ class productController {
         console.error("Formidable parsing error:", err);
         return responseReturn(res, 400, { error: "Form parsing failed" });
       }
-      console.log("files are", files);
-
       let {
         name,
         category,
@@ -184,7 +182,7 @@ class productController {
         productId,
         oldImages,
       } = fields;
-      console.log(oldImages);
+
       const { images } = files;
 
       // Validate required fields
@@ -240,7 +238,6 @@ class productController {
             !process.env.API_KEY ||
             !process.env.API_SECRET
           ) {
-            console.error("Missing Cloudinary configuration");
             return responseReturn(res, 500, {
               error: "Cloudinary configuration missing",
             });
