@@ -61,13 +61,15 @@ const Header = ({ categories }) => {
                 </li>
               </ul>
             </div>
-            <div className="flex flex-row">
+            <div className="flex flex-row w-[150px]">
               {userInfo ? (
-                <Link className="flex flex-row justify-center items-center gap-2 font-semibold">
+                <Link className="flex flex-row justify-end items-center gap-2 font-semibold">
                   <span>
                     <FaUser />
                   </span>
-                  <span>{userInfo.name}</span>
+                  <span className=" overflow-hidden w-[130px]">
+                    {userInfo.name}
+                  </span>
                 </Link>
               ) : (
                 <Link
@@ -207,8 +209,11 @@ const Header = ({ categories }) => {
                     <span>{userInfo.name}</span>
                   </Link>
                 ) : (
-                  <Link className="w-[30px] h-[30px] bg-slate-200 flex justify-center items-center rounded-full hover:bg-slate-400">
-                    <span>
+                  <Link
+                    to="/login"
+                    className=" flex flex-col justify-center items-center "
+                  >
+                    <span className="w-[30px] h-[30px] bg-slate-200 rounded-full hover:bg-slate-400 flex justify-center items-center">
                       <FaLock />
                     </span>
                     <span>Login</span>
@@ -228,7 +233,7 @@ const Header = ({ categories }) => {
                 </li>
                 <li
                   className={`cursor-pointer px-3 py-2 rounded-md ${
-                    pathname === "/shop" ? "bg-blue-700 text-white" : ""
+                    pathname === "/shops" ? "bg-blue-700 text-white" : ""
                   } `}
                 >
                   <Link to="/shops">Shop</Link>
