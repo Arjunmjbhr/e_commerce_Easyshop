@@ -89,7 +89,7 @@ const customerAdminReducer = createSlice({
         });
       })
       .addCase(block_unblock_customer.rejected, (state, action) => {
-        state.errorMessage = action.payload.errorMessage; // Fixed typo in `totalCustomers`
+        state.errorMessage = action.payload.errorMessage;
       });
   },
 });

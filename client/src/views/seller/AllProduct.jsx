@@ -33,8 +33,9 @@ const AllProduct = () => {
   }, [searchValue, currentPage, perPage]);
 
   const handleDelete = (id) => {
-    console.log("the delete button pressed");
-    dispatch(delete_product(id));
+    if (window.confirm("Are you sure want to delete the Product ?")) {
+      dispatch(delete_product(id));
+    }
   };
   useEffect(() => {
     if (successMessage) {

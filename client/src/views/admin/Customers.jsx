@@ -33,18 +33,27 @@ const Customers = () => {
   }, [perPage, currentPage, searchValue]);
 
   //block customer
-  const handleBlock = (customerId) => {
-    dispatch(block_unblock_customer(customerId));
+  const handleBlock = (customer) => {
+    if (
+      window.confirm(
+        `Are you sure want to ${
+          customer.isBlocked ? "unblock" : "block"
+        } customer name: ${customer.name} email ${customer.email} `
+      )
+    ) {
+      const customerId = customer._id;
+      dispatch(block_unblock_customer(customerId));
+    }
   };
 
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
-      messageClear();
+      dispatch(messageClear());
     }
     if (errorMessage) {
       toast.success(errorMessage);
-      messageClear();
+      dispatch(messageClear());
     }
   }, [successMessage, errorMessage]);
 
@@ -121,7 +130,7 @@ const Customers = () => {
                   <td className="border border-gray-300 px-4 py-2">
                     <div className="flex justify-center gap-3">
                       <div
-                        onClick={() => handleBlock(item._id)}
+                        onClick={() => handleBlock(item)}
                         className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
                       >
                         {item.isBlocked ? <TbLockFilled /> : <TbLockOpen2 />}
