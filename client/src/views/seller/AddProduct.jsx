@@ -353,6 +353,7 @@ const AddProduct = () => {
                 type="file"
                 id="image"
                 className="hidden"
+                accept="image/*"
                 onChange={imageHandle}
               />
             </div>

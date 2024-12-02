@@ -56,6 +56,9 @@ export const get_product = createAsyncThunk(
 export const update_product = createAsyncThunk(
   "product/update_product",
   async (formData, { rejectWithValue, fulfillWithValue }) => {
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`); // Logs field names and values
+    }
     try {
       // API Call
       const { data } = await api.put(`/product-update`, formData, {

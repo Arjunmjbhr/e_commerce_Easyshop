@@ -171,6 +171,7 @@ class productController {
         console.error("Formidable parsing error:", err);
         return responseReturn(res, 400, { error: "Form parsing failed" });
       }
+      console.log("files are", files);
 
       let {
         name,
@@ -181,8 +182,9 @@ class productController {
         discount,
         brand,
         productId,
+        oldImages,
       } = fields;
-
+      console.log(oldImages);
       const { images } = files;
 
       // Validate required fields
@@ -197,6 +199,18 @@ class productController {
         !productId
       ) {
         return responseReturn(res, 400, { error: "All fields are required" });
+      }
+      let oldImagesArray = [];
+      if (oldImages) {
+        try {
+          oldImagesArray = oldImages.split(",").map((url) => url.trim());
+          console.log(oldImagesArray);
+        } catch (error) {
+          console.error("Error parsing old images:", error.message);
+          return responseReturn(res, 400, {
+            error: "Invalid old images format",
+          });
+        }
       }
 
       name = name.trim();
@@ -261,7 +275,8 @@ class productController {
         }
 
         // Add new images to existing ones
-        const updatedImages = [...(product.images || []), ...allImageUrl];
+        const updatedImages = [...oldImagesArray, ...allImageUrl];
+        console.log("combined array", updatedImages);
 
         const updatedProduct = await productModel.findByIdAndUpdate(
           productId,

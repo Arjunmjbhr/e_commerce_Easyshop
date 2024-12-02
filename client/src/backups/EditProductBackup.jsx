@@ -13,8 +13,7 @@ import { get_category } from "../../store/Reducers/categoryReducer";
 import { PropagateLoader } from "react-spinners";
 import { toast } from "react-hot-toast";
 import { overRideStyle } from "./../../utils/spinnerProperty";
-import { Cropper } from "react-cropper";
-import "cropperjs/dist/cropper.css";
+
 const EditProduct = () => {
   const { categories } = useSelector((store) => store.category);
   const { productId } = useParams();
@@ -31,22 +30,18 @@ const EditProduct = () => {
   const [category, setCategory] = useState(""); //to set category input from the modal
   const [allCategory, setAllCategory] = useState(categories); //all category
   const [searchValue, setSearchValue] = useState("");
+  const [images, setImages] = useState([]); //images
+  const [imageShow, SetImageShow] = useState([]); //url of the images
   const { singleProduct, loader, successMessage, errorMessage } = useSelector(
     (store) => store.product
   );
   const [newImages, setNewImages] = useState([]); // To track new images
-  const [cropper, setCropper] = useState(null); // Cropper instance
-  const [cropImage, setCropImage] = useState(null); // Image to crop
-  const [isCropping, setIsCropping] = useState(false); // Toggle cropping modal
-  const [images, setImages] = useState([]); // Final cropped images
-  const [imageShow, setImageShow] = useState([]);
-  const [oldImages, setOldImages] = useState([]);
 
-  // useEffect for geting product
+  // useEffect
   useEffect(() => {
     dispatch(get_editProduct(productId));
   }, [productId]);
-  //category dispatch
+
   useEffect(() => {
     dispatch(
       get_category({
@@ -69,8 +64,7 @@ const EditProduct = () => {
         stock: "",
       });
       setCategory("");
-      setNewImages([]);
-      setOldImages([]);
+      setNewImages("");
     }
     if (errorMessage) {
       toast.error(errorMessage);
@@ -80,20 +74,13 @@ const EditProduct = () => {
 
   // handling removing the images
   const handleRemove = (img, i) => {
-    if (img?.url) {
-      const filterdImages = images.filter((_, index) => index !== i);
-      const filterdUrl = imageShow.filter((_, index) => index !== i);
-      const filterdNewImages = images.filter((_, index) => index !== i);
-      setImages(filterdImages);
-      setImageShow(filterdUrl);
-      setNewImages(filterdNewImages);
-    }
-    if (img) {
-      const afterFilter = oldImages.filter((oldImg) => oldImg !== img);
-      setImageShow(afterFilter);
-      setOldImages([...afterFilter]);
-      console.log(afterFilter);
-    }
+    const filterdImages = images.filter((_, index) => index !== i);
+    const filterdUrl = imageShow.filter((_, index) => index !== i);
+    const filterdNewImages = images.filter((_, index) => index !== i);
+    setImages(filterdImages);
+    SetImageShow(filterdUrl);
+    setNewImages(filterdNewImages);
+    console.log(imageShow);
   };
   //handle input data
   const inputHandle = (e) => {
@@ -102,13 +89,32 @@ const EditProduct = () => {
       [e.target.name]: e.target.value,
     });
   };
+  // to change image of already uploaded
+  const changeImage = (img, index) => {
+    if (img) {
+      let tempUrl = imageShow;
+      let tempImages = images;
+      tempImages[index] = img;
+      tempUrl[index] = { url: URL.createObjectURL(img) };
+      setImages([...tempImages]);
+      SetImageShow([...imageShow]);
+      if (!newImages.includes(img)) {
+        setNewImages([...newImages, img]);
+      }
+    }
+  };
   // handle new image upload
   const imageHandle = (e) => {
     const files = e.target.files;
     const length = files.length;
     if (length > 0) {
-      setCropImage(URL.createObjectURL(files[0]));
-      setIsCropping(true);
+      setImages([...images, ...files]);
+      let imageUrl = [];
+      for (let i = 0; i < length; i++) {
+        imageUrl.push({ url: URL.createObjectURL(files[i]) });
+      }
+      SetImageShow([...imageShow, ...imageUrl]);
+      setNewImages([...newImages, ...files]);
     }
   };
   // category search
@@ -136,17 +142,14 @@ const EditProduct = () => {
       stock: singleProduct.stock,
     });
     setCategory(singleProduct.category);
-    setImageShow(singleProduct.images);
-    setOldImages(singleProduct.images);
+    SetImageShow(singleProduct.images);
   }, [singleProduct]);
 
-  // send data to server
   const update = (e) => {
     e.preventDefault();
     const formData = new FormData();
     if (newImages.length > 0)
       newImages.forEach((img) => formData.append("images", img));
-
     formData.append("name", state.name);
     formData.append("description", state.description);
     formData.append("discount", state.discount);
@@ -155,9 +158,7 @@ const EditProduct = () => {
     formData.append("stock", state.stock);
     formData.append("category", category);
     formData.append("productId", productId);
-    formData.append("oldImages", oldImages);
     dispatch(update_product(formData));
-    setOldImages([]);
   };
 
   return (
@@ -331,7 +332,12 @@ const EditProduct = () => {
                       />
                     </label>
                     {/* replace images */}
-
+                    <input
+                      onChange={(e) => changeImage(e.target.files[0], i)}
+                      type="file"
+                      id={i}
+                      className="hidden"
+                    />
                     {/* remove icon */}
                     <span
                       onClick={() => handleRemove(img, i)}
@@ -352,14 +358,14 @@ const EditProduct = () => {
                 <span>Select Image</span>
               </label>
               <input
+                multiple
                 type="file"
                 id="image"
                 className="hidden"
-                accept="image/*"
                 onChange={imageHandle}
               />
             </div>
-            {/* save chages  button*/}
+            {/* button to add product */}
             <div className="">
               <button
                 disabled={loader}
@@ -371,59 +377,6 @@ const EditProduct = () => {
                   "Save Changes"
                 )}
               </button>
-            </div>
-            {/* modal for cropping*/}
-            <div>
-              {isCropping && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                  <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
-                    <h3 className="text-lg font-semibold mb-4">Crop Image</h3>
-                    <Cropper
-                      className="w-full h-64"
-                      src={cropImage}
-                      aspectRatio={1}
-                      viewMode={1}
-                      guides={true}
-                      scalable={true}
-                      cropBoxResizable={true}
-                      onInitialized={(instance) => setCropper(instance)}
-                    />
-                    <div className="mt-4 flex justify-end space-x-3">
-                      <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (cropper) {
-                            const croppedCanvas = cropper.getCroppedCanvas();
-                            croppedCanvas.toBlob((blob) => {
-                              if (blob) {
-                                const file = new File(
-                                  [blob],
-                                  "cropped-image.jpg",
-                                  { type: "image/jpeg" }
-                                );
-                                setImages([...images, file]);
-                                setNewImages([...newImages, file]);
-                                const imageUrl = URL.createObjectURL(file);
-                                setImageShow([...imageShow, { url: imageUrl }]); // Update displayed images with the new image URL
-                                setIsCropping(false);
-                              }
-                            });
-                          }
-                        }}
-                      >
-                        Crop
-                      </button>
-                      <button
-                        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                        onClick={() => setIsCropping(false)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </form>
         </div>
