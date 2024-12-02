@@ -58,6 +58,13 @@ const Login = () => {
       navigate("/");
     }
   }, [successMessage, errorMessage, userInfo]);
+  const handleDemoLogin = () => {
+    setState({
+      password: "12345",
+      email: "guest@gamail.com",
+    });
+    toast("Please click login button for demo login");
+  };
 
   return (
     <div>
@@ -118,6 +125,12 @@ const Login = () => {
 
                 <div>
                   <GoogleLoginComponent />
+                </div>
+                <div
+                  onClick={handleDemoLogin}
+                  className="w-full flex justify-center items-center border my-3 py-2 text-sm cursor-pointer"
+                >
+                  Demo Login{" "}
                 </div>
               </div>
 

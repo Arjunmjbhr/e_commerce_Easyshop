@@ -13,6 +13,7 @@ import {
 import { toast } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import GoogleLoginComponent from "./../componets/GoogleLoginComponent";
+import { validateUserDetails } from "../utils/validation";
 
 const Register = () => {
   const [state, setState] = useState({
@@ -41,6 +42,7 @@ const Register = () => {
   };
   const handleForm = (e) => {
     e.preventDefault();
+
     dispatch(customer_register(state));
   };
   useEffect(() => {
@@ -77,6 +79,10 @@ const Register = () => {
   //sending otp
   const handleSubmit = (e) => {
     e.preventDefault();
+    const error = validateUserDetails(state.name, state.password, state.email);
+    if (error) {
+      return toast.error(error);
+    }
     dispatch(messageClear());
     dispatch(send_otp(state.email)); // Send OTP request
     setShowModal(true); // Show modal after sending OTP
@@ -85,6 +91,7 @@ const Register = () => {
   // handling otp submit
   const handleOtpSubmit = (e) => {
     e.preventDefault();
+
     const otp = otpInputs.join(""); // Combine all OTP inputs into a single string
     const data = {
       email: state.email,
