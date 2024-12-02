@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "./../componets/Header";
 import { Link, useParams } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
@@ -20,10 +20,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useDispatch, useSelector } from "react-redux";
 import { get_products, get_categories } from "../store/reducers/homeReducer";
 import { product_details } from "../store/reducers/homeReducer";
+import ProductImageZoom from "../componets/ProductImageZoom";
 
 const Details = () => {
   const [image, setImage] = useState("");
   const [state, setState] = useState("reviews");
+  const elementRef = useRef(null);
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 3000 },
@@ -60,6 +62,15 @@ const Details = () => {
   );
   const { slug } = useParams();
   const dispatch = useDispatch();
+  //when ever we select new product then scroll to product details view using useRef
+  const handleScroll = () => {
+    if (elementRef.current) {
+      elementRef.current.scrollIntoView({
+        behavior: "smooth", // Optional: adds smooth scrolling
+        block: "start", // Aligns the element at the top of the screen
+      });
+    }
+  };
   useEffect(() => {
     dispatch(product_details(slug));
   }, [slug]);
@@ -68,8 +79,11 @@ const Details = () => {
     dispatch(get_products());
     dispatch(get_categories());
   }, []);
+
   useEffect(() => {
     dispatch(product_details(slug));
+    setImage("");
+    handleScroll();
   }, [slug]);
 
   return (
@@ -111,13 +125,16 @@ const Details = () => {
         <div className="w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto">
           <div className="grid grid-cols-2 md-lg:grid-cols-1 gap-8">
             {/* product image layout */}
-            <div>
+            <div ref={elementRef}>
               <div>
-                <img
+                <ProductImageZoom
+                  imageUrl={image ? `${image}` : `${product?.images?.[0]}`}
+                />
+                {/* <img
                   className="h-[400px] w-full"
                   src={image ? `${image}` : `${product?.images?.[0]}`}
                   alt="images"
-                />
+                /> */}
                 {/* carousel */}
                 <div className="my-8">
                   {product.images && (
@@ -130,7 +147,10 @@ const Details = () => {
                       responsive={responsive}
                     >
                       {product.images.map((img, index) => (
-                        <div key={index} onClick={() => setImage(img)}>
+                        <div
+                          key={index}
+                          onClick={() => setImage((prev) => img)}
+                        >
                           <div className=" relative flex justify-center items-center ">
                             <img
                               src={`${img}`}
@@ -359,7 +379,11 @@ const Details = () => {
                           </h2>
                           <div className="flex gap-4">
                             <h2 className="text-md font-bold text-slate-600">
-                              ₹{pro.price}
+                              ₹
+                              {pro.discount
+                                ? pro.price -
+                                  Math.floor((pro.price * pro.discount) / 100)
+                                : pro.price}
                             </h2>
                             <div className="flex items-center gap-1">
                               <Ratings ratings={pro.rating} />
@@ -431,7 +455,14 @@ const Details = () => {
                           </h2>
                           <div className="flex justify-start items-center gap-3 ">
                             <h2 className="text-lg font-bold text-slate-600">
-                              ₹{relatedPro.price}
+                              ₹
+                              {relatedPro.discount
+                                ? relatedPro.price -
+                                  Math.floor(
+                                    (relatedPro.price * relatedPro.discount) /
+                                      100
+                                  )
+                                : relatedPro.price}
                             </h2>
                             <div className="flex">
                               <Ratings ratings={relatedPro.rating} />
