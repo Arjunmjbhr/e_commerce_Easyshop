@@ -23,9 +23,9 @@ const Register = () => {
   });
   const [showModal, setShowModal] = useState(false);
   const [otpInputs, setOtpInputs] = useState(Array(6).fill(""));
-  const [timer, setTimer] = useState(30); // Start with 30 seconds
+  const [timer, setTimer] = useState(0); // Start with 30 seconds
   const [isButtonDisabled, setIsButtonDisabled] = useState(true); // Button is disabled initially
-
+  const [isOtpSent, setIsOtpSent] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { categories } = useSelector((store) => store.home);
@@ -86,6 +86,7 @@ const Register = () => {
     dispatch(messageClear());
     dispatch(send_otp(state.email)); // Send OTP request
     setShowModal(true); // Show modal after sending OTP
+    setIsOtpSent(true);
   };
 
   // handling otp submit
@@ -104,23 +105,28 @@ const Register = () => {
   useEffect(() => {
     let interval;
 
-    if (timer > 0) {
+    if (isOtpSent && timer > 0) {
       interval = setInterval(() => {
-        setTimer((prev) => prev - 1); // Decrease the timer by 1 every  second
+        setTimer((prev) => prev - 1); // Decrease timer by 1 every second
       }, 1000);
-    } else {
-      setIsButtonDisabled(false); // Enable the button when timer reaches 0
-      clearInterval(interval); // Stop the countdown when timer is 0
+    }
+    if (timer === 0) {
+      setIsOtpSent(false); // Stop the timer logic
+      setIsButtonDisabled(false); // Enable the button
+      clearInterval(interval); // Clear interval
     }
 
-    return () => clearInterval(interval); // Clean up the interval when component is removed or timer is reset
-  }, [timer]); // Run this effect every time the timer changes
+    return () => clearInterval(interval);
+    // Clean up the interval when component is removed or timer is reset
+  }, [timer, isOtpSent]); // Run this effect every time the timer changes
+
   const handleResendClick = () => {
     if (!isButtonDisabled) {
       // Check if button is enabled
       dispatch(send_otp(state.email)); // Call the function to resend the OTP
       setTimer(30); // Reset the timer back to 30 seconds
       setIsButtonDisabled(true); // Disable the button again
+      setIsOtpSent(true);
     }
   };
 

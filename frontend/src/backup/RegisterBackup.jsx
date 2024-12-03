@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Header from "../componets/Header";
 import Footer from "../componets/Footer";
-import { FaFacebookF } from "react-icons/fa6";
-import { FaGoogle } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { get_categories } from "../store/reducers/homeReducer";
 import {
   customer_register,
   messageClear,
+  send_otp,
+  verify_otp,
 } from "../store/reducers/authUserReducer";
 import { toast } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 import GoogleLoginComponent from "./../componets/GoogleLoginComponent";
+import { validateUserDetails } from "../utils/validation";
 
 const Register = () => {
   const [state, setState] = useState({
@@ -20,9 +21,18 @@ const Register = () => {
     password: "",
     email: "",
   });
+  const [showModal, setShowModal] = useState(false);
+  const [otpInputs, setOtpInputs] = useState(Array(6).fill(""));
+  const [timer, setTimer] = useState(30); // Start with 30 seconds
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true); // Button is disabled initially
+  const [isOtpSent, setIsOtpSent] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { categories } = useSelector((store) => store.home);
+  const { loader, errorMessage, userInfo, successMessage } = useSelector(
+    (store) => store.authUser
+  );
+
   const handleInput = (e) => {
     const { name, value } = e.target;
     setState({
@@ -32,14 +42,13 @@ const Register = () => {
   };
   const handleForm = (e) => {
     e.preventDefault();
+
     dispatch(customer_register(state));
   };
   useEffect(() => {
     dispatch(get_categories());
   }, []);
-  const { loader, errorMessage, userInfo, successMessage } = useSelector(
-    (store) => store.authUser
-  );
+
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -54,6 +63,70 @@ const Register = () => {
     }
   }, [successMessage, errorMessage, userInfo]);
 
+  // closing modal
+  const closeModal = () => setShowModal(false);
+  // value entering in to the field
+  const handleOtpChange = (index, value) => {
+    const newOtpInputs = [...otpInputs];
+    newOtpInputs[index] = value.slice(0, 1); // Ensure only 1 digit
+    setOtpInputs(newOtpInputs);
+
+    // Auto-focus next input field if a digit is entered
+    if (value && index < otpInputs.length - 1) {
+      document.getElementById(`otp-input-${index + 1}`).focus();
+    }
+  };
+  //sending otp
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const error = validateUserDetails(state.name, state.password, state.email);
+    if (error) {
+      return toast.error(error);
+    }
+    dispatch(messageClear());
+    dispatch(send_otp(state.email)); // Send OTP request
+    setShowModal(true); // Show modal after sending OTP
+    setIsOtpSent(true);
+  };
+
+  // handling otp submit
+  const handleOtpSubmit = (e) => {
+    e.preventDefault();
+
+    const otp = otpInputs.join(""); // Combine all OTP inputs into a single string
+    const data = {
+      email: state.email,
+      password: state.password,
+      name: state.name,
+      otp,
+    };
+    dispatch(verify_otp(data)); // Verify OTP request
+  };
+  useEffect(() => {
+    let interval;
+
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1); // Decrease the timer by 1 every  second
+      }, 1000);
+    } else {
+      setIsButtonDisabled(false); // Enable the button when timer reaches 0
+      clearInterval(interval); // Stop the countdown when timer is 0
+    }
+
+    return () => clearInterval(interval); // Clean up the interval when component is removed or timer is reset
+  }, [timer, isOtpSent]); // Run this effect every time the timer changes
+
+  const handleResendClick = () => {
+    if (!isButtonDisabled) {
+      // Check if button is enabled
+      dispatch(send_otp(state.email)); // Call the function to resend the OTP
+      setTimer(30); // Reset the timer back to 30 seconds
+      setIsButtonDisabled(true); // Disable the button again
+      setIsOtpSent(true);
+    }
+  };
+
   return (
     <div>
       <Header categories={categories} />
@@ -66,7 +139,7 @@ const Register = () => {
               </h2>
 
               <div>
-                <form onSubmit={handleForm} className="text-slate-600">
+                <form onSubmit={handleSubmit} className="text-slate-600">
                   <div className="flex flex-col gap-1 mb-2">
                     <label htmlFor="name">Name</label>
                     <input
@@ -161,6 +234,56 @@ const Register = () => {
               </div>
             </div>
           </div>
+          {/* Modal */}
+          {showModal && (
+            <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 text-center shadow-lg">
+                <h3 className="text-xl font-semibold mb-4">Enter OTP</h3>
+                <p className="mb-4">OTP send to registerd email id</p>
+                <form
+                  onSubmit={handleOtpSubmit}
+                  className="flex justify-center gap-2"
+                >
+                  {otpInputs.map((input, index) => (
+                    <input
+                      key={index}
+                      id={`otp-input-${index}`}
+                      type="number"
+                      value={otpInputs[index]}
+                      required
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      className="w-12 h-12 text-center border rounded-md focus:outline-none focus:ring focus:ring-blue-300 text-xl"
+                      maxLength="1"
+                    />
+                  ))}
+
+                  <button
+                    type="submit"
+                    className="ml-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                  >
+                    Verify
+                  </button>
+                </form>
+                <p
+                  onClick={handleResendClick}
+                  className={`w-full text-left text-sm mt-3 text-blue-600 cursor-pointer ${
+                    isButtonDisabled ? "cursor-not-allowed text-gray-400" : ""
+                  }`}
+                >
+                  {isButtonDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
+                </p>
+
+                <div className="flex ">
+                  <button
+                    onClick={closeModal}
+                    className="mt-4  bg-gray-500 text-white mx-auto px-4 py-2 rounded-md hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
