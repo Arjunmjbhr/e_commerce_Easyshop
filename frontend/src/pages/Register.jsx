@@ -45,9 +45,6 @@ const Register = () => {
 
     dispatch(customer_register(state));
   };
-  useEffect(() => {
-    dispatch(get_categories());
-  }, []);
 
   useEffect(() => {
     if (successMessage) {
@@ -132,7 +129,7 @@ const Register = () => {
 
   return (
     <div>
-      <Header categories={categories} />
+      <Header />
       <div className="bg-slate-200 mt-4">
         <div className="w-full justify-center items-center p-10">
           <div className="grid grid-cols-2 w-[60%] mx-auto bg-white rounded-md md:grid-cols-1 sm:w-[90%] md-lg:w-[80%]">

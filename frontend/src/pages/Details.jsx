@@ -88,7 +88,7 @@ const Details = () => {
 
   return (
     <div>
-      <Header categories={categories} />
+      <Header />
       {/* page heading with image */}
       <section className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left'>
         <div className="bg-[#2422228a] w-full h-full ">

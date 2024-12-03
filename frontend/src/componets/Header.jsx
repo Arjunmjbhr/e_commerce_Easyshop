@@ -15,7 +15,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { FaChevronDown } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
-const Header = ({ categories }) => {
+const Header = () => {
   const { pathname } = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
@@ -24,6 +24,7 @@ const Header = ({ categories }) => {
   const wishlist_count = 5;
   const user = false;
   const { userInfo } = useSelector((store) => store.authUser);
+  const { categories } = useSelector((store) => store.home);
 
   return (
     <div className="w-full bg-white relative">

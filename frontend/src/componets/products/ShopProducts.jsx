@@ -37,10 +37,10 @@ const ShopProducts = ({ styles, products }) => {
                 />
                 {/* Hover Action Icons */}
                 <div
-                  className={`absolute flex justify-center items-center gap-4 -bottom-10  transition-all opacity-0 group-hover:opacity-100 ${
+                  className={`absolute flex w-[150px] bottom-10 left-10 justify-center items-center gap-4   transition-all opacity-0 group-hover:opacity-100 ${
                     styles === "grid"
-                      ? "group-hover:bottom-40"
-                      : "group-hover:bottom-10"
+                      ? "group-hover:bottom-40 group-hover:left-10"
+                      : "group-hover:bottom-10 group-hover:left-64 group-hover:md:left-3 "
                   }`}
                 >
                   <Link className="h-[38px] w-[38px] bg-slate-300 rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl">

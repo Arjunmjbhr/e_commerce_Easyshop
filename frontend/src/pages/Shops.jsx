@@ -29,12 +29,11 @@ const Shops = () => {
   );
   useEffect(() => {
     dispatch(get_products());
-    dispatch(get_categories());
   }, []);
 
   return (
     <div className=" ">
-      <Header categories={categories} />
+      <Header />
 
       {/* Breadcrumbs  */}
       <section className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left w-full overflow-x-hidden '>

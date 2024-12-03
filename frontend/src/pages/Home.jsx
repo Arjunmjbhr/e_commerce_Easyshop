@@ -18,12 +18,11 @@ const Home = () => {
     discounted_product,
   } = useSelector((store) => store.home);
   useEffect(() => {
-    dispatch(get_categories());
     dispatch(get_products());
   }, []);
   return (
     <div className="">
-      <Header categories={categories} />
+      <Header />
       <Banner />
       <Categories categories={categories} />
       <div className="py-[45px]">
