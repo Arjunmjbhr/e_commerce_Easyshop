@@ -14,7 +14,6 @@ class categoryController {
 
       let { categoryName } = field;
       let { image } = files;
-
       // Validate fields
       if (!categoryName || !image || !image.filepath) {
         return responseReturn(res, 400, { error: "All fields are mandatory" });

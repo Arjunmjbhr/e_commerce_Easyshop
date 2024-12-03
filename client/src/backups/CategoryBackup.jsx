@@ -18,25 +18,19 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import Search from "../../components/Search";
-import { Cropper } from "react-cropper";
-import "cropperjs/dist/cropper.css";
 
 const Category = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [show, setShow] = useState(false);
-
+  const [imageShow, setImageShow] = useState("");
   const [state, setState] = useState({
     categoryName: "",
+    image: "",
   });
   const [isEdit, setIsEdit] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [cropper, setCropper] = useState(null); // Cropper instance
-  const [cropImage, setCropImage] = useState(null); // Image to crop
-  const [isCropping, setIsCropping] = useState(false); // Toggle cropping modal
-  const [images, setImages] = useState(); // Final cropped images
-  const [imageShow, setImageShow] = useState(); // Images to display
 
   const dispatch = useDispatch();
 
@@ -47,20 +41,11 @@ const Category = () => {
   const addOrUpdateCategory = (e) => {
     e.preventDefault();
     if (isEdit) {
-      const obj = {
-        id: editId,
-        categoryName: state.categoryName,
-        image: images,
-      };
-      dispatch(updateCategory(obj));
+      dispatch(updateCategory({ id: editId, ...state })); ////to update
       setIsEdit(false);
       setEditId(null);
     } else {
-      const obj = {
-        categoryName: state.categoryName,
-        image: images,
-      };
-      dispatch(categoryAdd(obj));
+      dispatch(categoryAdd(state));
     }
   };
 
@@ -68,25 +53,28 @@ const Category = () => {
   const imageHandle = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      setCropImage(URL.createObjectURL(files[0]));
-      setIsCropping(true);
+      setState({
+        ...state,
+        image: files[0],
+      });
+      setImageShow(URL.createObjectURL(files[0]));
     }
   };
 
   // after posting the data to server
   useEffect(() => {
     if (errorMessage) {
-      toast.error(errorMessage);
+      toast(errorMessage);
       dispatch(messageClear());
     }
     if (successMessage) {
-      toast.success(successMessage);
+      toast(successMessage);
       dispatch(messageClear());
       setState({
-        categoryName: "",
+        name: "",
+        image: "",
       });
       setImageShow("");
-      setImages("");
     }
   }, [successMessage, errorMessage, dispatch]);
 
@@ -106,21 +94,17 @@ const Category = () => {
   const handleEdit = (category) => {
     setState({
       categoryName: category.categoryName,
+      image: category.image,
     });
-    setImages(category.image);
     setImageShow(category.image);
     setEditId(category._id);
     setIsEdit(true);
     setShow(true);
   };
-  const handleDelete = (categoryDetails) => {
-    if (
-      window.confirm(
-        `Are you sure want to delete ${categoryDetails.categoryName} category ?`
-      )
-    ) {
-      console.log("the deleted item is", categoryDetails._id);
-      dispatch(deleteCategory(categoryDetails._id));
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure want to delete the category ?")) {
+      console.log("the deleted item is", id);
+      dispatch(deleteCategory(id));
     }
   };
 
@@ -186,7 +170,7 @@ const Category = () => {
                         </Link>
                         <Link
                           to="#"
-                          onClick={() => handleDelete(item)}
+                          onClick={() => handleDelete(item._id)}
                           className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
                         >
                           <MdAutoDelete />
@@ -250,14 +234,14 @@ const Category = () => {
                 name="categoryName"
                 value={state.categoryName}
                 onChange={(e) => {
-                  setState({ categoryName: e.target.value });
+                  const { name, value } = e.target;
+                  setState({ ...state, [name]: value });
                 }}
                 type="text"
                 placeholder="Category Name"
                 className="w-full px-3 py-2 mb-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
               />
             </div>
-            {/* images for category */}
             <div className="flex w-full border border-dashed ">
               <label
                 htmlFor="image"
@@ -297,58 +281,6 @@ const Category = () => {
                 "Add Category"
               )}
             </button>
-            {/* modal for cropping*/}
-            <div>
-              {isCropping && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                  <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
-                    <h3 className="text-lg font-semibold mb-4">Crop Image</h3>
-                    <Cropper
-                      className="w-full h-64"
-                      src={cropImage}
-                      aspectRatio={1}
-                      viewMode={1}
-                      guides={true}
-                      scalable={true}
-                      cropBoxResizable={true}
-                      onInitialized={(instance) => setCropper(instance)}
-                    />
-                    <div className="mt-4 flex justify-end space-x-3">
-                      <button
-                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (cropper) {
-                            const croppedCanvas = cropper.getCroppedCanvas();
-                            croppedCanvas.toBlob((blob) => {
-                              if (blob) {
-                                const file = new File(
-                                  [blob],
-                                  "cropped-image.jpg",
-                                  { type: "image/jpeg" }
-                                );
-                                setImages(file);
-                                const imageUrl = URL.createObjectURL(file);
-                                setImageShow(imageUrl); // Update displayed images with the new image URL
-                                setIsCropping(false);
-                              }
-                            });
-                          }
-                        }}
-                      >
-                        Crop
-                      </button>
-                      <button
-                        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                        onClick={() => setIsCropping(false)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
           </form>
         </div>
       </div>

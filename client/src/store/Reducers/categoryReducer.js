@@ -5,6 +5,7 @@ export const categoryAdd = createAsyncThunk(
   "category/categoryAdd",
   async (info, { rejectWithValue, fulfillWithValue }) => {
     try {
+      console.log(info);
       const formdata = new FormData();
       formdata.append("categoryName", info.categoryName);
       formdata.append("image", info.image);
@@ -47,6 +48,7 @@ export const updateCategory = createAsyncThunk(
     { rejectWithValue, fulfillWithValue }
   ) => {
     try {
+      console.log(image);
       const formData = new FormData();
       formData.append("categoryName", categoryName);
       if (image) {
@@ -124,7 +126,7 @@ const categoryReducer = createSlice({
         state.loader = false;
         state.successMessage = action.payload?.message;
         if (action.payload?.category) {
-          state.categories.push(action.payload.category);
+          state.categories.unshift(action.payload.category);
         }
       })
       .addCase(get_category.fulfilled, (state, action) => {
