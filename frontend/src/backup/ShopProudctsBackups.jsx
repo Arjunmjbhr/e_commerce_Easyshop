@@ -11,25 +11,25 @@ const ShopProducts = ({ styles, products }) => {
     <div
       className={` overflow-x-hidden grid gap-3 ${
         styles === "grid"
-          ? "grid-cols-3 md-lg:grid-cols-2  sm:grid-cols-2 xs:grid-cols-1"
+          ? "grid-cols-3 md-lg:grid-cols-2 sm:grid-cols-1"
           : "grid-cols-1 "
       }`}
     >
       {products.map((prod) => {
         return (
-          <div key={prod._id} className="w-full p-2 overflow-hidden">
+          <div key={prod._id} className="w-full p-2 overflow-x-hidden">
             <div
-              className={`flex transition-all group rounded-md bg-white m-2   duration-1000 shadow-lg hover:-translate-y-3 ${
+              className={`flex transition-all group rounded-md bg-white m-2 sm:w-[60%] xs:w-[70%]  duration-1000 shadow-lg hover:-translate-y-3 ${
                 styles === "grid" ? "flex-col h-[350px] " : ""
               }`}
             >
               <div
-                className={`overflow-hidden p-3 ${
+                className={`overflow-x-hidden p-3 ${
                   styles === "grid" ? "h-[200px]" : ""
                 }  `}
               >
                 <img
-                  className={`object-fill overflow-hidden w-full rounded-lg ${
+                  className={`object-fill overflow-x-hidden w-full rounded-lg ${
                     styles === "grid" ? "h-[200px]" : "h-[120px]"
                   } `}
                   src={prod.images[0]}
@@ -37,7 +37,7 @@ const ShopProducts = ({ styles, products }) => {
                 />
                 {/* Hover Action Icons */}
                 <div
-                  className={`absolute flex justify-center items-center gap-4 -bottom-10  transition-all opacity-0 group-hover:opacity-100 ${
+                  className={`absolute  w-full flex justify-center items-center gap-4 -bottom-10  transition-all opacity-0 group-hover:opacity-100 ${
                     styles === "grid"
                       ? "group-hover:bottom-40"
                       : "group-hover:bottom-10"
