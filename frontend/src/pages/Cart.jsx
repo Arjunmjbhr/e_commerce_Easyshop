@@ -21,11 +21,13 @@ const Cart = () => {
           }}
         />
       </section>
-      {/* product details */}
+      {/* product details and checkout page */}
       <section className="bg-[#eee]">
         <div className="w-[85%] lg:w-[90%] mx-auto py-16 ">
+          {/* condition to check cart empty or not */}
           {cartProducts.length > 0 || outOfStockProducts.length > 0 ? (
             <div className="flex flex-wrap">
+              {/* product details */}
               <div className="w-[67%] md-lg:w-full">
                 <div className="pr-3 md-lg:pr-0">
                   {/* stocked products */}
@@ -74,6 +76,7 @@ const Cart = () => {
                   )}
                 </div>
               </div>
+              {/* checkout tab */}
               <div className="w-[33%] md-lg:w-full">
                 <div className="pl-3 md-lg:pl-0 md-lg:mt-5">
                   {cartProducts.length > 0 && (
