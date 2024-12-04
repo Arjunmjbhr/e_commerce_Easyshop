@@ -120,6 +120,117 @@ class homeController {
       responseReturn(res, 500, { error: "Internal server error" });
     }
   };
+  get_price_range = async (req, res) => {
+    try {
+      // Initialize the price range
+      let priceRange = {
+        low: 0,
+        high: 0,
+      };
+
+      // Fetch the highest and lowest price excluding deleted products
+      const [result] = await productModel.aggregate([
+        {
+          $match: { isDeleted: { $ne: true } }, // Exclude products with isDeleted: true
+        },
+        {
+          $group: {
+            _id: null,
+            low: { $min: "$price" },
+            high: { $max: "$price" },
+          },
+        },
+      ]);
+      // Update priceRange if products are found
+      if (result) {
+        priceRange = {
+          low: result.low,
+          high: result.high,
+        };
+      }
+      const allProducts_1 = await productModel
+        .find({ isDeleted: false })
+        .limit(9)
+        .sort({
+          createdAt: -1,
+        });
+      const latest_product = this.formate_product(allProducts_1);
+
+      return responseReturn(res, 200, { priceRange, latest_product });
+    } catch (error) {
+      console.error("Error in get_price_range:", error);
+      return responseReturn(res, 500, { message: "Internal Server Error" });
+    }
+  };
+  query_products = async (req, res) => {
+    console.log("in the query product");
+
+    // Destructure query parameters and convert necessary values to integers
+    const {
+      lowPrice,
+      highPrice,
+      rating,
+      category,
+      sortPrice,
+      pageNumber,
+      pageSize,
+    } = req.query;
+
+    const lowPriceInt = parseInt(lowPrice, 10);
+    const highPriceInt = parseInt(highPrice, 10);
+    const ratingInt = parseInt(rating, 10);
+    const pageNumberInt = parseInt(pageNumber, 10) || 1; // Default to 1 if not provided
+    const pageSizeInt = parseInt(pageSize, 10) || 9; // Default to 9 if not provided
+
+    // Match filter
+    const matchFilter = {
+      isDeleted: false,
+      price: { $gte: lowPriceInt, $lte: highPriceInt },
+      ...(category && { category }), // Add category filter if defined
+      ...(rating && { rating: { $gte: ratingInt } }), // Rating filter (greater than or equal to provided rating)
+    };
+
+    const sortFilter = {}; // Default sorting criteria
+
+    // Check for sorting condition based on price
+    if (sortPrice === "low-to-high") {
+      sortFilter.price = 1; // Ascending order for price (low to high)
+    } else if (sortPrice === "high-to-low") {
+      sortFilter.price = -1; // Descending order for price (high to low)
+    } else {
+      // Default sorting by createdAt (newest products first)
+      sortFilter.createdAt = -1;
+    }
+
+    // Skip and Limit logic
+    const skip = (pageNumberInt - 1) * pageSizeInt; // Skip products from previous pages
+    const limit = pageSizeInt; // Limit the number of products per page
+
+    try {
+      // Aggregation pipeline
+      const products = await productModel.aggregate([
+        {
+          $match: matchFilter, // Apply dynamic filters
+        },
+        {
+          $sort: sortFilter, // Apply sorting (either by price or createdAt)
+        },
+        {
+          $skip: skip, // Skip products for pagination
+        },
+        {
+          $limit: limit, // Limit the number of products per page
+        },
+      ]);
+
+      console.log(products);
+      // Return the products
+      return responseReturn(res, 200, { products });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return responseReturn(res, 500, { message: "Error fetching products" });
+    }
+  };
 }
 
 module.exports = new homeController();

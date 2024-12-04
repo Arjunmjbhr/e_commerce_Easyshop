@@ -1,6 +1,7 @@
 import React from "react";
 import { Range } from "react-range";
-const PriceRange = ({ state, setState }) => {
+
+const PriceRange = ({ state, setState, priceRange }) => {
   return (
     <div>
       <div className="py-2 flex flex-col gap-5 md:w-6/12 px-2  ">
@@ -8,8 +9,8 @@ const PriceRange = ({ state, setState }) => {
 
         <Range
           step={50}
-          min={50}
-          max={50000}
+          min={priceRange.low}
+          max={priceRange.high}
           values={state.values}
           onChange={(values) => setState({ values })}
           renderTrack={({ props, children }) => (

@@ -25,18 +25,44 @@ export const get_products = createAsyncThunk(
 ); // get_products End Method
 
 export const product_details = createAsyncThunk(
-  "product/product_details",
-  async (slug, { fulfillWithValue }) => {
+  "home/product_details",
+  async (slug, { fulfillWithValue, rejectWithValue }) => {
     try {
       const { data } = await api.get(`/home/product-details/${slug}`);
-      console.log(data);
       return fulfillWithValue(data);
     } catch (error) {
-      console.log(error.respone);
+      return rejectWithValue(error.response.data);
     }
   }
 );
 // End Method
+export const price_range_product = createAsyncThunk(
+  "home/price_range_product",
+  async (_, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/home/price-range-product`);
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const query_proudcts = createAsyncThunk(
+  "home/price_range_product",
+  async (query, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      console.log(query);
+      const { data } = await api.get(
+        `/home/query-products?category=${query.category}&&rating=${query.rating}&&lowPrice=${query.low}&&highPrice=${query.high}&&sortPrice=${query.sortPrice}&&pageNumber=${query.pageNumber}`
+      );
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 export const homeReducer = createSlice({
   name: "home",
@@ -50,6 +76,10 @@ export const homeReducer = createSlice({
     product: {},
     relatedProducts: [],
     moreProducts: [],
+    priceRange: {
+      low: 0,
+      high: 100,
+    },
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -73,6 +103,10 @@ export const homeReducer = createSlice({
         state.product = payload.product;
         state.relatedProducts = payload.relatedProducts;
         state.moreProducts = payload.moreProducts;
+      })
+      .addCase(price_range_product.fulfilled, (state, { payload }) => {
+        state.priceRange = payload.priceRange;
+        state.latest_product = payload.latest_product;
       });
   },
 });

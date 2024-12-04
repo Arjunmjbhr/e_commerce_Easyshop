@@ -6,7 +6,7 @@ import FeaturedProducts from "../componets/products/FeaturedProducts";
 import Products from "../componets/products/Products";
 import Footer from "./../componets/Footer";
 import { useDispatch, useSelector } from "react-redux";
-import { get_categories, get_products } from "../store/reducers/homeReducer";
+import { get_products } from "../store/reducers/homeReducer";
 
 const Home = () => {
   const dispatch = useDispatch();
