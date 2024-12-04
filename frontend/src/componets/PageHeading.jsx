@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 const PageHeading = ({ heading, breadcrumbs }) => {
-  console.log(breadcrumbs);
   return (
     <div>
       <div className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left'>
