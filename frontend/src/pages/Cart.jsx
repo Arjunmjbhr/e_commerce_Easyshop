@@ -51,23 +51,9 @@ const Cart = () => {
                       </h2>
                     </div>
                     {/* content stocked products */}
-                    {cartProducts.map(() => {
-                      return (
-                        <div className="bg-white p-4 flex flex-col gap-2">
-                          <div>
-                            <h2 className="text-md text-slate-600 font-semibold">
-                              EasyShop
-                            </h2>
-                          </div>
-                          <div>
-                            {/*  cart items */}
-                            {[1, 2].map(() => (
-                              <CartProductDetails />
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
+                    <div className="mt-3">
+                      <CartProductDetails />
+                    </div>
                   </div>
                   {/* out of stcoked products */}
                   {outOfStockProducts.length > 0 && (
@@ -80,9 +66,8 @@ const Cart = () => {
                       </div>
                       <div className="mt-3">
                         {/*  cart items */}
-                        {[1, 2].map(() => (
-                          <CartProductDetails />
-                        ))}
+
+                        <CartProductDetails />
                       </div>
                     </div>
                   )}

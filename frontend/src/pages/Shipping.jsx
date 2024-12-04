@@ -98,25 +98,10 @@ const Shipping = () => {
                 </div>
                 {/* product details */}
                 <div className="mt-3">
-                  {[1, 2].map(() => {
-                    return (
-                      <div className="bg-white p-4 flex flex-col gap-2 mt-2">
-                        <div>
-                          <h2 className="text-md text-slate-600 font-semibold">
-                            EasyShop
-                          </h2>
-                        </div>
-                        <div>
-                          {/*  cart items */}
-                          {[1, 2].map(() => (
-                            <CartProductDetails />
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <CartProductDetails />
                 </div>
               </div>
+              {/* order summary */}
               <div className="w-[33%] md-lg:w-full pr-3">
                 <div className="pl-3 md-lg:pl-0 md-lg:mt-5">
                   <OrderSummaryShipping res={res} />
