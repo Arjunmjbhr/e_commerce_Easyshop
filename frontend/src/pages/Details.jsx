@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { get_products, get_categories } from "../store/reducers/homeReducer";
 import { product_details } from "../store/reducers/homeReducer";
 import ProductImageZoom from "../componets/ProductImageZoom";
+import PageHeading from "../componets/PageHeading";
 
 const Details = () => {
   const [image, setImage] = useState("");
@@ -90,19 +91,14 @@ const Details = () => {
     <div>
       <Header />
       {/* page heading with image */}
-      <section className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left'>
-        <div className="bg-[#2422228a] w-full h-full ">
-          <div className="flex flex-col justify-center items-center text-white h-full w-full gap-2 text-xl ">
-            <h1 className="font-extrabold">Product Details Page</h1>
-            <div className="flex flex-row justify-center items-center text-base gap-2">
-              <Link to="/">Home</Link>
-              <span>
-                <FaAngleRight />
-              </span>
-              <Link>Product </Link>
-            </div>
-          </div>
-        </div>
+      <section>
+        <PageHeading
+          heading="Product Details"
+          breadcrumbs={{
+            Home: "/",
+            "Product Deatils": "",
+          }}
+        />
       </section>
       {/* Breadcrumbs  */}
       <section>
@@ -347,7 +343,7 @@ const Details = () => {
                 )}
               </div>
             </div>
-            {/* Related Products */}
+            {/*  Products from same shop */}
             <div className="w-[28%] md-lg:w-full">
               <div className="pl-4 md-lg:pl-0">
                 <div className="bg-slate-500 py-2 text-white pl-4">

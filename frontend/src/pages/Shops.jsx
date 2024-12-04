@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { get_products, get_categories } from "../store/reducers/homeReducer";
 import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa6";
+import PageHeading from "../componets/PageHeading";
 
 const Shops = () => {
   const [filter, setFilter] = useState(true);
@@ -35,21 +36,16 @@ const Shops = () => {
     <div className=" ">
       <Header />
 
-      {/* Breadcrumbs  */}
-      <section className='bg-[url("http://localhost:3000/images/banner/shop.png")] h-[180px] my-5  bg-cover bg-left w-full overflow-x-hidden '>
-        <div className="bg-[#2422228a] w-full h-full ">
-          <div className="flex flex-col justify-center items-center text-white h-full w-full gap-2 text-xl ">
-            <h1 className="font-extrabold">Shop Your Dream Products</h1>
-            <div className="flex flex-row justify-center items-center text-base gap-2">
-              <Link to="/">Home</Link>
-              <span>
-                <FaAngleRight />
-              </span>
-              <Link>Product</Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* page Heading  */}
+      <div>
+        <PageHeading
+          heading="Shop your Dream Products"
+          breadcrumbs={{
+            Home: "/",
+            Product: "/shops",
+          }}
+        />
+      </div>
       {/* filter layout and product side layout */}
       <section className="py-16  overflow-x-hidden ">
         <div className="w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto">

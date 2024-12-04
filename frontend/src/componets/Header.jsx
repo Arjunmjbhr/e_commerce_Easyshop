@@ -143,24 +143,30 @@ const Header = () => {
                 </ul>
               </div>
             </div>
-            {/* cart */}
+            {/* cart & wishlist */}
             <div className="md-lg:hidden flex justify-center items-center gap-6 ">
-              <div className="relative">
-                <span className="text-green-600 w-[30px] h-[30px] rounded-full bg-slate-200 flex justify-center items-center text-lg ">
-                  <FaHeart />
-                </span>
-                <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
-                  {wishlist_count}
+              {/* wishlist */}
+              <Link to="#">
+                <div className="relative">
+                  <span className="text-green-600 w-[30px] h-[30px] rounded-full bg-slate-200 flex justify-center items-center text-lg ">
+                    <FaHeart />
+                  </span>
+                  <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
+                    {wishlist_count}
+                  </div>
                 </div>
-              </div>
-              <div className="relative">
-                <span className="text-green-600 w-[30px] h-[30px] rounded-full bg-slate-200 flex justify-center items-center text-xl ">
-                  <MdShoppingCart />
-                </span>
-                <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
-                  {wishlist_count}
+              </Link>
+              {/* cart*/}
+              <Link to="/cart">
+                <div className="relative">
+                  <span className="text-green-600 w-[30px] h-[30px] rounded-full bg-slate-200 flex justify-center items-center text-xl ">
+                    <MdShoppingCart />
+                  </span>
+                  <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
+                    {wishlist_count}
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
