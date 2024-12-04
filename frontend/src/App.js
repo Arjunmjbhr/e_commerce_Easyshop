@@ -10,6 +10,8 @@ import { useDispatch } from "react-redux";
 import { get_categories } from "./store/reducers/homeReducer";
 import Shipping from "./pages/Shipping";
 
+import FilterRating from "./componets/shops/FilterRating";
+
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -25,6 +27,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/product/details/:slug" element={<Details />} />
+        <Route path="/test" element={<FilterRating />} />
       </Routes>
     </BrowserRouter>
   );

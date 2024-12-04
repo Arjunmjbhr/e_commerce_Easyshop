@@ -10,10 +10,10 @@ import { FaListUl } from "react-icons/fa";
 import ShopProducts from "../componets/products/ShopProducts";
 import Pagination from "../componets/Pagination";
 import { useDispatch, useSelector } from "react-redux";
-import { get_products, get_categories } from "../store/reducers/homeReducer";
-import { Link } from "react-router-dom";
-import { FaAngleRight } from "react-icons/fa6";
+import { get_products } from "../store/reducers/homeReducer";
 import PageHeading from "../componets/PageHeading";
+import PriceRange from "../componets/shops/PriceRange";
+import FilterRating from "../componets/shops/FilterRating";
 
 const Shops = () => {
   const [filter, setFilter] = useState(true);
@@ -91,152 +91,15 @@ const Shops = () => {
                 </div>
               </div>
               {/* price range */}
-              <div>
-                <div className="py-2 flex flex-col gap-5 md:w-6/12 px-2  ">
-                  <h2 className="text-3xl font-bold mb-3 text-slate-600">
-                    Price
-                  </h2>
-
-                  <Range
-                    step={50}
-                    min={50}
-                    max={50000}
-                    values={state.values}
-                    onChange={(values) => setState({ values })}
-                    renderTrack={({ props, children }) => (
-                      <div
-                        {...props}
-                        className="w-full h-[6px] bg-slate-200 rounded-full cursor-pointer"
-                      >
-                        {children}
-                      </div>
-                    )}
-                    renderThumb={({ props }) => (
-                      <div
-                        className="w-[15px] h-[15px] bg-[#059473] rounded-full"
-                        {...props}
-                      />
-                    )}
-                  />
-                </div>
-                <span className="text-slate-800 font-bold text-lg">
-                  ₹{Math.floor(state.values[0])} - ₹
-                  {Math.floor(state.values[1])}
-                </span>
+              <div className="mb-5">
+                <PriceRange state={state} setState={setState} />
               </div>
               {/* rating */}
-              <div className="my-4">
-                <h2 className="text-3xl font-bold mb-3 text-slate-600">
-                  Rating
-                </h2>
-                {/* 5 star */}
-                <div
-                  onClick={() => setRating(5)}
-                  className="text-orange-500 flex  justify-evenly gap-3 items-center hover:shadow-md w-8/12 hover:bg-slate-100 py-2 "
-                >
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                </div>
-                {/* 4 star */}
-                <div
-                  onClick={() => setRating(4)}
-                  className="text-orange-500 flex  justify-evenly gap-3 items-center hover:shadow-md w-8/12 hover:bg-slate-100 py-2 "
-                >
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                </div>
-                {/* 3 star */}
-                <div
-                  onClick={() => setRating(3)}
-                  className="text-orange-500 flex  justify-evenly gap-3 items-center hover:shadow-md w-8/12 hover:bg-slate-100 py-2 "
-                >
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                </div>
-                {/* 2 star */}
-                <div
-                  onClick={() => setRating(2)}
-                  className="text-orange-500 flex  justify-evenly gap-3 items-center hover:shadow-md w-8/12 hover:bg-slate-100 py-2 "
-                >
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                </div>
-                {/* 1 star */}
-                <div
-                  onClick={() => setRating(1)}
-                  className="text-orange-500 flex  justify-evenly gap-3 items-center hover:shadow-md w-8/12 hover:bg-slate-100 py-2 "
-                >
-                  <span>
-                    <AiFillStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                  <span>
-                    <CiStar />
-                  </span>
-                </div>
+              <div className="mb-5">
+                <FilterRating setRating={setRating} />
               </div>
               {/* latest product  */}
-              <div>
+              <div className="mb-5">
                 <Products title="Latest Products" products={latest_product} />
               </div>
             </div>

@@ -24,7 +24,7 @@ const Home = () => {
     <div className="">
       <Header />
       <Banner />
-      <Categories categories={categories} />
+      <Categories />
       <div className="py-[45px]">
         <FeaturedProducts products={products} />
       </div>

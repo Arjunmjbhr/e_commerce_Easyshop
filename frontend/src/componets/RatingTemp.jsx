@@ -6,19 +6,19 @@ const RatingTemp = ({ ratings }) => {
   if (ratings === 5) {
     return (
       <>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
       </>
@@ -26,19 +26,19 @@ const RatingTemp = ({ ratings }) => {
   } else if (ratings === 4) {
     return (
       <>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
       </>
@@ -46,19 +46,19 @@ const RatingTemp = ({ ratings }) => {
   } else if (ratings === 3) {
     return (
       <>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
       </>
@@ -66,19 +66,19 @@ const RatingTemp = ({ ratings }) => {
   } else if (ratings === 2) {
     return (
       <>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
       </>
@@ -86,19 +86,19 @@ const RatingTemp = ({ ratings }) => {
   } else if (ratings === 1) {
     return (
       <>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <FaStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
       </>
@@ -106,19 +106,19 @@ const RatingTemp = ({ ratings }) => {
   } else {
     return (
       <>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
-        <span className="text-[#Edbb0E]">
+        <span className="text-orange-500">
           <CiStar />
         </span>
       </>
