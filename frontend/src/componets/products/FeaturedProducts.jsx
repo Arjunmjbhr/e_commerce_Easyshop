@@ -1,11 +1,45 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CiHeart } from "react-icons/ci";
 import { IoCartOutline } from "react-icons/io5";
 import { IoEyeOutline } from "react-icons/io5";
 import Ratings from "../Ratings";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { add_to_cart, messageClear } from "../../store/reducers/cartReducer";
+import toast from "react-hot-toast";
 
 const FeaturedProducts = ({ products }) => {
+  const { userInfo } = useSelector((store) => store.authUser);
+  const { errorMessage, successMessage } = useSelector((store) => store.cart);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // add to cart
+  const add_cart = (productId) => {
+    if (userInfo) {
+      const details = {
+        userId: userInfo.id,
+        quantity: 1,
+        productId,
+      };
+      console.log(details);
+      dispatch(add_to_cart(details));
+    } else {
+      navigate("/login");
+    }
+  };
+  // toaster message for success and failure
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage]);
+
   return (
     <div className="w-[85%] mx-auto">
       <div className="w-full">
@@ -40,12 +74,20 @@ const FeaturedProducts = ({ products }) => {
 
                 {/* Hover Action Icons view cart wishlist */}
                 <div className="absolute w-full flex justify-center items-center gap-2 -bottom-10 group-hover:bottom-4 transition-all opacity-0 group-hover:opacity-100">
+                  {/* wishlist */}
                   <Link className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl">
                     <CiHeart />
                   </Link>
-                  <Link className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl">
+                  {/* cart */}
+                  <Link
+                    onClick={() => {
+                      add_cart(product._id);
+                    }}
+                    className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                  >
                     <IoCartOutline />
                   </Link>
+                  {/* view details */}
                   <Link
                     to={`/product/details/${product.slug}`}
                     className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
@@ -70,6 +112,7 @@ const FeaturedProducts = ({ products }) => {
               </div>
             </div>
           ))}
+          {/* end of map  */}
         </div>
       </div>
     </div>

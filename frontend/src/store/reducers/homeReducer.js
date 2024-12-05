@@ -68,7 +68,7 @@ export const query_proudcts = createAsyncThunk(
   }
 );
 
-export const homeReducer = createSlice({
+const homeReducer = createSlice({
   name: "home",
   initialState: {
     errorMessage: "",
