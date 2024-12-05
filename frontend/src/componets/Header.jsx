@@ -317,7 +317,7 @@ const Header = () => {
                   </span>
                 </div>
               </div>
-              {/* hidden category list  */}
+              {/*  category list  */}
               <div
                 className={`bg-green-300 absolute w-full  md-lg:relative transition-all duration-500 overflow-hidden z-[9999]  ${
                   showCategory ? "h-auto rounded-b-md" : "h-0"
@@ -335,7 +335,9 @@ const Header = () => {
                           className="w-[30px] h-[30px] rounded-full overflow-hidden mx-5"
                           alt=""
                         />
-                        <Link>{item.categoryName}</Link>
+                        <Link to={`/products?category=${item.categoryName}`}>
+                          {item.categoryName}
+                        </Link>
                       </li>
                     );
                   })}

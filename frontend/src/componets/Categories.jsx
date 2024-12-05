@@ -52,8 +52,11 @@ const Categories = () => {
           transitionDuration={500}
           responsive={responsive}
         >
-          {categories.map((category, index) => (
-            <Link key={category._id}>
+          {categories.map((category) => (
+            <Link
+              to={`/products?category=${category.categoryName}`}
+              key={category._id}
+            >
               <div className="h-[200px] w-[200px] relative flex justify-center items-center  ">
                 <img
                   src={category.image}
