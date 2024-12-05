@@ -6,6 +6,21 @@ export const add_to_cart = createAsyncThunk(
   async (info, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.post("/home/product/add-to-cart", info);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
+export const get_cart_products = createAsyncThunk(
+  "cart/get_cart_products",
+  async (userId, { rejectWithValue, fulfillWithValue }) => {
+    console.log(userId);
+    try {
+      const { data } = await api.get(
+        `/home/product/get-cart-product/${userId}`
+      );
       console.log(data);
       return fulfillWithValue(data);
     } catch (error) {

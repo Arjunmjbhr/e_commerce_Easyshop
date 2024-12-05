@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./../componets/Header";
 import Footer from "../componets/Footer";
 import PageHeading from "../componets/PageHeading";
 import { Link, useNavigate } from "react-router-dom";
 import CartProductDetails from "../componets/cart_checkout/CartProductDetails";
 import OrderSummaryCart from "../componets/cart_checkout/OrderSummaryCart";
+import { useDispatch, useSelector } from "react-redux";
+import { get_cart_products } from "../store/reducers/cartReducer";
 
 const Cart = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { userInfo } = useSelector((store) => store.authUser);
   const cartProducts = [1, 2];
   const outOfStockProducts = [1, 2];
+
+  //function for chekout
   const redirectToCheckout = () => {
     navigate("/shipping", {
       state: {
@@ -20,6 +26,11 @@ const Cart = () => {
       },
     });
   };
+  //useEffect for geting cart data
+  useEffect(() => {
+    dispatch(get_cart_products(userInfo.id));
+  }, []);
+
   return (
     <div>
       <Header />
