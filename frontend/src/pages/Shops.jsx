@@ -23,12 +23,9 @@ const Shops = () => {
   const [perPage, setPerPage] = useState(1);
   const [pageNumber, setPageNumber] = useState(1);
   const dispatch = useDispatch();
-  const {
-    categories,
-    products,
-    latest_product,
-    priceRange = { low: 0, high: 100 },
-  } = useSelector((store) => store.home);
+  const { categories, products, latest_product, priceRange } = useSelector(
+    (store) => store.home
+  );
   const [state, setState] = useState({
     values: priceRange ? [priceRange.low, priceRange.high] : [0, 100],
   });
@@ -45,8 +42,9 @@ const Shops = () => {
 
   // useEffect
   useEffect(() => {
-    dispatch(get_products());
     dispatch(price_range_product());
+
+    dispatch(get_products());
   }, []);
 
   useEffect(() => {
@@ -72,8 +70,6 @@ const Shops = () => {
     sortPrice,
     pageNumber,
   ]);
-  console.log(category);
-  console.log(rating);
 
   return (
     <div className=" ">

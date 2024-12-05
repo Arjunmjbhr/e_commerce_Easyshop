@@ -141,6 +141,7 @@ class homeController {
           },
         },
       ]);
+      console.log(result);
       // Update priceRange if products are found
       if (result) {
         priceRange = {
@@ -155,7 +156,7 @@ class homeController {
           createdAt: -1,
         });
       const latest_product = this.formate_product(allProducts_1);
-
+      console.log(priceRange);
       return responseReturn(res, 200, { priceRange, latest_product });
     } catch (error) {
       console.error("Error in get_price_range:", error);
@@ -223,7 +224,6 @@ class homeController {
         },
       ]);
 
-      console.log(products);
       // Return the products
       return responseReturn(res, 200, { products });
     } catch (error) {
