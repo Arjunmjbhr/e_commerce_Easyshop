@@ -4,7 +4,7 @@ import { FaMobileScreen } from "react-icons/fa6";
 import { CiFacebook } from "react-icons/ci";
 import { FaGithub } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { FaList } from "react-icons/fa";
@@ -16,16 +16,20 @@ import { FaChevronDown } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
 const Header = () => {
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [category, setCategory] = useState("");
   const wishlist_count = 5;
-  const user = false;
   const { userInfo } = useSelector((store) => store.authUser);
   const { categories } = useSelector((store) => store.home);
-
+  const search = () => {
+    navigate(
+      `/products/search?category=${category}&&searchValue=${searchValue}`
+    );
+  };
   return (
     <div className="w-full bg-white relative">
       {/* first header */}
@@ -352,8 +356,6 @@ const Header = () => {
               <div className="px-2 w-3/12 md:hidden">
                 <select
                   onChange={(e) => setCategory(e.target.value)}
-                  name=""
-                  id=""
                   className="px-2 py-1"
                 >
                   <option value="">Select Category</option>
@@ -374,7 +376,10 @@ const Header = () => {
                   placeholder="What do you need?"
                 />
                 {/* search button */}
-                <button className="bg-green-700 py-3 px-3 text-white font-semibold uppercase">
+                <button
+                  onClick={search}
+                  className="bg-green-700 py-3 px-3 text-white font-semibold uppercase"
+                >
                   Search
                 </button>
               </div>

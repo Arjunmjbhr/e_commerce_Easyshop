@@ -11,6 +11,7 @@ import { get_categories } from "./store/reducers/homeReducer";
 import Shipping from "./pages/Shipping";
 import FilterRating from "./componets/shops/FilterRating";
 import CategoryShop from "./pages/CategoryShop";
+import SearchProducts from "./pages/SearchProducts";
 
 function App() {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ function App() {
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/product/details/:slug" element={<Details />} />
         <Route path="/products?" element={<CategoryShop />} />
+        <Route path="/products/search?" element={<SearchProducts />} />
         <Route path="/test" element={<FilterRating />} />
       </Routes>
     </BrowserRouter>

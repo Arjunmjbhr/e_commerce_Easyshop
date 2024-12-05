@@ -156,7 +156,6 @@ class homeController {
           createdAt: -1,
         });
       const latest_product = this.formate_product(allProducts_1);
-      console.log(priceRange);
       return responseReturn(res, 200, { priceRange, latest_product });
     } catch (error) {
       console.error("Error in get_price_range:", error);
@@ -164,8 +163,15 @@ class homeController {
     }
   };
   query_products = async (req, res) => {
-    const { lowPrice, highPrice, rating, category, sortPrice, pageNumber } =
-      req.query;
+    const {
+      lowPrice,
+      highPrice,
+      rating,
+      category,
+      sortPrice,
+      pageNumber,
+      searchValue,
+    } = req.query;
 
     const lowPriceInt = parseInt(lowPrice, 10) || 0;
     const highPriceInt = parseInt(highPrice, 10) || Infinity;
@@ -177,6 +183,7 @@ class homeController {
       price: { $gte: lowPriceInt, $lte: highPriceInt },
       ...(category && { category }),
       ...(rating && { rating: { $gte: ratingInt } }),
+      ...(searchValue && { $text: { $search: searchValue } }),
     };
 
     const sortFilter = {};
@@ -206,7 +213,6 @@ class homeController {
         { $skip: skip }, // Skip for pagination
         { $limit: perPage }, // Limit for pagination
       ]);
-      console.log(totalCount);
       // Return response
       return responseReturn(res, 200, { totalCount, totalProducts, perPage });
     } catch (error) {
