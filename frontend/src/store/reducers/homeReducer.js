@@ -68,6 +68,9 @@ export const homeReducer = createSlice({
     errorMessage: "",
     categories: [],
     products: [],
+    totalCount: 0,
+    totalProducts: [],
+    perPage: 9,
     latest_product: [],
     topRated_product: [],
     discounted_product: [],
@@ -105,6 +108,11 @@ export const homeReducer = createSlice({
       .addCase(price_range_product.fulfilled, (state, { payload }) => {
         state.priceRange = payload.priceRange;
         state.latest_product = payload.latest_product;
+      })
+      .addCase(query_proudcts.fulfilled, (state, { payload }) => {
+        state.totalCount = payload.totalCount;
+        state.totalProducts = payload.totalProducts;
+        state.perPage = payload.perPage;
       });
   },
 });

@@ -20,12 +20,18 @@ const Shops = () => {
   const [filter, setFilter] = useState(true);
   const [rating, setRating] = useState("");
   const [styles, setStyles] = useState("grid");
-  const [perPage, setPerPage] = useState(1);
+
   const [pageNumber, setPageNumber] = useState(1);
   const dispatch = useDispatch();
-  const { categories, products, latest_product, priceRange } = useSelector(
-    (store) => store.home
-  );
+  const {
+    categories,
+    products,
+    latest_product,
+    priceRange,
+    totalProducts,
+    totalCount,
+    perPage,
+  } = useSelector((store) => store.home);
   const [state, setState] = useState({
     values: priceRange ? [priceRange.low, priceRange.high] : [0, 100],
   });
@@ -158,7 +164,7 @@ const Shops = () => {
               {/* sorting and view change feature */}
               <div className="mb-7">
                 <div className="border-[1px] border-slate-500 flex justify-between items-center px-3 py-2 ">
-                  <div>15 Products Available</div>
+                  <div>{totalCount} Products Available</div>
                   <div className="flex justify-center items-center gap-4">
                     {/* sort option */}
                     <div>
@@ -194,18 +200,20 @@ const Shops = () => {
               </div>
               {/* product list */}
               <div className="">
-                <ShopProducts styles={styles} products={products} />
+                <ShopProducts styles={styles} products={totalProducts} />
               </div>
               {/* pagination */}
-              <div className="w-full flex justify-end mt-4 pr-7 overflow-x-hidden">
-                <Pagination
-                  pageNumber={pageNumber}
-                  setPageNumber={setPageNumber}
-                  totalItem={10}
-                  perPage={perPage}
-                  showItem={Math.floor(10 / 3)}
-                />
-              </div>
+              {totalCount > perPage && (
+                <div className="w-full flex justify-end mt-4 pr-7 overflow-x-hidden">
+                  <Pagination
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    totalItem={totalCount}
+                    perPage={perPage}
+                    showItem={3}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

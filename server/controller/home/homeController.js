@@ -164,68 +164,51 @@ class homeController {
     }
   };
   query_products = async (req, res) => {
-    console.log("in the query product");
+    const { lowPrice, highPrice, rating, category, sortPrice, pageNumber } =
+      req.query;
 
-    // Destructure query parameters and convert necessary values to integers
-    const {
-      lowPrice,
-      highPrice,
-      rating,
-      category,
-      sortPrice,
-      pageNumber,
-      pageSize,
-    } = req.query;
-
-    const lowPriceInt = parseInt(lowPrice, 10);
-    const highPriceInt = parseInt(highPrice, 10);
-    const ratingInt = parseInt(rating, 10);
-    const pageNumberInt = parseInt(pageNumber, 10) || 1; // Default to 1 if not provided
-    const pageSizeInt = parseInt(pageSize, 10) || 9; // Default to 9 if not provided
-
-    // Match filter
+    const lowPriceInt = parseInt(lowPrice, 10) || 0;
+    const highPriceInt = parseInt(highPrice, 10) || Infinity;
+    const ratingInt = parseInt(rating, 10) || 0;
+    const pageNumberInt = parseInt(pageNumber, 10) || 1;
+    const perPage = 9;
     const matchFilter = {
       isDeleted: false,
       price: { $gte: lowPriceInt, $lte: highPriceInt },
-      ...(category && { category }), // Add category filter if defined
-      ...(rating && { rating: { $gte: ratingInt } }), // Rating filter (greater than or equal to provided rating)
+      ...(category && { category }),
+      ...(rating && { rating: { $gte: ratingInt } }),
     };
 
-    const sortFilter = {}; // Default sorting criteria
-
-    // Check for sorting condition based on price
+    const sortFilter = {};
     if (sortPrice === "low-to-high") {
-      sortFilter.price = 1; // Ascending order for price (low to high)
+      sortFilter.price = 1;
     } else if (sortPrice === "high-to-low") {
-      sortFilter.price = -1; // Descending order for price (high to low)
+      sortFilter.price = -1;
     } else {
-      // Default sorting by createdAt (newest products first)
       sortFilter.createdAt = -1;
     }
 
-    // Skip and Limit logic
-    const skip = (pageNumberInt - 1) * pageSizeInt; // Skip products from previous pages
-    const limit = pageSizeInt; // Limit the number of products per page
+    const skip = (pageNumberInt - 1) * perPage;
 
     try {
-      // Aggregation pipeline
-      const products = await productModel.aggregate([
-        {
-          $match: matchFilter, // Apply dynamic filters
-        },
-        {
-          $sort: sortFilter, // Apply sorting (either by price or createdAt)
-        },
-        {
-          $skip: skip, // Skip products for pagination
-        },
-        {
-          $limit: limit, // Limit the number of products per page
-        },
+      // Aggregation 1: Total count of matching products
+      const totalCountResult = await productModel.aggregate([
+        { $match: matchFilter },
+        { $count: "totalCount" },
       ]);
 
-      // Return the products
-      return responseReturn(res, 200, { products });
+      const totalCount = totalCountResult[0]?.totalCount || 0; // Default to 0 if no results
+
+      // Aggregation 2: Fetch paginated products
+      const totalProducts = await productModel.aggregate([
+        { $match: matchFilter }, // Apply filters
+        { $sort: sortFilter }, // Sort
+        { $skip: skip }, // Skip for pagination
+        { $limit: perPage }, // Limit for pagination
+      ]);
+      console.log(totalCount);
+      // Return response
+      return responseReturn(res, 200, { totalCount, totalProducts, perPage });
     } catch (error) {
       console.error("Error fetching products:", error);
       return responseReturn(res, 500, { message: "Error fetching products" });
