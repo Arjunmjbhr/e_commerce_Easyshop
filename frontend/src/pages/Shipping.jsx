@@ -6,8 +6,16 @@ import { useLocation } from "react-router-dom";
 import AddressForm from "../componets/AddressForm";
 import CartProductDetails from "../componets/cart_checkout/CartProductDetails";
 import OrderSummaryShipping from "../componets/cart_checkout/OrderSummaryShipping";
+import { useDispatch, useSelector } from "react-redux";
+import { place_order } from "../store/reducers/orderReducer";
+import { useNavigate } from "react-router-dom";
 
 const Shipping = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {
+    state: { products, price, shipping_fee, items },
+  } = useLocation();
   const [res, setRes] = useState(false);
   const [inputState, setInputState] = useState({
     name: "",
@@ -18,6 +26,7 @@ const Shipping = () => {
     city: "",
     area: "",
   });
+  const { userInfo } = useSelector((store) => store.authUser);
 
   //   handling form input
   const inputHandle = (e) => {
@@ -35,6 +44,18 @@ const Shipping = () => {
     if (name && address && phone && post && district && city && area) {
       setRes(true);
     }
+  };
+  const placeOrder = () => {
+    const data = {
+      price,
+      products,
+      shipping_fee,
+      items,
+      shippingInfo: inputState,
+      userId: userInfo.id,
+      navigate,
+    };
+    dispatch(place_order(data));
   };
 
   return (
@@ -98,13 +119,22 @@ const Shipping = () => {
                 </div>
                 {/* product details */}
                 <div className="mt-3">
-                  <CartProductDetails />
+                  <CartProductDetails
+                    cart_products={products}
+                    isShipping={true}
+                  />
                 </div>
               </div>
               {/* order summary */}
               <div className="w-[33%] md-lg:w-full pr-3">
                 <div className="pl-3 md-lg:pl-0 md-lg:mt-5">
-                  <OrderSummaryShipping res={res} />
+                  <OrderSummaryShipping
+                    res={res}
+                    placeOrder={placeOrder}
+                    price={price}
+                    shipping_fee={shipping_fee}
+                    items={items}
+                  />
                 </div>
               </div>
             </div>

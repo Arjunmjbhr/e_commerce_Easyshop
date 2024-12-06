@@ -1,9 +1,18 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { delete_cart_product } from "../../store/reducers/cartReducer";
+import {
+  delete_cart_product,
+  quantity_decrement,
+} from "../../store/reducers/cartReducer";
 
 const OutOfStock = ({ outofstock_products }) => {
   const dispatch = useDispatch();
+  const decrementCount = (quantity, cartId, stock) => {
+    const temp = quantity - 1;
+    if (temp !== 0) {
+      dispatch(quantity_decrement(cartId));
+    }
+  };
 
   return (
     <div className="mt-3">
@@ -39,6 +48,17 @@ const OutOfStock = ({ outofstock_products }) => {
                 <p> -{cart.products[0].discount}%</p>
               </div>
               <div className="flex flex-col gap-2 justify-center items-center">
+                {/* increment and decremetn */}
+                <div className="flex bg-slate-200 h-[30px] justify-center items-center text-lg">
+                  <div
+                    onClick={() => decrementCount(cart.quantity, cart._id)}
+                    className="cursor-pointer px-2 text-2xl"
+                  >
+                    -
+                  </div>
+                  <div className="cursor-pointer px-2">{cart.quantity}</div>
+                  <div className="cursor-pointer px-2">+</div>
+                </div>
                 {/* button for delete item in the cart */}
                 <div>
                   <button

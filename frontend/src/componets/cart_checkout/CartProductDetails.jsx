@@ -1,7 +1,7 @@
 import React from "react";
 import CartProduct from "./CartProduct";
 
-const CartProductDetails = ({ cart_products }) => {
+const CartProductDetails = ({ cart_products, isShipping }) => {
   return (
     <div className="mt-3">
       {cart_products.map((shop) => (
@@ -11,7 +11,7 @@ const CartProductDetails = ({ cart_products }) => {
               {shop?.shopName}
             </h2>
           </div>
-          <CartProduct shop={shop} isOutOfStock={false} />
+          <CartProduct shop={shop} isShipping={isShipping} />
         </div>
       ))}
     </div>
