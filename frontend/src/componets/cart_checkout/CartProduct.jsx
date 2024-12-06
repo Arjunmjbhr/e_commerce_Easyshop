@@ -1,6 +1,9 @@
 import React from "react";
+import { useDispatch } from "react-redux";
+import { delete_cart_product } from "../../store/reducers/cartReducer";
 
 const CartProduct = ({ shop }) => {
+  const dispatch = useDispatch();
   return (
     <div>
       <div>
@@ -50,7 +53,12 @@ const CartProduct = ({ shop }) => {
                 </div>
                 {/* button for delete item in the cart */}
                 <div>
-                  <button className="px-5 bg-red-500 text-white">Delete</button>
+                  <button
+                    onClick={() => dispatch(delete_cart_product(product._id))}
+                    className="px-5 bg-red-500 text-white"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>

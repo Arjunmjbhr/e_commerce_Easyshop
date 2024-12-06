@@ -7,7 +7,6 @@ import CartProductDetails from "../componets/cart_checkout/CartProductDetails";
 import OrderSummaryCart from "../componets/cart_checkout/OrderSummaryCart";
 import { useDispatch, useSelector } from "react-redux";
 import { get_cart_products } from "../store/reducers/cartReducer";
-import CartProduct from "../componets/cart_checkout/CartProduct";
 import OutOfStock from "../componets/cart_checkout/OutOfStock";
 
 const Cart = () => {
@@ -35,6 +34,7 @@ const Cart = () => {
       },
     });
   };
+
   //useEffect for geting cart data
   useEffect(() => {
     dispatch(get_cart_products(userInfo.id));
@@ -97,7 +97,12 @@ const Cart = () => {
               <div className="w-[33%] md-lg:w-full">
                 <div className="pl-3 md-lg:pl-0 md-lg:mt-5">
                   {cart_products.length > 0 && (
-                    <OrderSummaryCart redirectToCheckout={redirectToCheckout} />
+                    <OrderSummaryCart
+                      shipping_fee={shipping_fee}
+                      buy_product_item={buy_product_item}
+                      price={price}
+                      redirectToCheckout={redirectToCheckout}
+                    />
                   )}
                 </div>
               </div>

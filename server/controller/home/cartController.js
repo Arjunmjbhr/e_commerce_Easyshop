@@ -154,6 +154,16 @@ class cartController {
       return responseReturn(res, 500, { message: "Internal Server Error" });
     }
   };
+  delete_cart_products = async (req, res) => {
+    console.log(req.params);
+    const { cartId } = req.params;
+    try {
+      await cartModel.findByIdAndDelete(cartId);
+      responseReturn(res, 200, { message: "Product Remove Successfully" });
+    } catch (error) {
+      console.log("error while deleting the products", error.message);
+    }
+  };
 }
 
 module.exports = new cartController();
