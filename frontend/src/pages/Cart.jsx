@@ -7,13 +7,22 @@ import CartProductDetails from "../componets/cart_checkout/CartProductDetails";
 import OrderSummaryCart from "../componets/cart_checkout/OrderSummaryCart";
 import { useDispatch, useSelector } from "react-redux";
 import { get_cart_products } from "../store/reducers/cartReducer";
+import CartProduct from "../componets/cart_checkout/CartProduct";
+import OutOfStock from "../componets/cart_checkout/OutOfStock";
 
 const Cart = () => {
+  const {
+    cart_products,
+    successMessage,
+    price,
+    buy_product_item,
+    shipping_fee,
+    outofstock_products,
+  } = useSelector((state) => state.cart);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { userInfo } = useSelector((store) => store.authUser);
-  const cartProducts = [1, 2];
-  const outOfStockProducts = [1, 2];
 
   //function for chekout
   const redirectToCheckout = () => {
@@ -48,7 +57,7 @@ const Cart = () => {
       <section className="bg-[#eee]">
         <div className="w-[85%] lg:w-[90%] mx-auto py-16 ">
           {/* condition to check cart empty or not */}
-          {cartProducts.length > 0 || outOfStockProducts.length > 0 ? (
+          {cart_products.length > 0 || outofstock_products.length > 0 ? (
             <div className="flex flex-wrap">
               {/* product details */}
               <div className="w-[67%] md-lg:w-full">
@@ -58,27 +67,27 @@ const Cart = () => {
                     {/* heading stocked products */}
                     <div className="bg-white p-4 rounded-md">
                       <h2 className="font-bold text-md text-green-700">
-                        Stocked Products - {cartProducts.length}
+                        Stocked Products - {cart_products.length}
                       </h2>
                     </div>
                     {/* content stocked products */}
                     <div className="mt-3">
-                      <CartProductDetails />
+                      <CartProductDetails cart_products={cart_products} />
                     </div>
                   </div>
                   {/* out of stcoked products */}
-                  {outOfStockProducts.length > 0 && (
+                  {outofstock_products.length > 0 && (
                     <div className="mt-5">
                       {/* heading stocked products */}
                       <div className=" p-4 rounded-md bg-white ">
                         <h2 className="font-bold text-md text-green-700">
-                          outOfStocked Products - {outOfStockProducts.length}
+                          outOfStocked Products - {outofstock_products.length}
                         </h2>
                       </div>
                       <div className="mt-3">
                         {/*  cart items */}
 
-                        <CartProductDetails />
+                        <OutOfStock outofstock_products={outofstock_products} />
                       </div>
                     </div>
                   )}
@@ -87,7 +96,7 @@ const Cart = () => {
               {/* checkout tab */}
               <div className="w-[33%] md-lg:w-full">
                 <div className="pl-3 md-lg:pl-0 md-lg:mt-5">
-                  {cartProducts.length > 0 && (
+                  {cart_products.length > 0 && (
                     <OrderSummaryCart redirectToCheckout={redirectToCheckout} />
                   )}
                 </div>

@@ -35,13 +35,14 @@ const cartReducer = createSlice({
   initialState: {
     cart_products: [],
     cart_product_count: 0,
-    wishlist_count: 0,
-    wishlist: [],
     price: 0,
-    errorMessage: "",
-    successMessage: "",
     shipping_fee: 0,
     outofstock_products: [],
+    buy_product_item: 0,
+    errorMessage: "",
+    successMessage: "",
+    wishlist_count: 0,
+    wishlist: [],
   },
   reducers: {
     messageClear: (state, _) => {
@@ -57,6 +58,14 @@ const cartReducer = createSlice({
       .addCase(add_to_cart.fulfilled, (state, action) => {
         state.cart_product_count = state.cart_product_count + 1;
         state.successMessage = action.payload.message;
+      })
+      .addCase(get_cart_products.fulfilled, (state, action) => {
+        state.cart_products = action.payload.cart_products;
+        state.price = action.payload.price;
+        state.cart_product_count = action.payload.cart_product_count;
+        state.shipping_fee = action.payload.shipping_fee;
+        state.outofstock_products = action.payload.outOfStockProduct;
+        state.buy_product_item = action.payload.buy_product_item;
       });
   },
 });
