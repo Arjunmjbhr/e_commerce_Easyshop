@@ -28,7 +28,7 @@ const Sidebar = ({ filterShow }) => {
             <span className="text-xl">
               <FaBorderAll />
             </span>
-            <Link to="/dashboard" className="block">
+            <Link to="/dashboard/my-orders" className="block">
               My Orders
             </Link>
           </li>
