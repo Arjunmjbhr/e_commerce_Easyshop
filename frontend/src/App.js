@@ -13,6 +13,8 @@ import FilterRating from "./componets/shops/FilterRating";
 import CategoryShop from "./pages/CategoryShop";
 import SearchProducts from "./pages/SearchProducts";
 import Payment from "./pages/Payment";
+import Dashboard from "./pages/Dashboard";
+import ProtectUser from "./utils/ProtectUser";
 
 function App() {
   const dispatch = useDispatch();
@@ -33,6 +35,9 @@ function App() {
         <Route path="/products/search?" element={<SearchProducts />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/test" element={<FilterRating />} />
+        <Route path="/dashboard" element={<ProtectUser />}>
+          <Route path="" element={<Dashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
