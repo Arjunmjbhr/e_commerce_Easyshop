@@ -180,6 +180,22 @@ class cartController {
       responseReturn(res, 500, { message: "An error occurred" });
     }
   };
+  quantity_decrement = async (req, res) => {
+    const { cartId } = req.params;
+    try {
+      // Update the quantity directly
+      await cartModel.findByIdAndUpdate(
+        cartId,
+        { $inc: { quantity: -1 } }, // Increment quantity by 1
+        { new: true } // Return the updated document if needed
+      );
+      console.log("quantity");
+      responseReturn(res, 200, { message: "Quantity Updated" });
+    } catch (error) {
+      console.log(error.message);
+      responseReturn(res, 500, { message: "An error occurred" });
+    }
+  };
 }
 
 module.exports = new cartController();

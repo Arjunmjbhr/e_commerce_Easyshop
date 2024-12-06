@@ -16,5 +16,9 @@ router.put(
   "/home/product/quantity-inc/:cartId",
   cartController.quantity_increment
 );
+router.put(
+  "/home/product/quantity-dec/:cartId",
+  cartController.quantity_decrement
+);
 
 module.exports = router;

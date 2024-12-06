@@ -11,7 +11,7 @@ const CartProductDetails = ({ cart_products }) => {
               {shop?.shopName}
             </h2>
           </div>
-          <CartProduct shop={shop} />
+          <CartProduct shop={shop} isOutOfStock={false} />
         </div>
       ))}
     </div>

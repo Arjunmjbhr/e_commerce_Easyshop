@@ -3,14 +3,21 @@ import { useDispatch } from "react-redux";
 import {
   delete_cart_product,
   quantity_increment,
+  quantity_decrement,
 } from "../../store/reducers/cartReducer";
 
-const CartProduct = ({ shop }) => {
+const CartProduct = ({ shop, isOutOfStock = true }) => {
   const dispatch = useDispatch();
   const incrementCount = (quantity, cartId, stock) => {
     const temp = quantity + 1;
     if (temp <= stock) {
       dispatch(quantity_increment(cartId));
+    }
+  };
+  const decrementCount = (quantity, cartId, stock) => {
+    const temp = quantity - 1;
+    if (temp !== 0) {
+      dispatch(quantity_decrement(cartId));
     }
   };
   return (
@@ -55,22 +62,37 @@ const CartProduct = ({ shop }) => {
               </div>
               <div className="flex flex-col gap-2 justify-center items-center">
                 {/* button for adding and reducing */}
-                <div className="flex bg-slate-200 h-[30px] justify-center items-center text-lg">
-                  <div className="cursor-pointer px-2 text-2xl">-</div>
-                  <div className="cursor-pointer px-2">{product.quantity}</div>
-                  <div
-                    onClick={() =>
-                      incrementCount(
-                        product.quantity,
-                        product._id,
-                        product.productInfo.stock
-                      )
-                    }
-                    className="cursor-pointer px-2"
-                  >
-                    +
+                {!isOutOfStock && (
+                  <div className="flex bg-slate-200 h-[30px] justify-center items-center text-lg">
+                    <div
+                      onClick={() =>
+                        decrementCount(
+                          product.quantity,
+                          product._id,
+                          product.productInfo.stock
+                        )
+                      }
+                      className="cursor-pointer px-2 text-2xl"
+                    >
+                      -
+                    </div>
+                    <div className="cursor-pointer px-2">
+                      {product.quantity}
+                    </div>
+                    <div
+                      onClick={() =>
+                        incrementCount(
+                          product.quantity,
+                          product._id,
+                          product.productInfo.stock
+                        )
+                      }
+                      className="cursor-pointer px-2"
+                    >
+                      +
+                    </div>
                   </div>
-                </div>
+                )}
                 {/* button for delete item in the cart */}
                 <div>
                   <button
