@@ -6,8 +6,9 @@ import { Link, useNavigate } from "react-router-dom";
 import CartProductDetails from "../componets/cart_checkout/CartProductDetails";
 import OrderSummaryCart from "../componets/cart_checkout/OrderSummaryCart";
 import { useDispatch, useSelector } from "react-redux";
-import { get_cart_products } from "../store/reducers/cartReducer";
+import { get_cart_products, messageClear } from "../store/reducers/cartReducer";
 import OutOfStock from "../componets/cart_checkout/OutOfStock";
+import toast from "react-hot-toast";
 
 const Cart = () => {
   const {
@@ -39,6 +40,13 @@ const Cart = () => {
   useEffect(() => {
     dispatch(get_cart_products(userInfo.id));
   }, []);
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+      dispatch(get_cart_products(userInfo.id));
+    }
+  }, [successMessage]);
 
   return (
     <div>

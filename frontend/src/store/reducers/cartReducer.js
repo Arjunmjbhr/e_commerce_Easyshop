@@ -43,6 +43,20 @@ export const delete_cart_product = createAsyncThunk(
     }
   }
 );
+export const quantity_increment = createAsyncThunk(
+  "cart/quantity_increment",
+  async (cartId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      console.log(cartId);
+      const { data } = await api.put(`/home/product/quantity-inc/${cartId}`);
+      // console.log(data)
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 const cartReducer = createSlice({
   name: "cart",
@@ -80,6 +94,12 @@ const cartReducer = createSlice({
         state.shipping_fee = action.payload.shipping_fee;
         state.outofstock_products = action.payload.outOfStockProduct;
         state.buy_product_item = action.payload.buy_product_item;
+      })
+      .addCase(quantity_increment.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(delete_cart_product.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
       });
   },
 });

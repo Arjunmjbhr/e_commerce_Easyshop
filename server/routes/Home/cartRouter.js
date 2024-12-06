@@ -12,5 +12,9 @@ router.delete(
   "/home/product/delete-cart-product/:cartId",
   cartController.delete_cart_products
 );
+router.put(
+  "/home/product/quantity-inc/:cartId",
+  cartController.quantity_increment
+);
 
 module.exports = router;

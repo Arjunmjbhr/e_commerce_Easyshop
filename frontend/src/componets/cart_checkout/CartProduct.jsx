@@ -1,9 +1,18 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { delete_cart_product } from "../../store/reducers/cartReducer";
+import {
+  delete_cart_product,
+  quantity_increment,
+} from "../../store/reducers/cartReducer";
 
 const CartProduct = ({ shop }) => {
   const dispatch = useDispatch();
+  const incrementCount = (quantity, cartId, stock) => {
+    const temp = quantity + 1;
+    if (temp <= stock) {
+      dispatch(quantity_increment(cartId));
+    }
+  };
   return (
     <div>
       <div>
@@ -49,7 +58,18 @@ const CartProduct = ({ shop }) => {
                 <div className="flex bg-slate-200 h-[30px] justify-center items-center text-lg">
                   <div className="cursor-pointer px-2 text-2xl">-</div>
                   <div className="cursor-pointer px-2">{product.quantity}</div>
-                  <div className="cursor-pointer px-2">+</div>
+                  <div
+                    onClick={() =>
+                      incrementCount(
+                        product.quantity,
+                        product._id,
+                        product.productInfo.stock
+                      )
+                    }
+                    className="cursor-pointer px-2"
+                  >
+                    +
+                  </div>
                 </div>
                 {/* button for delete item in the cart */}
                 <div>
