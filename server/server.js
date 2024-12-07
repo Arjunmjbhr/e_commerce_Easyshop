@@ -11,6 +11,7 @@ const customerAuthRouter = require("./routes/Home/customerAuthRoutes");
 const customerAdminRouter = require("./routes/dashboard/customerRoutes");
 const cartRouter = require("./routes/Home/cartRouter");
 const orderRouter = require("./routes/Home/orderRoutes");
+const userDashboardRouter = require("./routes/Home/dashboardRoutes");
 const app = express();
 const PORT = process.env.PORT;
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/home", homeRouter);
+app.use("/api", userDashboardRouter);
 app.use("/api", orderRouter);
 app.use("/api/", cartRouter);
 app.use("/api", authRouter);

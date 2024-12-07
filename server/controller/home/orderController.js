@@ -3,6 +3,9 @@ const adminOrderModel = require("../../model/adminOrderModel");
 const customerOrderModel = require("../../model/customerOrderModel");
 const cartModel = require("../../model/cartModel");
 const { responseReturn } = require("../../utils/response");
+const {
+  mongo: { ObjectId },
+} = require("mongoose");
 
 class orderController {
   paymentCheck = async (id) => {
@@ -98,9 +101,9 @@ class orderController {
       for (let k = 0; k < cartId.length; k++) {
         await cartModel.findByIdAndDelete(cartId[k]);
       }
-      setTimeout(() => {
-        this.paymentCheck(order.id);
-      }, 15000);
+      // setTimeout(() => {
+      //   this.paymentCheck(order.id);
+      // }, 15000);
 
       return responseReturn(res, 200, {
         message: "Order placed successfully",
@@ -113,8 +116,22 @@ class orderController {
       });
     }
   };
-
   // End Method
+  get_orders = async (req, res) => {
+    console.log(req.params);
+    const { customerId, status } = req.params;
+    try {
+      const queryString =
+        status === "all"
+          ? { customerId: new ObjectId(customerId) }
+          : { customerId: new ObjectId(customerId), delivery_status: status };
+      const orders = await customerOrderModel
+        .find(queryString)
+        .sort({ updatedAt: -1 });
+
+      return responseReturn(res, 200, { orders });
+    } catch (error) {}
+  };
 }
 
 module.exports = new orderController();

@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RiShoppingCart2Fill } from "react-icons/ri";
 import CustomerOrders from "./CustomerOrders";
+import { useDispatch, useSelector } from "react-redux";
+import { get_dashboard_index_data } from "../../store/reducers/dashboardReducer";
+
 const Index = () => {
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((store) => store.authUser);
+  const { recentOrders, totalOrder, pendingOrder, cancelledOrder } =
+    useSelector((store) => store.dashboard);
+
+  useEffect(() => {
+    dispatch(get_dashboard_index_data(userInfo.id));
+  }, []);
   return (
     <div>
       {/* summary */}
@@ -13,7 +24,7 @@ const Index = () => {
             </span>
           </div>
           <div className="flex flex-col justify-start items-start text-slate-600">
-            <h2 className="text-3xl font-bold">45</h2>
+            <h2 className="text-3xl font-bold">{totalOrder}</h2>
             <span>Orders </span>
           </div>
         </div>
@@ -24,7 +35,7 @@ const Index = () => {
             </span>
           </div>
           <div className="flex flex-col justify-start items-start text-slate-600">
-            <h2 className="text-3xl font-bold">25</h2>
+            <h2 className="text-3xl font-bold">{pendingOrder}</h2>
             <span>Pending Orders </span>
           </div>
         </div>
@@ -35,7 +46,7 @@ const Index = () => {
             </span>
           </div>
           <div className="flex flex-col justify-start items-start text-slate-600">
-            <h2 className="text-3xl font-bold">2</h2>
+            <h2 className="text-3xl font-bold">{cancelledOrder}</h2>
             <span>Cancelled Orders </span>
           </div>
         </div>
@@ -43,7 +54,7 @@ const Index = () => {
       {/* order */}
       <div className="bg-white p-5  rounded-md">
         <h2 className="text-xl font-bold text-center mb-4 ">Recent Orders</h2>
-        <CustomerOrders />
+        <CustomerOrders recentOrders={recentOrders} />
       </div>
     </div>
   );

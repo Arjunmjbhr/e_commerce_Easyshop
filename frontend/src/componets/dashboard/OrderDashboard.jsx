@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomerOrders from "./CustomerOrders";
+import { useDispatch, useSelector } from "react-redux";
+import { get_orders } from "../../store/reducers/orderReducer";
 
 const OrderDashboard = () => {
   const [state, setState] = useState("all");
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((store) => store.authUser);
+  const { myOrders } = useSelector((store) => store.order);
+  useEffect(() => {
+    dispatch(get_orders({ customerId: userInfo.id, status: state }));
+  }, [state]);
   return (
     <div>
       <div className="bg-white flex items-center justify-between py-3 px-10 rounded-xl my-4 ">
@@ -20,7 +28,7 @@ const OrderDashboard = () => {
         </select>
       </div>
       <div className="bg-white p-4 rounded-xl">
-        <CustomerOrders />
+        <CustomerOrders recentOrders={myOrders} />
       </div>
     </div>
   );

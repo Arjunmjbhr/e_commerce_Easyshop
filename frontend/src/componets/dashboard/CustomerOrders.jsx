@@ -1,6 +1,23 @@
 import React from "react";
 import { MdEdit } from "react-icons/md";
-const CustomerOrders = () => {
+import { FaCcAmazonPay } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+const CustomerOrders = ({ recentOrders }) => {
+  const navigate = useNavigate();
+  const redirect = (order) => {
+    let items = 0;
+    for (let i = 0; i < order.products.length; i++) {
+      items += order.products[i].quantity;
+    }
+    navigate("/payment", {
+      state: {
+        price: order.price,
+        items,
+        orderId: order._id,
+      },
+    });
+  };
+
   return (
     <div className="pt-4">
       <div className="relative overflow-x-auto rounded-md">
@@ -14,6 +31,9 @@ const CustomerOrders = () => {
                 Price
               </th>
               <th scope="col" className="px-6 py-3">
+                Date
+              </th>
+              <th scope="col" className="px-6 py-3">
                 payment status
               </th>
               <th scope="col" className="px-6 py-3">
@@ -25,21 +45,40 @@ const CustomerOrders = () => {
             </tr>
           </thead>
           <tbody className="text-xs text-gray-700 uppercase bg-white">
-            <tr className="border-b-2">
-              <td className="px-6 py-4 font-medium whitespace-nowrap">
-                order id
-              </td>
-              <td className="px-6 py-4 font-medium whitespace-nowrap">price</td>
-              <td className="px-6 py-4 font-medium whitespace-nowrap">
-                payment status
-              </td>
-              <td className="px-6 py-4 font-medium whitespace-nowrap">
-                order status
-              </td>
-              <td className="px-6 py-4 text-xl whitespace-nowrap ">
-                <MdEdit />
-              </td>
-            </tr>
+            {recentOrders.map((order) => (
+              <tr key={order._id} className="border-b-2">
+                <td className="px-6 py-4 font-medium whitespace-nowrap">
+                  {order._id}
+                </td>
+                <td className="px-6 py-4 font-medium whitespace-nowrap">
+                  {order.price}
+                </td>
+                <td className="px-6 py-4 font-medium whitespace-nowrap">
+                  {order.date}
+                </td>
+                <td className="px-6 py-4 font-medium whitespace-nowrap">
+                  {order.payment_status}
+                </td>
+                <td className="px-6 py-4 font-medium whitespace-nowrap">
+                  {order.delivery_status}
+                </td>
+                <td className="px-6 py-4 text-xl whitespace-nowrap ">
+                  <div className="flex gap-4">
+                    <span className="cursor-pointer">
+                      <MdEdit />
+                    </span>
+                    {order.payment_status !== "paid" && (
+                      <span
+                        onClick={() => redirect(order)}
+                        className="cursor-pointer"
+                      >
+                        <FaCcAmazonPay />
+                      </span>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
