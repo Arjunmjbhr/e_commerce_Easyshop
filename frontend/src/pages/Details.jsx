@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./../componets/Header";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
 import Footer from "../componets/Footer";
 import Carousel from "react-multi-carousel";
@@ -22,8 +22,11 @@ import { get_products, get_categories } from "../store/reducers/homeReducer";
 import { product_details } from "../store/reducers/homeReducer";
 import ProductImageZoom from "../componets/ProductImageZoom";
 import PageHeading from "../componets/PageHeading";
+import { toast } from "react-hot-toast";
+import { add_to_cart, messageClear } from "../store/reducers/cartReducer";
 
 const Details = () => {
+  const navigate = useNavigate();
   const [image, setImage] = useState("");
   const [state, setState] = useState("reviews");
   const elementRef = useRef(null);
@@ -61,6 +64,8 @@ const Details = () => {
   const { categories, product, relatedProducts, moreProducts } = useSelector(
     (store) => store.home
   );
+  const { userInfo } = useSelector((state) => state.authUser);
+  const { errorMessage, successMessage } = useSelector((state) => state.cart);
   const { slug } = useParams();
   const dispatch = useDispatch();
   //when ever we select new product then scroll to product details view using useRef
@@ -74,19 +79,59 @@ const Details = () => {
   };
   useEffect(() => {
     dispatch(product_details(slug));
-  }, [slug]);
+  }, [slug, dispatch]);
 
   useEffect(() => {
     dispatch(get_products());
     dispatch(get_categories());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(product_details(slug));
     setImage("");
     handleScroll();
-  }, [slug]);
+  }, [slug, dispatch]);
 
+  //button incement and decrement
+  const [quantity, setQuantity] = useState(1);
+  const incrementCount = () => {
+    if (quantity >= product.stock) {
+      toast.error("Out of Stock");
+    } else if (quantity >= 5) {
+      toast.error("you can only buy maximum 5 piece per item in single order");
+    } else {
+      setQuantity(quantity + 1);
+    }
+  };
+  const decrementCount = () => {
+    if (quantity > 1) {
+      setQuantity(quantity - 1);
+    }
+  };
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch]);
+
+  const add_cart = () => {
+    if (userInfo) {
+      dispatch(
+        add_to_cart({
+          userId: userInfo.id,
+          quantity,
+          productId: product._id,
+        })
+      );
+    } else {
+      navigate("/login");
+    }
+  };
   return (
     <div>
       <Header />
@@ -214,15 +259,26 @@ const Details = () => {
                     {product.stock ? (
                       <div className="flex gap-4 ">
                         <div className="w-[120px] bg-zinc-300 flex justify-center items-center gap-5 px-2 py-2 font-bold rounded-md text-xl">
-                          <button className="cursor-pointer w-[20px] h-[20px] flex justify-center rounded-full items-center hover:bg-zinc-600 hover:text-white">
+                          <button
+                            onClick={decrementCount}
+                            className="cursor-pointer w-[20px] h-[20px] flex justify-center rounded-full items-center hover:bg-zinc-600 hover:text-white"
+                          >
                             -
                           </button>
-                          <div className="text-lg font-semibold">{2}</div>
-                          <button className="cursor-pointer w-[20px] h-[20px] flex justify-center rounded-full items-center hover:bg-zinc-600 hover:text-white">
+                          <div className="text-lg font-semibold">
+                            {quantity}
+                          </div>
+                          <button
+                            onClick={incrementCount}
+                            className="cursor-pointer w-[20px] h-[20px] flex justify-center rounded-full items-center hover:bg-zinc-600 hover:text-white"
+                          >
                             +
                           </button>
                         </div>
-                        <button className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-green-500/40 bg-[#059473] text-white">
+                        <button
+                          onClick={add_cart}
+                          className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-green-500/40 bg-[#059473] text-white"
+                        >
                           Add To Cart
                         </button>
                       </div>

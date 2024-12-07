@@ -10,7 +10,8 @@ const CartProduct = ({ shop, isShipping }) => {
   const dispatch = useDispatch();
   const incrementCount = (quantity, cartId, stock) => {
     const temp = quantity + 1;
-    if (temp <= stock) {
+
+    if (temp <= stock && temp <= 5) {
       dispatch(quantity_increment(cartId));
     }
   };
