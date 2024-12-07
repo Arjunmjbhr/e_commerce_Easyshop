@@ -35,7 +35,10 @@ const HeaderTop = ({ userInfo }) => (
       </div>
       <div className="flex flex-row w-[150px]">
         {userInfo ? (
-          <Link className="flex flex-row justify-end items-center gap-2 font-semibold">
+          <Link
+            to="/dashboard"
+            className="flex flex-row justify-end items-center gap-2 font-semibold"
+          >
             <FaUser />
             <span className="overflow-hidden w-[130px]">{userInfo.name}</span>
           </Link>

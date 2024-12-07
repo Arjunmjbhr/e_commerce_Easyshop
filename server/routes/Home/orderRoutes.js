@@ -7,5 +7,13 @@ router.get(
   "/home/customer/get-orders/:customerId/:status",
   orderController.get_orders
 );
+router.get(
+  "/home/customer/get-order-details/:orderId",
+  orderController.get_order_details
+);
+router.put(
+  "/home/customer/cancel-order/:orderId",
+  orderController.cancel_order
+);
 
 module.exports = router;

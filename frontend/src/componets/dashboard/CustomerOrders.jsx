@@ -2,8 +2,10 @@ import React from "react";
 import { MdEdit } from "react-icons/md";
 import { FaCcAmazonPay } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 const CustomerOrders = ({ recentOrders }) => {
   const navigate = useNavigate();
+  // redirect to payment page
   const redirect = (order) => {
     let items = 0;
     for (let i = 0; i < order.products.length; i++) {
@@ -64,17 +66,20 @@ const CustomerOrders = ({ recentOrders }) => {
                 </td>
                 <td className="px-6 py-4 text-xl whitespace-nowrap ">
                   <div className="flex gap-4">
-                    <span className="cursor-pointer">
-                      <MdEdit />
-                    </span>
-                    {order.payment_status !== "paid" && (
-                      <span
-                        onClick={() => redirect(order)}
-                        className="cursor-pointer"
-                      >
-                        <FaCcAmazonPay />
+                    <Link to={`/dashboard/order/details/${order._id}`}>
+                      <span className="cursor-pointer">
+                        <MdEdit />
                       </span>
-                    )}
+                    </Link>
+                    {order.payment_status !== "paid" &&
+                      order.delivery_status !== "cancelled" && (
+                        <span
+                          onClick={() => redirect(order)}
+                          className="cursor-pointer"
+                        >
+                          <FaCcAmazonPay />
+                        </span>
+                      )}
                   </div>
                 </td>
               </tr>

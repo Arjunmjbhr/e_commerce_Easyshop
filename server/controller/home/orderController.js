@@ -118,7 +118,6 @@ class orderController {
   };
   // End Method
   get_orders = async (req, res) => {
-    console.log(req.params);
     const { customerId, status } = req.params;
     try {
       const queryString =
@@ -131,6 +130,57 @@ class orderController {
 
       return responseReturn(res, 200, { orders });
     } catch (error) {}
+  };
+  // End Method
+  get_order_details = async (req, res) => {
+    const { orderId } = req.params;
+    try {
+      const order = await customerOrderModel.findById(orderId);
+      return responseReturn(res, 200, { order });
+    } catch (error) {
+      console.log(
+        "erro while fetching the specific order details",
+        error.message
+      );
+    }
+  };
+  // End Method
+  cancel_order = async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+      // Update the delivery_status to "cancelled"
+      const order = await customerOrderModel.findByIdAndUpdate(
+        orderId,
+        { delivery_status: "cancelled" },
+        { new: true } // Returns the updated document
+      );
+      const orderAdmin = await adminOrderModel.updateMany(
+        { orderId: new ObjectId(orderId) },
+        { delivery_status: "cancelled" },
+        { new: true } // Returns the updated document
+      );
+
+      // Handle case where the order is not found
+      if (!order && !orderAdmin) {
+        return responseReturn(res, 404, {
+          error: "Failed to cancel the order",
+        });
+      }
+
+      // Successful response
+      return responseReturn(res, 200, {
+        message: "Order canceled successfully",
+        order,
+      });
+    } catch (error) {
+      console.error("Failed to cancel the order:", error.message);
+
+      // Internal server error response
+      return responseReturn(res, 500, {
+        error: "Internal server error. Failed to cancel the order.",
+      });
+    }
   };
 }
 

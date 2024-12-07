@@ -17,6 +17,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectUser from "./utils/ProtectUser";
 import Index from "./componets/dashboard/Index";
 import OrderDashboard from "./componets/dashboard/OrderDashboard";
+import OrderDetails from "./componets/dashboard/OrderDetails";
 
 function App() {
   const dispatch = useDispatch();
@@ -37,9 +38,11 @@ function App() {
         <Route path="/products/search?" element={<SearchProducts />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/test" element={<FilterRating />} />
+
         <Route path="/dashboard" element={<ProtectUser />}>
           <Route path="" element={<Dashboard />}>
             <Route path="" element={<Index />} />
+            <Route path="order/details/:orderId" element={<OrderDetails />} />
             <Route path="my-orders" element={<OrderDashboard />} />
           </Route>
         </Route>
