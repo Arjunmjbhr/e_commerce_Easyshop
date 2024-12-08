@@ -1,14 +1,31 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "./../Pagination";
 import Search from "../../components/Search";
 import { FaRegEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { get_seller_orders } from "../../store/Reducers/orderReducer";
 
 const SellerOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [perPage, setPerPage] = useState(5);
+  const [show, setShow] = useState("");
+  const dispatch = useDispatch();
+  const { myOrders, totalOrder } = useSelector((store) => store.order);
+  const { userInfo } = useSelector((store) => store.auth);
+
+  useEffect(() => {
+    const data = {
+      searchValue,
+      page: currentPage,
+      perPage,
+      sellerId: userInfo._id,
+    };
+    dispatch(get_seller_orders(data));
+  }, [currentPage, searchValue, perPage, dispatch]);
   return (
     <div className="px-2 md:pr-7">
       <div className="w-full p-4">
@@ -32,33 +49,47 @@ const SellerOrders = () => {
               <div className="font-bold uppercase text-white text-sm w-[13%]  ">
                 Price
               </div>
-              <div className="font-bold uppercase text-white text-sm w-[18%]  ">
+              <div className="font-bold uppercase text-white text-sm w-[25%]  ">
+                Date
+              </div>
+              <div className="font-bold uppercase text-white text-sm w-[15%]  ">
                 Payment Status
               </div>
-              <div className="font-bold uppercase text-white text-sm w-[18%] ">
+              <div className="font-bold uppercase text-white text-sm w-[15%] ">
                 order status
               </div>
-              <div className="font-bold uppercase text-white text-sm w-[18%] ">
+              <div className="font-bold uppercase text-white text-sm w-[8%] ">
                 Action
               </div>
             </div>
             {/* table content */}
-            <div className="bg-white">
-              <div className="  p-2 my-2 flex">
-                <div className=" text-black text-sm w-[25%] ">Order Id</div>
-                <div className=" text-black text-sm w-[13%]  ">Price</div>
-                <div className="  text-black text-sm w-[18%]  ">
-                  Payment Status
-                </div>
-                <div className=" text-black text-sm w-[18%] ">order status</div>
+            {myOrders.map((product) => (
+              <div className="bg-white ">
+                <div className="  p-2 my-2 flex">
+                  <div className=" text-black text-sm w-[25%] ">
+                    {product._id}
+                  </div>
+                  <div className=" text-black text-sm w-[13%]  ">
+                    {product.price}
+                  </div>
+                  <div className=" text-black text-sm w-[25%]  ">
+                    {product.date}
+                  </div>
+                  <div className="  text-black text-sm w-[15%]  ">
+                    {product.payment_status}
+                  </div>
+                  <div className=" text-black text-sm w-[15%] ">
+                    {product.delivery_status}
+                  </div>
 
-                <div className=" text-black text-lg w-[8%] cursor-pointer  ">
-                  <Link to={`/seller/dashboard/order/details/${4}`}>
-                    <FaRegEdit />
-                  </Link>
+                  <div className=" text-black text-lg w-[7%] cursor-pointer  ">
+                    <Link to={`/seller/dashboard/order/details/${product._id}`}>
+                      <FaRegEdit />
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
         {/* pagination */}
@@ -66,7 +97,7 @@ const SellerOrders = () => {
           <Pagination
             pageNumber={currentPage}
             setPageNumber={setCurrentPage}
-            totalItem={50}
+            totalItem={totalOrder}
             perPage={perPage}
             showItem={3}
           />

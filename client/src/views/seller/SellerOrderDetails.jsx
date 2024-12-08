@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
-  get_admin_specific_order,
+  get_seller_specific_order,
   admin_order_status_update,
   messageClear,
 } from "../../store/Reducers/orderReducer";
@@ -12,14 +12,22 @@ import { toast } from "react-hot-toast";
 const SellerOrderDetails = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
+
+  // subscribing to the store
   const { order, successMessage, errorMessage } = useSelector(
     (store) => store.order
   );
+  const { userInfo } = useSelector((store) => store.auth);
+
   const [status, setStatus] = useState(order.delivery_status);
   const [modalClose, SetModalClose] = useState(true);
 
   useEffect(() => {
-    dispatch(get_admin_specific_order(orderId));
+    const data = {
+      sellerId: userInfo._id,
+      adminOrderId: orderId,
+    };
+    dispatch(get_seller_specific_order(data));
   }, [dispatch, orderId, successMessage]);
 
   // fuction for updatin the status
@@ -62,8 +70,6 @@ const SellerOrderDetails = () => {
             >
               <option value="pending">Pending</option>
               <option value="processing">Processing</option>
-              <option value="warehouse">Warehouse</option>
-              <option value="placed">Placed</option>
               <option value="cancelled">Cancelled</option>
             </select>
             <div
@@ -87,21 +93,18 @@ const SellerOrderDetails = () => {
             <strong className="text-gray-800">Deliver To: </strong>
             {order?.shippingInfo?.name}
           </p>
-          <p className="text-gray-600 mt-2">
-            {order?.shippingInfo?.address}, {order?.shippingInfo?.province},
-            {order?.shippingInfo?.city}, {order?.shippingInfo?.area}
-          </p>
+          <p className="text-gray-600 mt-2">{order?.shippingInfo},</p>
           <div className="mt-4">
             <p className="text-gray-600">
-              <strong className="text-gray-800">Payment Status:</strong>
+              <strong className="text-gray-800">Payment Status:</strong>{" "}
               {order?.payment_status}
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800"> Total Price :</strong> $
+              <strong className="text-gray-800"> Total Price :</strong> ₹
               {order?.price}
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800">Order Date :</strong>
+              <strong className="text-gray-800">Order Date :</strong>{" "}
               {order?.date}
             </p>
             <p className="text-gray-600 mt-2">
@@ -116,45 +119,44 @@ const SellerOrderDetails = () => {
           {/* Suborders Section */}
           <div className="bg-white p-6 rounded-xl shadow-lg">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Suborders
+              Order Details
             </h3>
-            {order?.suborders?.map((sub, i) => (
-              <div key={i} className="mb-6">
-                <div className="flex items-center justify-between gap-4 mb-3">
-                  <h4 className="font-semibold text-gray-700">
-                    Seller {i + 1} {"-"}
-                    {sub?.sellerId}
-                  </h4>
-                  <div className="flex gap-4">
-                    <span>Order Status:</span>
-                    <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg shadow-sm text-sm">
-                      {sub.delivery_status}
-                    </span>
+
+            <div className="mb-6">
+              <div className="flex items-center justify-between gap-4 mb-3">
+                <h4 className="font-semibold text-gray-700 uppercase">
+                  order Id -{order.orderId}
+                </h4>
+                <div className="flex gap-4">
+                  <span>Order Status:</span>
+                  <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg shadow-sm text-sm">
+                    {order.delivery_status}
+                  </span>
+                </div>
+              </div>
+
+              {order.products.map((item) => (
+                <div
+                  key={item._id}
+                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:shadow-md transition transform hover:-translate-y-1"
+                >
+                  <img
+                    className="w-16 h-16 object-cover rounded-md shadow-sm"
+                    src={item.images[0]}
+                    alt={item.name}
+                  />
+                  <div>
+                    <h4 className="font-semibold text-gray-800">{item.name}</h4>
+                    <p className="text-gray-600">
+                      <strong>Brand:</strong> {item.brand}
+                    </p>
+                    <p className="text-gray-600">
+                      <strong>Quantity:</strong> {item.quantity}
+                    </p>
                   </div>
                 </div>
-                {sub.products?.map((p, j) => (
-                  <div
-                    key={j}
-                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:shadow-md transition transform hover:-translate-y-1"
-                  >
-                    <img
-                      className="w-16 h-16 object-cover rounded-md shadow-sm"
-                      src={p.images[0]}
-                      alt={p.name}
-                    />
-                    <div>
-                      <h4 className="font-semibold text-gray-800">{p.name}</h4>
-                      <p className="text-gray-600">
-                        <strong>Brand:</strong> {p.brand}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Quantity:</strong> {p.quantity}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -30,4 +30,11 @@ router.put(
   orderController.admin_order_status_update
 );
 
+////////////////////Seller//////////////////////////
+router.get("/seller/orders/:sellerId", orderController.get_seller_order);
+router.get(
+  "/seller/specific-order/:adminOrderId/:sellerId",
+  orderController.get_seller_specific_order
+);
+
 module.exports = router;

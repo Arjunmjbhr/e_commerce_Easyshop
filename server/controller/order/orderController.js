@@ -319,6 +319,95 @@ class orderController {
       });
     }
   };
+
+  ////////////////////////////////// seller order///////////////////////////////////
+  get_seller_order = async (req, res) => {
+    let { page, searchValue, perPage } = req.query;
+    const { sellerId } = req.params;
+    console.log(sellerId);
+    console.log(req.query);
+
+    // Validate and parse query parameters
+    page = parseInt(page) || 1;
+    perPage = parseInt(perPage) || 5;
+    const skipPage = perPage * (page - 1);
+
+    try {
+      // Build the match stage
+      let matchStage = { sellerId: new ObjectId(sellerId) };
+      if (searchValue) {
+        if (ObjectId.isValid(searchValue)) {
+          matchStage = {
+            orderId: new ObjectId(searchValue),
+            sellerId: new ObjectId(sellerId),
+          };
+        } else {
+          return responseReturn(res, 400, {
+            error: "Invalid Order ID format.",
+          });
+        }
+      }
+
+      // Fetch paginated orders
+      const orders = await adminOrderModel.aggregate([
+        { $match: matchStage },
+        { $sort: { createdAt: -1 } },
+        { $skip: skipPage },
+        { $limit: perPage },
+      ]);
+
+      // Fetch total count
+      const totalOrder = await adminOrderModel.aggregate([
+        { $match: matchStage },
+        { $count: "total" },
+      ]);
+
+      return responseReturn(res, 200, {
+        orders,
+        totalOrder: totalOrder[0]?.total || 0,
+      });
+    } catch (error) {
+      console.error("error in get admin order", error.message);
+      responseReturn(res, 500, {
+        message: "An error occurred while fetching orders.",
+      });
+    }
+  };
+  // End Method
+  get_seller_specific_order = async (req, res) => {
+    const { adminOrderId, sellerId } = req.params;
+    console.log(req.params);
+
+    try {
+      // Validate ObjectId
+      if (!ObjectId.isValid(adminOrderId)) {
+        return responseReturn(res, 400, { error: "Invalid Order ID format" });
+      }
+
+      // Aggregate to fetch the order and its suborder details
+      const order = await adminOrderModel.aggregate([
+        {
+          $match: {
+            _id: new ObjectId(adminOrderId),
+            sellerId: new ObjectId(sellerId),
+          },
+        },
+      ]);
+
+      if (!order.length) {
+        return responseReturn(res, 404, { error: "Order not found" });
+      }
+      console.log(order);
+
+      responseReturn(res, 200, { order: order[0] });
+    } catch (error) {
+      console.error("Error in get_admin_specific_order:", error.message);
+      responseReturn(res, 500, {
+        message: "An error occurred while fetching the order.",
+      });
+    }
+  };
+  // End Method
 }
 
 module.exports = new orderController();
