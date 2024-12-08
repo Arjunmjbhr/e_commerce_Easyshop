@@ -18,6 +18,7 @@ import ProtectUser from "./utils/ProtectUser";
 import Index from "./componets/dashboard/Index";
 import OrderDashboard from "./componets/dashboard/OrderDashboard";
 import OrderDetails from "./componets/dashboard/OrderDetails";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ function App() {
             <Route path="" element={<Index />} />
             <Route path="order/details/:orderId" element={<OrderDetails />} />
             <Route path="my-orders" element={<OrderDashboard />} />
+            <Route path="user-profile" element={<UserProfile />} />
           </Route>
         </Route>
       </Routes>

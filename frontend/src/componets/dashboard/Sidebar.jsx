@@ -52,7 +52,7 @@ const Sidebar = ({ filterShow }) => {
             <span className="text-xl">
               <IoPersonCircle />
             </span>
-            <Link to="/dashboard" className="block">
+            <Link to="/dashboard/user-profile" className="block">
               Profile
             </Link>
           </li>
