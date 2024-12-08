@@ -182,6 +182,74 @@ class orderController {
       });
     }
   };
+
+  // admin order
+
+  get_admin_order = async (req, res) => {
+    console.log("in the admin controller");
+    console.log(req.query);
+
+    let { page, searchValue, perPage } = req.query;
+
+    // Validate and parse query parameters
+    page = parseInt(page) || 1;
+    perPage = parseInt(perPage) || 5;
+    const skipPage = perPage * (page - 1);
+
+    try {
+      // Build the match stage
+      let matchStage = {};
+      if (searchValue) {
+        if (ObjectId.isValid(searchValue)) {
+          matchStage = { orderId: new ObjectId(searchValue) };
+        } else {
+          return responseReturn(res, 400, {
+            error: "Invalid Order ID format.",
+          });
+        }
+      }
+
+      // Fetch paginated orders
+      const orders = await customerOrderModel.aggregate([
+        { $match: matchStage },
+        {
+          $lookup: {
+            from: "adminorders",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "suborders",
+          },
+        },
+        { $sort: { createdAt: -1 } },
+        { $skip: skipPage },
+        { $limit: perPage },
+      ]);
+
+      // Fetch total count
+      const totalOrder = await customerOrderModel.aggregate([
+        { $match: matchStage },
+        {
+          $lookup: {
+            from: "adminorders",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "suborders",
+          },
+        },
+        { $count: "total" },
+      ]);
+
+      return responseReturn(res, 200, {
+        orders,
+        totalOrder: totalOrder[0]?.total || 0,
+      });
+    } catch (error) {
+      console.error("error in get admin order", error.message);
+      responseReturn(res, 500, {
+        message: "An error occurred while fetching orders.",
+      });
+    }
+  }; // End Method
 }
 
 module.exports = new orderController();

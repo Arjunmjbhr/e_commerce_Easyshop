@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const orderController = require("../../controller/home/orderController");
+const orderController = require("../../controller/order/orderController");
+
+// customer
 
 router.post("/home/order/place-order", orderController.place_order);
 router.get(
@@ -15,5 +17,8 @@ router.put(
   "/home/customer/cancel-order/:orderId",
   orderController.cancel_order
 );
+
+// admin
+router.get("/admin/orders", orderController.get_admin_order);
 
 module.exports = router;

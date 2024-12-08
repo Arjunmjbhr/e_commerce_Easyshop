@@ -1,33 +1,38 @@
-import React from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CiCircleChevDown } from "react-icons/ci";
 import Pagination from "./../Pagination";
+import Search from "../../components/Search";
+import { get_admin_orders } from "../../store/Reducers/orderReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { FaRegEdit } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const Orders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [perPage, setPerPage] = useState(5);
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState("");
+  const dispatch = useDispatch();
+  const { myOrders, totalOrder } = useSelector((store) => store.order);
+
+  useEffect(() => {
+    const data = {
+      searchValue,
+      page: currentPage,
+      perPage,
+    };
+    dispatch(get_admin_orders(data));
+  }, [currentPage, searchValue, perPage, dispatch]);
+
   return (
     <div className="px-2 md:pr-7">
       <div className="w-full p-4">
         {/* header of order list */}
-        <div className=" h-12 bg-slate-600 rounded-sm flex justify-between items-center">
-          <select
-            onChange={(e) => setPerPage(parseInt(e.target.value))}
-            className="mx-5 px-3 py-1 rounded-sm font-bold"
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-          </select>
-          <input
-            className=" hidden md:block bg-white outline-none overflow-hidden h-7 px-2 py-1 rounded-md focus:border-2 focus:border-blue-500 mx-5"
-            type="text"
-            name="search"
-            placeholder="Search"
-          />
-        </div>
+        <Search
+          setPerPage={setPerPage}
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+        />
         {/* content of order table*/}
         <div className="relative overflow-x-auto">
           <div>
@@ -48,41 +53,64 @@ const Orders = () => {
               <div className="font-bold uppercase text-white text-sm w-[18%] ">
                 Action
               </div>
-              <div className="font-bold uppercase text-white text-lg w-[8%]  ">
+              <div
+                onClick={() => setShow("")}
+                className="font-bold uppercase text-white text-lg w-[8%] cursor-pointer  "
+              >
                 <CiCircleChevDown />
               </div>
             </div>
             {/* table content */}
-            <div className="bg-white">
-              <div className="  p-2 my-2 flex">
-                <div className=" text-black text-sm w-[25%] ">Order Id</div>
-                <div className=" text-black text-sm w-[13%]  ">Price</div>
-                <div className="  text-black text-sm w-[18%]  ">
-                  Payment Status
+            {myOrders.map((product) => (
+              <div className="bg-white">
+                <div className="  p-2 my-2 flex">
+                  <div className=" text-black text-sm w-[25%] ">
+                    {product._id}
+                  </div>
+                  <div className=" text-black text-sm w-[13%]  ">
+                    {product.price}
+                  </div>
+                  <div className="  text-black text-sm w-[18%]  ">
+                    {product.payment_status}
+                  </div>
+                  <div className=" text-black text-sm w-[18%] ">
+                    {product.delivery_status}
+                  </div>
+                  <div className=" text-black text-sm w-[18%] ">
+                    <Link to={`/admin/dashboard/order/details/${product._id}`}>
+                      <FaRegEdit />
+                    </Link>
+                  </div>
+                  <div
+                    className=" text-black text-lg w-[8%] cursor-pointer  "
+                    onClick={() => setShow(product._id)}
+                  >
+                    <CiCircleChevDown />
+                  </div>
                 </div>
-                <div className=" text-black text-sm w-[18%] ">order status</div>
-                <div className=" text-black text-sm w-[18%] ">Action</div>
-                <div
-                  className=" text-black text-lg w-[8%] cursor-pointer  "
-                  onClick={() => setShow(!show)}
-                >
-                  <CiCircleChevDown />
-                </div>
+                {/* other orders along with main order */}
+                {product?.suborders.map((subOrd) => (
+                  <div
+                    className={`${
+                      show === product._id ? "block" : "hidden"
+                    }  p-2  flex bg-zinc-200`}
+                  >
+                    <div className=" text-black text-sm w-[25%] ">
+                      {subOrd._id}
+                    </div>
+                    <div className=" text-black text-sm w-[13%]  ">
+                      {subOrd.price}
+                    </div>
+                    <div className="  text-black text-sm w-[18%]  ">
+                      {subOrd.payment_status}
+                    </div>
+                    <div className=" text-black text-sm w-[18%] ">
+                      {subOrd.delivery_status}
+                    </div>
+                  </div>
+                ))}
               </div>
-              {/* other orders along with main order */}
-              <div
-                className={`${
-                  show ? "block" : "hidden"
-                }  p-2 my-2 flex bg-zinc-200`}
-              >
-                <div className=" text-black text-sm w-[25%] ">Order Id</div>
-                <div className=" text-black text-sm w-[13%]  ">Price</div>
-                <div className="  text-black text-sm w-[18%]  ">
-                  Payment Status
-                </div>
-                <div className=" text-black text-sm w-[18%] ">order status</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         {/* pagination */}
@@ -90,7 +118,7 @@ const Orders = () => {
           <Pagination
             pageNumber={currentPage}
             setPageNumber={setCurrentPage}
-            totalItem={50}
+            totalItem={totalOrder}
             perPage={perPage}
             showItem={3}
           />
