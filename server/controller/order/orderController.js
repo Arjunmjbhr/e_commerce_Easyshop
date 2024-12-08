@@ -408,6 +408,31 @@ class orderController {
     }
   };
   // End Method
+
+  seller_order_status_update = async (req, res) => {
+    console.log("in the order status update");
+    console.log(req.body);
+    console.log(req.params);
+    const { adminOrderId } = req.params;
+    const { status } = req.body;
+    try {
+      const orderAdmin = await adminOrderModel.findByIdAndUpdate(
+        adminOrderId,
+        { delivery_status: status },
+        { new: true } // Returns the updated document
+      );
+
+      // Successful response
+      return responseReturn(res, 200, {
+        message: "Order status changed successfully",
+      });
+    } catch (error) {
+      console.error("Failed to cancel the order:", error.message);
+      return responseReturn(res, 500, {
+        error: "Internal server error. Failed to cancel the order.",
+      });
+    }
+  };
 }
 
 module.exports = new orderController();

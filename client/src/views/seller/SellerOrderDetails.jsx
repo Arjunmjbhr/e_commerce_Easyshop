@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   get_seller_specific_order,
-  admin_order_status_update,
+  seller_order_status_update,
   messageClear,
 } from "../../store/Reducers/orderReducer";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -34,17 +34,16 @@ const SellerOrderDetails = () => {
   const status_update = (orderId) => {
     if (order.delivery_status !== status) {
       const data = {
-        orderId,
+        adminOrderId: orderId,
         info: {
           status,
         },
       };
-      dispatch(admin_order_status_update(data));
+      dispatch(seller_order_status_update(data));
     } else {
       toast.error("delivery status previous and current is same");
     }
   };
-
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -62,23 +61,26 @@ const SellerOrderDetails = () => {
       <div className="w-full p-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg text-white">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold tracking-wide">Order Details</h2>
-          <div className="flex gap-3">
-            <select
-              onChange={(e) => setStatus(e.target.value)}
-              value={status}
-              className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
-            >
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-            <div
-              onClick={() => SetModalClose(false)}
-              className="bg-red-700 px-3 py2 flex items-center rounded-lg text-white cursor-pointer"
-            >
-              Update Status
+          {(order.delivery_status === "pending" ||
+            order.delivery_status === "processing") && (
+            <div className="flex gap-3">
+              <select
+                onChange={(e) => setStatus(e.target.value)}
+                value={status}
+                className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
+              >
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <div
+                onClick={() => SetModalClose(false)}
+                className="bg-red-700 px-3 py2 flex items-center rounded-lg text-white cursor-pointer"
+              >
+                Update Status
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -125,33 +127,35 @@ const SellerOrderDetails = () => {
             <div className="mb-6">
               <div className="flex items-center justify-between gap-4 mb-3">
                 <h4 className="font-semibold text-gray-700 uppercase">
-                  order Id -{order.orderId}
+                  order Id -{order?.orderId}
                 </h4>
                 <div className="flex gap-4">
                   <span>Order Status:</span>
                   <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg shadow-sm text-sm">
-                    {order.delivery_status}
+                    {order?.delivery_status}
                   </span>
                 </div>
               </div>
 
-              {order.products.map((item) => (
+              {order?.products?.map((item) => (
                 <div
-                  key={item._id}
+                  key={item?._id}
                   className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:shadow-md transition transform hover:-translate-y-1"
                 >
                   <img
                     className="w-16 h-16 object-cover rounded-md shadow-sm"
-                    src={item.images[0]}
-                    alt={item.name}
+                    src={item?.images[0]}
+                    alt={item?.name}
                   />
                   <div>
-                    <h4 className="font-semibold text-gray-800">{item.name}</h4>
+                    <h4 className="font-semibold text-gray-800">
+                      {item?.name}
+                    </h4>
                     <p className="text-gray-600">
-                      <strong>Brand:</strong> {item.brand}
+                      <strong>Brand:</strong> {item?.brand}
                     </p>
                     <p className="text-gray-600">
-                      <strong>Quantity:</strong> {item.quantity}
+                      <strong>Quantity:</strong> {item?.quantity}
                     </p>
                   </div>
                 </div>
