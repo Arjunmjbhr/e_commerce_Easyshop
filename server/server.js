@@ -12,6 +12,7 @@ const customerAdminRouter = require("./routes/dashboard/customerRoutes");
 const cartRouter = require("./routes/Home/cartRouter");
 const orderRouter = require("./routes/order/orderRoutes");
 const userDashboardRouter = require("./routes/Home/dashboardRoutes");
+const addressRouter = require("./routes/Home/addressRoute");
 const app = express();
 const PORT = process.env.PORT;
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/home", homeRouter);
+app.use("/api", addressRouter);
 app.use("/api", userDashboardRouter);
 app.use("/api", orderRouter);
 app.use("/api/", cartRouter);

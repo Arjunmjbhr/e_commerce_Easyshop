@@ -13,12 +13,18 @@ const customerSchema = new Schema(
     },
     phone: {
       type: Number,
+
+      default: null,
     },
     fullName: {
       type: String,
+
+      default: null,
     },
     picture: {
       type: String,
+
+      default: null,
     },
 
     password: {

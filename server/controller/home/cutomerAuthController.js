@@ -4,6 +4,8 @@ const sellerCustomerModel = require("../../model/chat/sellerCustomerModel");
 const bcrypt = require("bcrypt");
 const { createToken } = require("../../utils/tokenCreate");
 const nodemailer = require("nodemailer");
+const addressModel = require("../../model/addressModel");
+const { ObjectId } = require("mongodb");
 
 class cutomerAuthController {
   constructor() {
@@ -365,6 +367,79 @@ class cutomerAuthController {
     } catch (error) {
       console.error("Error creating account:", error);
       return responseReturn(res, 500, { error: "Error creating account" });
+    }
+  };
+
+  //customer profile
+
+  update_user_profile = async (req, res) => {
+    console.log(req.body);
+    console.log(req.params);
+    const { userId } = req.params;
+    const { username, fullName, phone } = req.body;
+
+    try {
+      if (!username || !fullName || !phone) {
+        return responseReturn(res, 400, { error: "Missing required fields." });
+      }
+      const customer = await customerModel.findByIdAndUpdate(
+        userId,
+        {
+          name: username,
+          fullName,
+          phone,
+        },
+        { new: true }
+      );
+      if (!customer) {
+        return responseReturn(res, 404, {
+          error: "Fail to update. User not found.",
+        });
+      }
+      // Generate JWT token
+      const token = await createToken({
+        id: customer._id,
+        name: customer.name,
+        email: customer.email,
+        method: customer.method,
+      });
+
+      // Set cookie with the token
+      res.cookie("customerToken", token, {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
+      });
+
+      return responseReturn(res, 200, {
+        token,
+        message: "successfuly updated data",
+      });
+    } catch (error) {
+      console.error("Error in updating profile:", error.message);
+      return responseReturn(res, 500, { error: "Internal Server Error." });
+    }
+  };
+
+  get_user_profile = async (req, res) => {
+    console.log(req.params);
+    const { userId } = req.params;
+
+    try {
+      // Fetch user profile and address data
+      const userProfileInfo = await customerModel.findById(userId);
+      const addressUser = await addressModel.find({
+        userId: new ObjectId(userId),
+      });
+
+      // Check if user profile exists
+      if (!userProfileInfo) {
+        return responseReturn(res, 404, { error: "User profile not found." });
+      }
+      console.log(addressUser);
+      // Return both user profile and address information
+      return responseReturn(res, 200, { userProfileInfo, addressUser });
+    } catch (error) {
+      console.log("Error in fetching the user profile data", error.message);
+      return responseReturn(res, 500, { error: "Internal Server Error." });
     }
   };
 }

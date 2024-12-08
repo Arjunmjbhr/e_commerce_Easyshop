@@ -93,6 +93,60 @@ export const verify_otp = createAsyncThunk(
   }
 );
 
+//user profile edit
+export const update_user_profile = createAsyncThunk(
+  "authUser/update_user_profile",
+  async ({ userId, info }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      console.log(info);
+      const response = await api.put(
+        `/customer/update-user-profile/${userId}`,
+        info,
+        { withCredentials: true }
+      );
+      localStorage.setItem("customerToken", response.data.token);
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const get_user_profile = createAsyncThunk(
+  "authUser/get_user_profile",
+  async (userId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await api.get(`/customer/get-user-profile/${userId}`, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+); // End Method
+
+// address management
+
+export const add_address = createAsyncThunk(
+  "dashboard/add_address",
+  async ({ userId, info }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      console.log(userId);
+      console.log(info);
+      const { data } = await api.post(
+        `/home/customer/add_address/${userId}`,
+        info,
+        { withCredentials: true }
+      );
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
+
 // slice
 export const authUserReducer = createSlice({
   name: "auth",
@@ -101,6 +155,8 @@ export const authUserReducer = createSlice({
     userInfo: decodeToken(localStorage.getItem("customerToken")),
     errorMessage: "",
     successMessage: "",
+    userProfileInfo: {},
+    addressUser: [],
   },
   reducers: {
     messageClear: (state, _) => {
@@ -166,6 +222,33 @@ export const authUserReducer = createSlice({
       })
       .addCase(verify_otp.fulfilled, (state, { payload }) => {
         state.userInfo = decodeToken(payload.token);
+        state.successMessage = payload.message;
+        state.loader = false;
+      })
+      .addCase(update_user_profile.pending, (state, { payload }) => {
+        state.loader = true;
+      })
+      .addCase(update_user_profile.rejected, (state, { payload }) => {
+        state.errorMessage = payload.error;
+        state.loader = false;
+      })
+      .addCase(update_user_profile.fulfilled, (state, { payload }) => {
+        state.userInfo = decodeToken(payload.token);
+        state.successMessage = payload.message;
+        state.loader = false;
+      })
+      .addCase(get_user_profile.fulfilled, (state, { payload }) => {
+        state.userProfileInfo = payload.userProfileInfo;
+        state.addressUser = payload.addressUser;
+      })
+      .addCase(add_address.pending, (state, { payload }) => {
+        state.loader = true;
+      })
+      .addCase(add_address.rejected, (state, { payload }) => {
+        state.errorMessage = payload.error;
+        state.loader = false;
+      })
+      .addCase(add_address.fulfilled, (state, { payload }) => {
         state.successMessage = payload.message;
         state.loader = false;
       });
