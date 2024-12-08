@@ -9,7 +9,7 @@ import {
 import ConfirmModal from "../../components/ConfirmModal";
 import { toast } from "react-hot-toast";
 
-const OrderDetails = () => {
+const SellerOrderDetails = () => {
   const { orderId } = useParams();
   const dispatch = useDispatch();
   const { order, successMessage, errorMessage } = useSelector(
@@ -171,4 +171,4 @@ const OrderDetails = () => {
   );
 };
 
-export default OrderDetails;
+export default SellerOrderDetails;

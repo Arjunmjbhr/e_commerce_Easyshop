@@ -3,12 +3,13 @@ import { lazy } from "react";
 const SellerDashboard = lazy(() =>
   import("./../../views/seller/SellerDashboard")
 );
-
 const AllProduct = lazy(() => import("./../../views/seller/AllProduct"));
 const AddProduct = lazy(() => import("./../../views/seller/AddProduct"));
 const SellerOrders = lazy(() => import("./../../views/seller/SellerOrders"));
 const EditProduct = lazy(() => import("./../../views/seller/EditProduct"));
-const OrderDetails = lazy(() => import("./../../views/admin/OrderDetails"));
+const SellerOrderDetails = lazy(() =>
+  import("../../views/seller/SellerOrderDetails")
+);
 const Payments = lazy(() => import("./../../views/seller/Payments"));
 const SellerToAdmin = lazy(() => import("./../../views/seller/SellerToAdmin"));
 const SellerToCustomer = lazy(() =>
@@ -52,7 +53,7 @@ export const sellerRoutes = [
   },
   {
     path: "/seller/dashboard/order/details/:orderId",
-    element: <OrderDetails />,
+    element: <SellerOrderDetails />,
     role: "seller",
     visibility: ["active", "deactive"],
   },

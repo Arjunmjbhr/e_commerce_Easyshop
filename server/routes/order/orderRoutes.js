@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const orderController = require("../../controller/order/orderController");
 
-// customer
+////////////////////// customer////////////////////
 
 router.post("/home/order/place-order", orderController.place_order);
 router.get(
@@ -18,7 +18,16 @@ router.put(
   orderController.cancel_order
 );
 
-// admin
+//////////////////// admin/////////////////////////
+
 router.get("/admin/orders", orderController.get_admin_order);
+router.get(
+  "/admin/specific-order/:orderId",
+  orderController.get_admin_specific_order
+);
+router.put(
+  "/admin/order-status/update/:orderId",
+  orderController.admin_order_status_update
+);
 
 module.exports = router;

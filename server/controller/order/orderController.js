@@ -6,8 +6,11 @@ const { responseReturn } = require("../../utils/response");
 const {
   mongo: { ObjectId },
 } = require("mongoose");
+const customerModel = require("../../model/customerModel");
 
 class orderController {
+  ////////////////////////////customer order/////////////////////////////////////
+
   paymentCheck = async (id) => {
     try {
       const order = await customerOrderModel.findById(id);
@@ -29,7 +32,7 @@ class orderController {
       console.log(error);
     }
   };
-  // end method
+  // End method
   place_order = async (req, res) => {
     console.log("product in the controller");
     const { price, products, shipping_fee, shippingInfo, userId } = req.body;
@@ -183,12 +186,9 @@ class orderController {
     }
   };
 
-  // admin order
+  ////////////////////////////////// Admin order///////////////////////////////////
 
   get_admin_order = async (req, res) => {
-    console.log("in the admin controller");
-    console.log(req.query);
-
     let { page, searchValue, perPage } = req.query;
 
     // Validate and parse query parameters
@@ -249,7 +249,76 @@ class orderController {
         message: "An error occurred while fetching orders.",
       });
     }
-  }; // End Method
+  };
+  // End Method
+  get_admin_specific_order = async (req, res) => {
+    const { orderId } = req.params;
+
+    try {
+      // Validate ObjectId
+      if (!ObjectId.isValid(orderId)) {
+        return responseReturn(res, 400, { error: "Invalid Order ID format" });
+      }
+
+      // Aggregate to fetch the order and its suborder details
+      const order = await customerOrderModel.aggregate([
+        {
+          $match: { _id: new ObjectId(orderId) },
+        },
+        {
+          $lookup: {
+            from: "adminorders",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "suborders",
+          },
+        },
+      ]);
+
+      if (!order.length) {
+        return responseReturn(res, 404, { error: "Order not found" });
+      }
+      console.log(order);
+
+      responseReturn(res, 200, { order: order[0] });
+    } catch (error) {
+      console.error("Error in get_admin_specific_order:", error.message);
+      responseReturn(res, 500, {
+        message: "An error occurred while fetching the order.",
+      });
+    }
+  };
+  // End Method
+  admin_order_status_update = async (req, res) => {
+    console.log("in the order status update");
+    console.log(req.body);
+    console.log(req.params);
+    const { orderId } = req.params;
+    const { status } = req.body;
+    try {
+      // Update the delivery_status to "cancelled"
+      const order = await customerOrderModel.findByIdAndUpdate(
+        orderId,
+        { delivery_status: status },
+        { new: true } // Returns the updated document
+      );
+      const orderAdmin = await adminOrderModel.updateMany(
+        { orderId: new ObjectId(orderId) },
+        { delivery_status: status },
+        { new: true } // Returns the updated document
+      );
+
+      // Successful response
+      return responseReturn(res, 200, {
+        message: "Order status changed successfully",
+      });
+    } catch (error) {
+      console.error("Failed to cancel the order:", error.message);
+      return responseReturn(res, 500, {
+        error: "Internal server error. Failed to cancel the order.",
+      });
+    }
+  };
 }
 
 module.exports = new orderController();
