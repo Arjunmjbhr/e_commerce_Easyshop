@@ -420,7 +420,6 @@ class cutomerAuthController {
   };
 
   get_user_profile = async (req, res) => {
-    console.log(req.params);
     const { userId } = req.params;
 
     try {

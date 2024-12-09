@@ -1,14 +1,43 @@
 import React from "react";
+import { IoMdCloseCircle } from "react-icons/io";
 
 const AddressForm = ({
   inputState,
   inputHandle,
-  save,
+  saveAddress,
   setIsAddressEditing,
+  isAddressEditing,
+  setInputState,
 }) => {
+  const cancelButton = () => {
+    setInputState({
+      name: "",
+      address: "",
+      phone: "",
+      post: "",
+      district: "",
+      city: "",
+      area: "",
+    });
+    setIsAddressEditing(false);
+  };
+
   return (
-    <div className="bg-zinc-200 p-3">
-      <form onSubmit={save}>
+    <div className="bg-zinc-200 p-3 ">
+      <div className="flex justify-evenly items-center">
+        <h4 className="text-lg text-center font-semibold py-3 ">
+          {!isAddressEditing
+            ? "Add New Delivery Address"
+            : "Edit Delivery Address"}
+        </h4>
+        {isAddressEditing && (
+          <span onClick={cancelButton} className="text-lg cursor-pointer">
+            <IoMdCloseCircle />
+          </span>
+        )}
+      </div>
+
+      <form onSubmit={saveAddress}>
         {/* name and Address */}
         <div className="flex flex-col w-full text-slate-600 gap-3 ">
           <div className="flex flex-col gap-1 mb-2  w-full ">
@@ -112,16 +141,9 @@ const AddressForm = ({
             />
           </div>
           <div className="flex flex-col gap-1 mt-8 mb-2 w-full">
-            {setIsAddressEditing && (
-              <button className="px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white">
-                Add
-              </button>
-            )}
-            {!setIsAddressEditing && (
-              <button className="px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white">
-                Save Change
-              </button>
-            )}
+            <button className="px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white">
+              {!isAddressEditing ? "Add" : "Save Change"}
+            </button>
           </div>
         </div>
       </form>

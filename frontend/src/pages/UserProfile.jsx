@@ -4,6 +4,7 @@ import {
   get_user_profile,
   messageClear,
   add_address,
+  update_address,
 } from "../store/reducers/authUserReducer";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -29,6 +30,7 @@ const UserProfile = () => {
     phone: userProfileInfo?.phone,
   });
 
+  // user profile
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserDetails({
@@ -36,11 +38,11 @@ const UserProfile = () => {
       [name]: value,
     });
   };
-
+  // user profile
   const toggleEdit = () => {
     setIsEditing(!isEditing);
   };
-
+  // user profile
   const saveChanges = () => {
     const data = {
       userId: userInfo.id,
@@ -49,7 +51,7 @@ const UserProfile = () => {
     dispatch(update_user_profile(data));
     setIsEditing(false);
   };
-
+  // getting profile page
   useEffect(() => {
     dispatch(get_user_profile(userInfo.id));
   }, [successMessage]);
@@ -74,6 +76,7 @@ const UserProfile = () => {
     district: "",
     city: "",
     area: "",
+    addressId: "",
   });
 
   const inputHandle = (e) => {
@@ -84,26 +87,44 @@ const UserProfile = () => {
     });
   };
 
-  const save = (e) => {
+  // for adding  and editing  address
+  const saveAddress = (e) => {
     e.preventDefault();
+    console.log("save");
 
     const { name, address, phone, post, district, city, area } = inputState;
-    if (name && address && phone && post && district && city && area) {
+
+    if (!name || !address || !phone || !post || !district || !city || !area) {
+      toast.error("All fields are mandatory");
+      return;
+    }
+
+    if (isAddressEditing) {
+      const { addressId } = inputState;
+      const data = {
+        info: inputState,
+        addressId,
+      };
+      console.log(data);
+      dispatch(update_address(data));
+      setIsAddressEditing(false);
+    } else {
       const data = {
         userId: userInfo?.id,
         info: inputState,
       };
       dispatch(add_address(data));
-      setInputState({
-        name: "",
-        address: "",
-        phone: "",
-        post: "",
-        district: "",
-        city: "",
-        area: "",
-      });
     }
+
+    setInputState({
+      name: "",
+      address: "",
+      phone: "",
+      post: "",
+      district: "",
+      city: "",
+      area: "",
+    });
   };
 
   return (
@@ -121,8 +142,11 @@ const UserProfile = () => {
         <div className="grid grid-cols-2 gap-8">
           <div className="pr-8">
             {addressUser.map((address) => (
-              <div className="flex flex-col gap-1 bg-zinc-200 rounded-md p-3 my-3">
-                <p>
+              <div
+                key={address._id}
+                className="flex flex-col gap-1 bg-zinc-200 rounded-md p-3 my-3"
+              >
+                <div>
                   <span className="bg-blue-200 text-blue-800 text-sm font-medium mr-2 px-2 py-1 rounded">
                     To
                   </span>
@@ -142,7 +166,6 @@ const UserProfile = () => {
 
                   <span
                     onClick={() => {
-                      setIsAddressEditing(true);
                       setInputState({
                         name: address?.name,
                         address: address?.address,
@@ -151,22 +174,26 @@ const UserProfile = () => {
                         district: address?.district,
                         city: address?.city,
                         area: address?.area,
+                        addressId: address._id,
                       });
+                      setIsAddressEditing(true);
                     }}
                     className="text-indigo-500 cursor-pointer mx-2 px-6"
                   >
                     Change
                   </span>
-                </p>
+                </div>
               </div>
             ))}
           </div>
           <div>
             <UserAddress
+              isAddressEditing={isAddressEditing}
               setIsAddressEditing={setIsAddressEditing}
-              save={save}
+              saveAddress={saveAddress}
               inputHandle={inputHandle}
               inputState={inputState}
+              setInputState={setInputState}
             />
           </div>
         </div>

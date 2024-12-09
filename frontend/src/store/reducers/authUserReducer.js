@@ -146,6 +146,24 @@ export const add_address = createAsyncThunk(
   }
 );
 // End Method
+export const update_address = createAsyncThunk(
+  "dashboard/update_address",
+  async ({ addressId, info }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      console.log(info);
+      const { data } = await api.post(
+        `/home/customer/update_address/${addressId}`,
+        info,
+        { withCredentials: true }
+      );
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 // slice
 export const authUserReducer = createSlice({
@@ -249,6 +267,17 @@ export const authUserReducer = createSlice({
         state.loader = false;
       })
       .addCase(add_address.fulfilled, (state, { payload }) => {
+        state.successMessage = payload.message;
+        state.loader = false;
+      })
+      .addCase(update_address.pending, (state, { payload }) => {
+        state.loader = true;
+      })
+      .addCase(update_address.rejected, (state, { payload }) => {
+        state.errorMessage = payload.error;
+        state.loader = false;
+      })
+      .addCase(update_address.fulfilled, (state, { payload }) => {
         state.successMessage = payload.message;
         state.loader = false;
       });
