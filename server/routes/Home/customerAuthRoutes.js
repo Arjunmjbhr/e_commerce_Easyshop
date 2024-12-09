@@ -24,5 +24,9 @@ router.post(
   "/customer/forgot-password",
   customerAuthController.forgot_password
 );
+router.post(
+  "/customer/reset-password/:userId/:token",
+  customerAuthController.reset_password
+);
 
 module.exports = router;

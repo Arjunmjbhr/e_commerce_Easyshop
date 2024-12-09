@@ -19,6 +19,7 @@ import Index from "./componets/dashboard/Index";
 import OrderDashboard from "./componets/dashboard/OrderDashboard";
 import OrderDetails from "./componets/dashboard/OrderDetails";
 import UserProfile from "./pages/UserProfile";
+import ResetPassword from "./componets/login_register/ResetPassword";
 
 function App() {
   const dispatch = useDispatch();
@@ -39,6 +40,10 @@ function App() {
         <Route path="/products/search?" element={<SearchProducts />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/test" element={<FilterRating />} />
+        <Route
+          path="/customer/reset-password/:userId/:token"
+          element={<ResetPassword />}
+        />
 
         <Route path="/dashboard" element={<ProtectUser />}>
           <Route path="" element={<Dashboard />}>

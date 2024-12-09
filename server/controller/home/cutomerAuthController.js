@@ -421,6 +421,54 @@ class cutomerAuthController {
       });
     }
   };
+  // End method
+  reset_password = async (req, res) => {
+    const { userId, token } = req.params;
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        error: "Password is required.",
+      });
+    }
+
+    try {
+      // Verify the JWT token
+      const decodedToken = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+      // Validate the token userId matches the request userId
+      if (decodedToken.id !== userId) {
+        return res.status(403).json({
+          error: "Token does not match user. Unauthorized request.",
+        });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Update the user's password in the database
+      const user = await customerModel.findByIdAndUpdate(
+        userId,
+        { password: hashedPassword },
+        { new: true } // Return the updated document
+      );
+
+      if (!user) {
+        return res.status(404).json({
+          error: "User not found.",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Password successfully reset.",
+      });
+    } catch (error) {
+      console.error("Error resetting password:", error.message);
+      return res.status(403).json({
+        error: "Invalid or expired token. Please log in again.",
+      });
+    }
+  };
 
   //customer profile
 
