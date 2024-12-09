@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getNav } from "../navigation";
 import { BiLogOutCircle } from "react-icons/bi";
 import { IoCloseCircleSharp } from "react-icons/io5";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../store/Reducers/authReducer";
 const Sidebar = ({ showSidebar, setShowSidebar }) => {
   const [allNav, setAllNav] = useState([]);
   const { pathname } = useLocation();
   const role = useSelector((store) => store.auth.role);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const navs = getNav(role);
@@ -69,7 +71,10 @@ const Sidebar = ({ showSidebar, setShowSidebar }) => {
             })}
             <li>
               {/* logout button */}
-              <button className="text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1">
+              <button
+                onClick={() => dispatch(logout({ navigate, role }))}
+                className="text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1"
+              >
                 <span>
                   <BiLogOutCircle />
                 </span>

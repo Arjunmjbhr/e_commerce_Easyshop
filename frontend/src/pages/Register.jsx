@@ -20,6 +20,7 @@ const Register = () => {
     name: "",
     password: "",
     email: "",
+    confirmPassword: "",
   });
   const [showModal, setShowModal] = useState(false);
   const [otpInputs, setOtpInputs] = useState(Array(6).fill(""));
@@ -49,6 +50,11 @@ const Register = () => {
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
+
+      if (successMessage === "OTP sent successfully!") {
+        setShowModal(true);
+        setIsOtpSent(true);
+      }
       dispatch(messageClear());
     }
     if (errorMessage) {
@@ -76,14 +82,20 @@ const Register = () => {
   //sending otp
   const handleSubmit = (e) => {
     e.preventDefault();
+    // password and confirm password checking
+    if (state.password !== state.confirmPassword) {
+      toast.error("Passwords does not match.");
+      return;
+    }
+
     const error = validateUserDetails(state.name, state.password, state.email);
     if (error) {
       return toast.error(error);
     }
     dispatch(messageClear());
     dispatch(send_otp(state.email)); // Send OTP request
-    setShowModal(true); // Show modal after sending OTP
-    setIsOtpSent(true);
+
+    // cut modal code to success message
   };
 
   // handling otp submit
@@ -177,6 +189,19 @@ const Register = () => {
                       id="password"
                       placeholder="Password"
                       value={state.password}
+                      onChange={handleInput}
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 mb-2">
+                    <label htmlFor="confirmPassword">Confirm Password</label>
+                    <input
+                      className="w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md"
+                      type="password"
+                      name="confirmPassword"
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                      value={state.confirmPassword}
                       onChange={handleInput}
                       required
                     />

@@ -202,6 +202,22 @@ export const reset_password = createAsyncThunk(
 );
 // End Method
 
+// logout
+export const logout_customer = createAsyncThunk(
+  "authUser/logout",
+  async (_, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(`/customer/logout`, {
+        withCredentials: true,
+      });
+      localStorage.removeItem("customerToken");
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 // slice
 export const authUserReducer = createSlice({
   name: "auth",
@@ -217,6 +233,9 @@ export const authUserReducer = createSlice({
     messageClear: (state, _) => {
       state.errorMessage = "";
       state.successMessage = "";
+    },
+    user_reset: (state, _) => {
+      state.userInfo = "";
     },
   },
   extraReducers: (builder) => {
@@ -334,9 +353,17 @@ export const authUserReducer = createSlice({
       .addCase(reset_password.fulfilled, (state, { payload }) => {
         state.successMessage = payload.message;
         state.loader = false;
+      })
+      .addCase(logout_customer.rejected, (state, { payload }) => {
+        state.errorMessage = payload.error;
+        state.loader = false;
+      })
+      .addCase(logout_customer.fulfilled, (state, { payload }) => {
+        state.successMessage = payload.message;
+        state.loader = false;
       });
   },
 });
 
-export const { messageClear } = authUserReducer.actions;
+export const { messageClear, user_reset } = authUserReducer.actions;
 export default authUserReducer.reducer;

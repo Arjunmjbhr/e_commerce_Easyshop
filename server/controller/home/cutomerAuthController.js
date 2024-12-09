@@ -259,6 +259,16 @@ class cutomerAuthController {
     if (!email) {
       return responseReturn(res, 400, { error: "Email is required" });
     }
+    // Check if the customer already exists
+    const existingCustomer = await customerModel.findOne({
+      email: email,
+      isBlocked: false,
+    });
+    if (existingCustomer) {
+      return responseReturn(res, 400, {
+        error: "You are already registered. Please login.",
+      });
+    }
 
     // Generate and store OTP
     this.otpStore[email] = this.createOtp();
@@ -540,6 +550,13 @@ class cutomerAuthController {
       console.log("Error in fetching the user profile data", error.message);
       return responseReturn(res, 500, { error: "Internal Server Error." });
     }
+  };
+  // logout
+  customer_logout = async (req, res) => {
+    res.cookie("customerToken", "", {
+      expires: new Date(Date.now()),
+    });
+    responseReturn(res, 200, { message: "Logout Success" });
   };
 }
 

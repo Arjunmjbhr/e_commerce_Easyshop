@@ -7,7 +7,7 @@ import { IoMdLogOut } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 
-const Sidebar = ({ filterShow }) => {
+const Sidebar = ({ filterShow, logout }) => {
   return (
     <div>
       <div
@@ -57,13 +57,14 @@ const Sidebar = ({ filterShow }) => {
             </Link>
           </li>
 
-          <li className="flex justify-start items-center gap-2 py-2">
+          <li
+            onClick={logout}
+            className="flex justify-start items-center gap-2 py-2 cursor-pointer"
+          >
             <span className="text-xl">
               <IoMdLogOut />
             </span>
-            <Link to="/dashboard" className="block">
-              Logout{" "}
-            </Link>
+            <div className="block">Logout </div>
           </li>
         </ul>
       </div>

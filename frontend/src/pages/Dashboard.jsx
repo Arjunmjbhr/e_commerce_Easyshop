@@ -1,12 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Footer from "../componets/Footer";
 import Header from "../componets/Header";
 import { FaList } from "react-icons/fa";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../componets/dashboard/Sidebar";
+import {
+  logout_customer,
+  user_reset,
+  messageClear,
+} from "../store/reducers/authUserReducer";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { reset_count } from "../store/reducers/cartReducer";
 
 const Dashboard = () => {
   const [filterShow, setFilterShow] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { successMessage, errorMessage } = useSelector(
+    (store) => store.authUser
+  );
+
+  const logout = async () => {
+    console.log("logout");
+    dispatch(logout_customer());
+  };
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+      dispatch(reset_count());
+      dispatch(user_reset());
+      navigate("/login");
+    }
+    if (errorMessage) {
+      toast.success(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch, messageClear]);
+
   return (
     <div>
       <Header />
@@ -27,7 +59,7 @@ const Dashboard = () => {
             <div className="py-5 flex md-lg:w-[90%] mx-auto relative">
               <div>
                 {/* sidebar */}
-                <Sidebar filterShow={filterShow} />
+                <Sidebar filterShow={filterShow} logout={logout} />
               </div>
 
               <div className="w-[calc(100%-270px)] md-lg:w-full">
