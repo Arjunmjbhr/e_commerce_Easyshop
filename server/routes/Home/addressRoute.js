@@ -10,5 +10,9 @@ router.post(
   "/home/customer/update_address/:addressId",
   addressController.update_address
 );
+router.delete(
+  "/home/customer/delete-address/:addressId",
+  addressController.delete_address
+);
 
 module.exports = router;

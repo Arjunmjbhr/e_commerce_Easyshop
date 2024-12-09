@@ -5,11 +5,15 @@ import {
   messageClear,
   add_address,
   update_address,
+  delete_address,
 } from "../store/reducers/authUserReducer";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import Profile from "../componets/UserProfile/Profile";
 import UserAddress from "./../componets/UserProfile/UserAddress";
+import { MdDelete } from "react-icons/md";
+import { FaEdit } from "react-icons/fa";
+import ConfirmModal from "./../componets/ConfirmModal";
 
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false); // Toggle edit mode
@@ -22,6 +26,7 @@ const UserProfile = () => {
     successMessage,
     errorMessage,
   } = useSelector((store) => store.authUser);
+  const [modalClose, SetModalClose] = useState(true);
 
   const [userDetails, setUserDetails] = useState({
     username: userProfileInfo?.name,
@@ -29,6 +34,7 @@ const UserProfile = () => {
     email: userProfileInfo?.email,
     phone: userProfileInfo?.phone,
   });
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   // user profile
   const handleInputChange = (e) => {
@@ -147,9 +153,50 @@ const UserProfile = () => {
                 className="flex flex-col gap-1 bg-zinc-200 rounded-md p-3 my-3"
               >
                 <div>
-                  <span className="bg-blue-200 text-blue-800 text-sm font-medium mr-2 px-2 py-1 rounded">
-                    To
-                  </span>
+                  <div className="flex justify-between items-center">
+                    <span className="bg-blue-200 text-blue-800 text-sm font-medium mr-2 px-2 py-1 rounded">
+                      To
+                    </span>
+                    <div className="flex text-xl gap-2  ">
+                      <span
+                        onClick={() => {
+                          setInputState({
+                            name: address?.name,
+                            address: address?.address,
+                            phone: address?.phone,
+                            post: address?.post,
+                            district: address?.district,
+                            city: address?.city,
+                            area: address?.area,
+                            addressId: address._id,
+                          });
+                          setIsAddressEditing(true);
+                        }}
+                        className=" cursor-pointer mx-2 "
+                      >
+                        <FaEdit />
+                      </span>
+                      <span
+                        onClick={() => {
+                          setSelectedAddressId(address._id);
+                          SetModalClose(false);
+                          console.log(address._id);
+                        }}
+                        className=" cursor-pointer"
+                      >
+                        <MdDelete />
+                      </span>
+                      {!modalClose && (
+                        <ConfirmModal
+                          message="do you want to delete this address"
+                          SetModalClose={SetModalClose}
+                          confimFunction={() =>
+                            dispatch(delete_address(selectedAddressId))
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
 
                   <div className="flex flex-col px-8">
                     <span className="lowercase">
@@ -163,25 +210,6 @@ const UserProfile = () => {
                     </span>
                     <span>{address?.phone}</span>
                   </div>
-
-                  <span
-                    onClick={() => {
-                      setInputState({
-                        name: address?.name,
-                        address: address?.address,
-                        phone: address?.phone,
-                        post: address?.post,
-                        district: address?.district,
-                        city: address?.city,
-                        area: address?.area,
-                        addressId: address._id,
-                      });
-                      setIsAddressEditing(true);
-                    }}
-                    className="text-indigo-500 cursor-pointer mx-2 px-6"
-                  >
-                    Change
-                  </span>
                 </div>
               </div>
             ))}

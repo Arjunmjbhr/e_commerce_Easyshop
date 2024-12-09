@@ -164,6 +164,22 @@ export const update_address = createAsyncThunk(
   }
 );
 // End Method
+export const delete_address = createAsyncThunk(
+  "authUser/delete_address",
+  async (addressId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.delete(
+        `/home/customer/delete-address/${addressId}`,
+        { withCredentials: true }
+      );
+      console.log(data);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 // forgot-password
 
@@ -363,6 +379,12 @@ export const authUserReducer = createSlice({
       .addCase(logout_customer.fulfilled, (state, { payload }) => {
         state.logoutMessage = payload.message;
         state.loader = false;
+      })
+      .addCase(delete_address.rejected, (state, { payload }) => {
+        state.errorMessage = payload.error;
+      })
+      .addCase(delete_address.fulfilled, (state, { payload }) => {
+        state.successMessage = payload.message;
       });
   },
 });

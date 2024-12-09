@@ -107,6 +107,25 @@ class addressController {
       return responseReturn(res, 500, { error: "Internal Server Error." });
     }
   };
+  delete_address = async (req, res) => {
+    const { addressId } = req.params;
+
+    try {
+      const address = await addressModel.deleteOne({ _id: addressId });
+
+      if (address.deletedCount === 0) {
+        return responseReturn(res, 404, { error: "Address not found" });
+      }
+      return responseReturn(res, 200, {
+        message: "Address deleted successfully",
+      });
+    } catch (error) {
+      console.error(error);
+      return responseReturn(res, 500, {
+        error: "Failed to delete the address",
+      });
+    }
+  };
 }
 
 module.exports = new addressController();
