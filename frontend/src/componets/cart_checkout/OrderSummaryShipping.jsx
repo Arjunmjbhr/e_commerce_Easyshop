@@ -2,7 +2,7 @@ import React from "react";
 
 const OrderSummaryShipping = ({
   placeOrder,
-  res,
+  isAddressSelected,
   price,
   shipping_fee,
   items,
@@ -24,9 +24,9 @@ const OrderSummaryShipping = ({
       </div>
       <button
         onClick={placeOrder}
-        disabled={!res}
+        disabled={!isAddressSelected ? true : false}
         className={`px-5 py-[6px] rounded-sm ${
-          res
+          isAddressSelected
             ? `hover:shadow-orange-500/50 bg-red-500 hover:shadow-lg `
             : "bg-red-100"
         }  text-sm text-white uppercase`}

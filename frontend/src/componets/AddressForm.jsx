@@ -1,11 +1,27 @@
 import React from "react";
+import { IoMdCloseCircle } from "react-icons/io";
 
-const AddressForm = ({ inputState, inputHandle, save }) => {
+const AddressForm = ({
+  inputState,
+  inputHandle,
+  saveAddress,
+  setIsAddressEditing,
+  isAddressEditing,
+  setInputState,
+}) => {
   return (
-    <div>
-      <form onSubmit={save}>
+    <div className="bg-zinc-200 p-3 ">
+      <div className="flex justify-evenly items-center">
+        <h4 className="text-lg text-center font-semibold py-3 ">
+          {!isAddressEditing
+            ? "Add New Delivery Address"
+            : "Edit Delivery Address"}
+        </h4>
+      </div>
+
+      <form onSubmit={saveAddress}>
         {/* name and Address */}
-        <div className="flex md:flex-col md:gap-2 w-full text-slate-600 gap-3 ">
+        <div className="flex flex-col w-full text-slate-600 gap-3 ">
           <div className="flex flex-col gap-1 mb-2  w-full ">
             <label htmlFor="name">Name</label>
             <input
@@ -108,7 +124,7 @@ const AddressForm = ({ inputState, inputHandle, save }) => {
           </div>
           <div className="flex flex-col gap-1 mt-8 mb-2 w-full">
             <button className="px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white">
-              Save Change
+              {!isAddressEditing ? "Add" : "Save Change"}
             </button>
           </div>
         </div>
