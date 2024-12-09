@@ -23,7 +23,9 @@ const AddressForm = ({
   };
 
   return (
-    <div className="bg-zinc-200 p-3  ">
+    <div
+      className={` p-3 ${isAddressEditing ? "bg-green-300" : "bg-zinc-200"} `}
+    >
       <div className="flex justify-evenly items-center">
         <h4 className="text-lg text-center font-semibold py-3 ">
           {!isAddressEditing
@@ -39,7 +41,7 @@ const AddressForm = ({
 
       <form onSubmit={saveAddress}>
         {/* name and Address */}
-        <div className="flex flex-col w-full text-slate-600 gap-3 ">
+        <div className={`flex flex-col w-full text-slate-600 gap-3 `}>
           <div className="flex flex-col gap-1 mb-2  w-full ">
             <label htmlFor="name">Name</label>
             <input
@@ -141,7 +143,11 @@ const AddressForm = ({
             />
           </div>
           <div className="flex flex-col gap-1 mt-8 mb-2 w-full">
-            <button className="px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg bg-green-500 text-white">
+            <button
+              className={`px-3 py-[6px] rounded-sm hover:shadow-green-500/50 hover:shadow-lg ${
+                isAddressEditing ? "bg-red-500" : "bg-green-500"
+              }  text-white`}
+            >
               {!isAddressEditing ? "Add" : "Save Change"}
             </button>
           </div>

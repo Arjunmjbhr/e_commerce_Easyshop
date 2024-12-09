@@ -9,15 +9,15 @@ const Profile = ({
 }) => {
   return (
     <div className="w-full">
-      <div className="w-full max-w-4xl bg-white p-8 rounded-md shadow-md ">
+      <div className="w-full max-w-4xl bg-green-200 p-8 rounded-md shadow-md ">
         <h2 className="text-2xl font-bold mb-10 text-center">
           Profile Details
         </h2>
-        <div className="grid grid-cols-[40%_60%] md:grid-cols-1 gap-6">
+        <div className="grid grid-cols-[40%_60%] md:grid-cols-1 gap-6 pr-4">
           {/* Profile Picture */}
           <div className="flex flex-col items-center md:col-span-1">
             <img
-              src=""
+              src="http://localhost:3000/images/user.png"
               alt=""
               className="w-32 h-32 bg-zinc-200 object-cover rounded-full mb-4"
             />

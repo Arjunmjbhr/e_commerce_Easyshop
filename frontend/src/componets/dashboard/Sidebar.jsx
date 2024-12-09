@@ -15,8 +15,8 @@ const Sidebar = ({ filterShow, logout }) => {
           filterShow ? "-left-4" : "-left-[360px]"
         } w-[270px] ml-4 bg-white`}
       >
-        <ul className="py-2 text-slate-600 px-4">
-          <li className="flex justify-start items-center gap-2 py-2">
+        <ul className="py-3 text-slate-600 px-6 flex flex-col gap-4 ">
+          <li className="flex justify-start items-center gap-2 py-2 shadow-sm hover:bg-green-300  rounded-md px-3">
             <span className="text-xl">
               <IoIosHome />
             </span>
@@ -24,7 +24,7 @@ const Sidebar = ({ filterShow, logout }) => {
               Dashboard
             </Link>
           </li>
-          <li className="flex justify-start items-center gap-2 py-2">
+          <li className="flex justify-start items-center gap-2 py-2 shadow-sm hover:bg-green-300  rounded-md px-3">
             <span className="text-xl">
               <FaBorderAll />
             </span>
@@ -32,7 +32,7 @@ const Sidebar = ({ filterShow, logout }) => {
               My Orders
             </Link>
           </li>
-          <li className="flex justify-start items-center gap-2 py-2">
+          <li className="flex justify-start items-center gap-2 py-2 shadow-sm hover:bg-green-300  rounded-md px-3">
             <span className="text-xl">
               <FaHeart />
             </span>
@@ -40,7 +40,7 @@ const Sidebar = ({ filterShow, logout }) => {
               Wishlist
             </Link>
           </li>
-          <li className="flex justify-start items-center gap-2 py-2">
+          <li className="flex justify-start items-center gap-2 py-2 shadow-sm hover:bg-green-300  rounded-md px-3">
             <span className="text-xl">
               <IoChatbubbleEllipsesSharp />
             </span>
@@ -48,7 +48,7 @@ const Sidebar = ({ filterShow, logout }) => {
               Chat
             </Link>
           </li>
-          <li className="flex justify-start items-center gap-2 py-2">
+          <li className="flex justify-start items-center gap-2 py-2 shadow-sm hover:bg-green-300  rounded-md px-3 ">
             <span className="text-xl">
               <IoPersonCircle />
             </span>
@@ -59,7 +59,7 @@ const Sidebar = ({ filterShow, logout }) => {
 
           <li
             onClick={logout}
-            className="flex justify-start items-center gap-2 py-2 cursor-pointer"
+            className="flex justify-start items-center gap-2 py-2 cursor-pointer shadow-sm hover:bg-red-500 hover:text-white  rounded-md px-3"
           >
             <span className="text-xl">
               <IoMdLogOut />
