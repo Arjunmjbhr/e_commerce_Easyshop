@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../componets/Header";
 import Footer from "../componets/Footer";
 import PageHeading from "../componets/PageHeading";
@@ -9,6 +9,8 @@ import OrderSummaryShipping from "../componets/cart_checkout/OrderSummaryShippin
 import { useDispatch, useSelector } from "react-redux";
 import { place_order } from "../store/reducers/orderReducer";
 import { useNavigate } from "react-router-dom";
+import { get_user_profile } from "./../store/reducers/authUserReducer";
+import AddressItration from "../componets/cart_checkout/AddressItration";
 
 const Shipping = () => {
   const dispatch = useDispatch();
@@ -16,7 +18,7 @@ const Shipping = () => {
   const {
     state: { products, price, shipping_fee, items },
   } = useLocation();
-  const [res, setRes] = useState(false);
+  const [res, setRes] = useState(true);
   const [inputState, setInputState] = useState({
     name: "",
     address: "",
@@ -26,7 +28,11 @@ const Shipping = () => {
     city: "",
     area: "",
   });
-  const { userInfo } = useSelector((store) => store.authUser);
+  const { userInfo, addressUser } = useSelector((store) => store.authUser);
+
+  useEffect(() => {
+    dispatch(get_user_profile(userInfo.id));
+  }, []);
 
   //   handling form input
   const inputHandle = (e) => {
@@ -76,9 +82,19 @@ const Shipping = () => {
               <div className="w-[67%] md-lg:w-full">
                 {/* address */}
                 <div className="bg-white p-6 shadow-sm rounded-md">
-                  <h2 className="text-lg font-bold mb-5">
-                    Shipping Information
-                  </h2>
+                  <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-bold mb-5">
+                      Shipping Information
+                    </h2>
+                    <div
+                      onClick={() => setRes(!res)}
+                      className={` py-2 px-3 rounded-md cursor-pointer ${
+                        res ? "bg-green-400" : "bg-slate-400"
+                      }`}
+                    >
+                      {res ? "Add new +" : "Cancel"}
+                    </div>
+                  </div>
                   {/* address edit and show */}
                   <div>
                     {/* addressinput form */}
@@ -92,29 +108,14 @@ const Shipping = () => {
                       </div>
                     )}
                     {/* address show */}
-                    {res && (
-                      <div className="flex flex-col gap-1">
-                        <h2 className="text-slate-600 font-semibold pb-2">
-                          Deliver To {inputState.name}
-                        </h2>
-                        <p>
-                          <span className="bg-blue-200 text-blue-800 text-sm font-medium mr-2 px-2 py-1 rounded">
-                            Home
-                          </span>
-                          <span className="lowercase">
-                            {inputState.address},{inputState.district},
-                            {inputState.city},{inputState.area},
-                            {inputState.phone},{`post: ${inputState.post}`}
-                          </span>
-                          <span
-                            onClick={() => setRes(false)}
-                            className="text-indigo-500 cursor-pointer mx-2"
-                          >
-                            Change
-                          </span>
-                        </p>
-                      </div>
-                    )}
+                    {res &&
+                      addressUser.map((address) => (
+                        <AddressItration
+                          address={address}
+                          inputState={inputState}
+                          setRes={setRes}
+                        />
+                      ))}
                   </div>
                 </div>
                 {/* product details */}
