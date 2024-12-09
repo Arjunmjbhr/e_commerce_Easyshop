@@ -17,7 +17,7 @@ const Dashboard = () => {
   const [filterShow, setFilterShow] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { successMessage, errorMessage } = useSelector(
+  const { logoutMessage, errorMessage } = useSelector(
     (store) => store.authUser
   );
 
@@ -26,8 +26,8 @@ const Dashboard = () => {
     dispatch(logout_customer());
   };
   useEffect(() => {
-    if (successMessage) {
-      toast.success(successMessage);
+    if (logoutMessage) {
+      toast.success(logoutMessage);
       dispatch(messageClear());
       dispatch(reset_count());
       dispatch(user_reset());
@@ -37,7 +37,7 @@ const Dashboard = () => {
       toast.success(errorMessage);
       dispatch(messageClear());
     }
-  }, [successMessage, errorMessage, dispatch, messageClear]);
+  }, [logoutMessage, errorMessage, dispatch, messageClear]);
 
   return (
     <div>

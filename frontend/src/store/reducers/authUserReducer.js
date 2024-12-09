@@ -226,6 +226,7 @@ export const authUserReducer = createSlice({
     userInfo: decodeToken(localStorage.getItem("customerToken")),
     errorMessage: "",
     successMessage: "",
+    logoutMessage: "",
     userProfileInfo: {},
     addressUser: [],
   },
@@ -233,6 +234,7 @@ export const authUserReducer = createSlice({
     messageClear: (state, _) => {
       state.errorMessage = "";
       state.successMessage = "";
+      state.logoutMessage = "";
     },
     user_reset: (state, _) => {
       state.userInfo = "";
@@ -359,7 +361,7 @@ export const authUserReducer = createSlice({
         state.loader = false;
       })
       .addCase(logout_customer.fulfilled, (state, { payload }) => {
-        state.successMessage = payload.message;
+        state.logoutMessage = payload.message;
         state.loader = false;
       });
   },
