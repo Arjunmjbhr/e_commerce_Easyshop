@@ -134,7 +134,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-14 ">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-5 ">
       <Profile
         toggleEdit={toggleEdit}
         saveChanges={saveChanges}
@@ -143,9 +143,9 @@ const UserProfile = () => {
         userDetails={userDetails}
       />
       {/* address */}
-      <div className="bg-white w-[90%] px-7 py-10 flex flex-col gap-10">
-        <h1 className="text-2xl text-center font-bold">Address</h1>
-        <div className="grid grid-cols-2 gap-8">
+      <div className="bg-white  px-7 py-10 flex flex-col gap-10 rounded-lg mr-12">
+        <h1 className="text-2xl text-center font-bold">Delivery Address</h1>
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-1">
           <div className="pr-8">
             {addressUser.map((address) => (
               <div

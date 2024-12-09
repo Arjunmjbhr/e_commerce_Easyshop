@@ -9,11 +9,11 @@ const Profile = ({
 }) => {
   return (
     <div className="w-full">
-      <div className="w-full max-w-4xl bg-white p-8 rounded-md shadow-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center">
+      <div className="w-full max-w-4xl bg-white p-8 rounded-md shadow-md ">
+        <h2 className="text-2xl font-bold mb-10 text-center">
           Profile Details
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-[40%_60%] md:grid-cols-1 gap-6">
           {/* Profile Picture */}
           <div className="flex flex-col items-center md:col-span-1">
             <img
@@ -23,9 +23,9 @@ const Profile = ({
             />
             <label
               htmlFor="profilePic"
-              className="block font-medium text-gray-700"
+              className="block font-medium text-lg text-gray-700"
             >
-              change Profile pic
+              {userDetails?.username}
             </label>
             <input
               type="file"
@@ -42,7 +42,7 @@ const Profile = ({
           <div className="space-y-4 md:col-span-1">
             <div className="flex w-full gap-4">
               <div className="w-full">
-                <label className="block  font-medium text-gray-700">
+                <label className="block font-medium text-gray-700">
                   Username
                 </label>
                 <input
@@ -57,7 +57,7 @@ const Profile = ({
                 />
               </div>
               <div className="w-full">
-                <label className="block w-full font-medium text-gray-700">
+                <label className="block font-medium text-gray-700">
                   Full Name
                 </label>
                 <input
@@ -85,7 +85,6 @@ const Profile = ({
                   }`}
                 />
               </div>
-
               <div className="w-full">
                 <label className="block font-medium text-gray-700">
                   Phone Number

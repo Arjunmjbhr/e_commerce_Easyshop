@@ -23,7 +23,7 @@ const AddressForm = ({
   };
 
   return (
-    <div className="bg-zinc-200 p-3 ">
+    <div className="bg-zinc-200 p-3  ">
       <div className="flex justify-evenly items-center">
         <h4 className="text-lg text-center font-semibold py-3 ">
           {!isAddressEditing
