@@ -6,6 +6,7 @@ const { createToken } = require("../../utils/tokenCreate");
 const nodemailer = require("nodemailer");
 const addressModel = require("../../model/addressModel");
 const { ObjectId } = require("mongodb");
+const jwt = require("jsonwebtoken");
 
 class cutomerAuthController {
   constructor() {
@@ -367,6 +368,57 @@ class cutomerAuthController {
     } catch (error) {
       console.error("Error creating account:", error);
       return responseReturn(res, 500, { error: "Error creating account" });
+    }
+  };
+
+  forgot_password = async (req, res) => {
+    console.log("in the forgot password");
+    console.log(req.body);
+    const { emailId } = req.body;
+    try {
+      const user = await customerModel.findOne({ email: emailId });
+      if (!user) {
+        return responseReturn(res, 404, { error: "No user Exist" });
+      }
+
+      const token = await jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET_KEY,
+        {
+          expiresIn: "5m",
+        }
+      );
+
+      var transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "naveen.prakash.kv@gmail.com",
+          pass: "tens lfeb uihx gnvo",
+        },
+      });
+
+      var mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: emailId,
+        subject: "Reset password login in the EasyShop",
+        text: `http://localhost:3000/customer/reset-password/${user._id}/${token}`,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+      return responseReturn(res, 200, {
+        message: "reset password link send to email id",
+      });
+    } catch (error) {
+      console.log("error in forgot password", error.message);
+      return responseReturn(res, 500, {
+        error: "error in sending reset link to email",
+      });
     }
   };
 

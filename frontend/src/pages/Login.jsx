@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from "react";
 import Header from "../componets/Header";
 import Footer from "../componets/Footer";
-import { FaFacebookF } from "react-icons/fa6";
-import { FaGoogle } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { get_categories } from "../store/reducers/homeReducer";
 import {
   customer_login,
   messageClear,
-  googleLogin,
+  forgot_password,
 } from "../store/reducers/authUserReducer";
 import { toast } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
 
 import GoogleLoginComponent from "./../componets/GoogleLoginComponent";
+import ForgotPasswordMail from "../componets/login_register/ForgotPasswordMail";
 
 const Login = () => {
   const [state, setState] = useState({
     password: "",
     email: "",
   });
-  const [googleLoaded, setGoogleLoaded] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { categories } = useSelector((store) => store.home);
+  const [modalClose, SetModalClose] = useState(true);
+  const [resetEmail, setResetEmail] = useState("");
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -60,6 +58,10 @@ const Login = () => {
       email: "guest@gamail.com",
     });
     toast("Please click login button for demo login");
+  };
+  const handleForgotPassword = () => {
+    dispatch(forgot_password(resetEmail));
+    console.log(resetEmail);
   };
 
   return (
@@ -109,16 +111,29 @@ const Login = () => {
                   >
                     {loader ? <ClipLoader size={30} color="white" /> : "Login"}
                   </button>
-                  <div className=" flex justify-end m-2 text-blue-600">
-                    <Link>Forget Password</Link>
+                  <div
+                    onClick={() => SetModalClose(false)}
+                    className=" flex justify-end m-2 text-blue-600 cursor-pointer"
+                  >
+                    <span>Forgot Password</span>
                   </div>
                 </form>
+                <div>
+                  {!modalClose && (
+                    <ForgotPasswordMail
+                      handleForgotPassword={handleForgotPassword}
+                      SetModalClose={SetModalClose}
+                      resetEmail={resetEmail}
+                      setResetEmail={setResetEmail}
+                    />
+                  )}
+                </div>
                 <div className="flex justify-center items-center py-2">
                   <div className="h-[1px] bg-slate-300 w-[95%]"> </div>
                   <span className="px-3 text-slate-600">Or</span>
                   <div className="h-[1px] bg-slate-300 w-[95%]"> </div>
                 </div>
-
+                {/* google login */}
                 <div>
                   <GoogleLoginComponent />
                 </div>

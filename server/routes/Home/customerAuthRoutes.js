@@ -20,5 +20,9 @@ router.get(
   "/customer/get-user-profile/:userId",
   customerAuthController.get_user_profile
 );
+router.post(
+  "/customer/forgot-password",
+  customerAuthController.forgot_password
+);
 
 module.exports = router;
