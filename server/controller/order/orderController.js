@@ -10,7 +10,7 @@ const {
 const customerModel = require("../../model/customerModel");
 
 class orderController {
-  ////////////////////////////customer order/////////////////////////////////////
+  //////////////////////////// add and remove stock while cancel //////////////////
   reduce_stock_on_orderPlace = async (orderId) => {
     try {
       const placedOrder = await customerOrderModel.findById(orderId);
@@ -35,7 +35,7 @@ class orderController {
       console.error("Error processing stock update:", error);
     }
   };
-  add_stock_on_failed_payment = async (orderId) => {
+  add_stock_on_order_cancelled = async (orderId) => {
     try {
       const placedOrder = await customerOrderModel.findById(orderId);
       if (!placedOrder) {
@@ -59,7 +59,7 @@ class orderController {
       console.error("Error processing stock update:", error);
     }
   };
-
+  ////////////////////////////customer order/////////////////////////////////////
   paymentCheck = async (id) => {
     try {
       const order = await customerOrderModel.findById(id);
@@ -75,7 +75,7 @@ class orderController {
             delivery_status: "cancelled",
           }
         );
-        this.add_stock_on_failed_payment(id);
+        this.add_stock_on_order_cancelled(id);
       }
       return true;
     } catch (error) {
@@ -223,7 +223,7 @@ class orderController {
           error: "Failed to cancel the order",
         });
       }
-      this.add_stock_on_failed_payment(orderId);
+      this.add_stock_on_order_cancelled(orderId);
       // Successful response
       return responseReturn(res, 200, {
         message: "Order canceled successfully",
@@ -360,7 +360,9 @@ class orderController {
         { delivery_status: status },
         { new: true } // Returns the updated document
       );
-
+      if (status === "cancelled") {
+        this.add_stock_on_order_cancelled(orderId);
+      }
       // Successful response
       return responseReturn(res, 200, {
         message: "Order status changed successfully",
