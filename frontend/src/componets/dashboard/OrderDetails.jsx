@@ -159,26 +159,27 @@ const OrderDetails = () => {
         </div>
 
         {/* Action Buttons */}
-        {myOrder.delivery_status !== "cancelled" && (
-          <div className="mt-8 flex gap-6 justify-end">
-            {myOrder.payment_status !== "paid" && (
-              <button
-                className="px-6 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
-                onClick={() => redirect(myOrder)}
-              >
-                Make Payment
-              </button>
-            )}
-            {
-              <button
-                onClick={() => SetModalClose(false)}
-                className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out"
-              >
-                Cancel Order
-              </button>
-            }
-          </div>
-        )}
+        {myOrder.delivery_status !== "cancelled" &&
+          myOrder.delivery_status !== "delivered" && (
+            <div className="mt-8 flex gap-6 justify-end">
+              {myOrder.payment_status !== "paid" && (
+                <button
+                  className="px-6 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
+                  onClick={() => redirect(myOrder)}
+                >
+                  Make Payment
+                </button>
+              )}
+              {
+                <button
+                  onClick={() => SetModalClose(false)}
+                  className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out"
+                >
+                  Cancel Order
+                </button>
+              }
+            </div>
+          )}
         {/* Modal */}
         {!modalClose && (
           <div>

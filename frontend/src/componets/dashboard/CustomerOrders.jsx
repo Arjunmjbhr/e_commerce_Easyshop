@@ -72,7 +72,8 @@ const CustomerOrders = ({ recentOrders }) => {
                       </span>
                     </Link>
                     {order.payment_status !== "paid" &&
-                      order.delivery_status !== "cancelled" && (
+                      order.delivery_status !== "cancelled" &&
+                      order.delivery_status !== "delivered" && (
                         <span
                           onClick={() => redirect(order)}
                           className="cursor-pointer"
