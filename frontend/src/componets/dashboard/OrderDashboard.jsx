@@ -21,10 +21,10 @@ const OrderDashboard = () => {
           onChange={(e) => setState(e.target.value)}
         >
           <option value="all">--order status--</option>
-          <option value="placed">Placed</option>
           <option value="pending">Pending</option>
+          <option value="placed">Placed</option>
+          <option value="delivered">Delivered</option>
           <option value="cancelled">Cancelled</option>
-          <option value="warehouse">Warehouse</option>
         </select>
       </div>
       <div className="bg-white p-4 rounded-xl">

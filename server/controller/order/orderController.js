@@ -174,8 +174,14 @@ class orderController {
   };
   // End Method
   get_orders = async (req, res) => {
-    const { customerId, status } = req.params;
+    let { customerId, status } = req.params;
     try {
+      status =
+        status === "placed"
+          ? (status = {
+              $in: ["placed", "processing", "warehouse", "dispatched"],
+            })
+          : status;
       const queryString =
         status === "all"
           ? { customerId: new ObjectId(customerId) }
@@ -251,7 +257,7 @@ class orderController {
 
     try {
       // Build the match stage
-      let matchStage = {};
+      let matchStage = { delivery_status: { $ne: "pending" } };
       if (searchValue) {
         if (ObjectId.isValid(searchValue)) {
           matchStage = { orderId: new ObjectId(searchValue) };
@@ -389,7 +395,10 @@ class orderController {
 
     try {
       // Build the match stage
-      let matchStage = { sellerId: new ObjectId(sellerId) };
+      let matchStage = {
+        sellerId: new ObjectId(sellerId),
+        delivery_status: { $ne: "pending" },
+      };
       if (searchValue) {
         if (ObjectId.isValid(searchValue)) {
           matchStage = {

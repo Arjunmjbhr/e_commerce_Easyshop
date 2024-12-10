@@ -61,15 +61,17 @@ const SellerOrderDetails = () => {
       <div className="w-full p-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg text-white">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold tracking-wide">Order Details</h2>
-          {(order.delivery_status === "pending" ||
-            order.delivery_status === "processing") && (
+          {(order.delivery_status === "processing" ||
+            order.delivery_status === "placed") && (
             <div className="flex gap-3">
               <select
                 onChange={(e) => setStatus(e.target.value)}
                 value={status}
                 className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
               >
-                <option value="pending">Pending</option>
+                <option value="deliverdAtWarehouse">
+                  Deliverd at Warehouse
+                </option>
                 <option value="processing">Processing</option>
                 <option value="cancelled">Cancelled</option>
               </select>

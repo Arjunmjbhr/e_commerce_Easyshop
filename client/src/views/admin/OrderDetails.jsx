@@ -24,6 +24,12 @@ const OrderDetails = () => {
 
   // fuction for updatin the status
   const status_update = (orderId) => {
+    if (
+      order.delivery_status === "cancelled" ||
+      order.delivery_status === "delivered"
+    ) {
+      return toast.error("order completed! further action disabled");
+    }
     if (order.delivery_status !== status) {
       const data = {
         orderId,
@@ -60,10 +66,10 @@ const OrderDetails = () => {
               value={status}
               className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
             >
-              <option value="pending">Pending</option>
               <option value="processing">Processing</option>
               <option value="warehouse">Warehouse</option>
-              <option value="placed">Placed</option>
+              <option value="dispatched">Dispatched</option>
+              <option value="delivered">Delivered</option>
               <option value="cancelled">Cancelled</option>
             </select>
             <div
