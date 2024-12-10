@@ -167,11 +167,10 @@ class cartController {
   quantity_increment = async (req, res) => {
     const { cartId } = req.params;
     try {
-      // Update the quantity directly
       await cartModel.findByIdAndUpdate(
         cartId,
         { $inc: { quantity: 1 } }, // Increment quantity by 1
-        { new: true } // Return the updated document if needed
+        { new: true }
       );
       console.log("quantity");
       responseReturn(res, 200, { message: "Quantity Updated" });
@@ -183,11 +182,10 @@ class cartController {
   quantity_decrement = async (req, res) => {
     const { cartId } = req.params;
     try {
-      // Update the quantity directly
       await cartModel.findByIdAndUpdate(
         cartId,
-        { $inc: { quantity: -1 } }, // Increment quantity by 1
-        { new: true } // Return the updated document if needed
+        { $inc: { quantity: -1 } },
+        { new: true }
       );
       console.log("quantity");
       responseReturn(res, 200, { message: "Quantity Updated" });

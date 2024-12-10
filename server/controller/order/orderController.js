@@ -1,4 +1,5 @@
 const moment = require("moment");
+const productModel = require("../../model/productModel");
 const adminOrderModel = require("../../model/adminOrderModel");
 const customerOrderModel = require("../../model/customerOrderModel");
 const cartModel = require("../../model/cartModel");
@@ -10,6 +11,54 @@ const customerModel = require("../../model/customerModel");
 
 class orderController {
   ////////////////////////////customer order/////////////////////////////////////
+  reduce_stock_on_orderPlace = async (orderId) => {
+    try {
+      const placedOrder = await customerOrderModel.findById(orderId);
+      if (!placedOrder) {
+        console.error("No order found with the given ID.");
+        return;
+      }
+
+      const productList = placedOrder.products; // Assuming products is an array of { _id, quantity }
+      for (const product of productList) {
+        const productId = product._id;
+        const placedQuantity = product.quantity;
+
+        // Decrement stock
+        await productModel.findByIdAndUpdate(productId, {
+          $inc: { stock: -placedQuantity },
+        });
+      }
+
+      console.log("Stock updated successfully!");
+    } catch (error) {
+      console.error("Error processing stock update:", error);
+    }
+  };
+  add_stock_on_failed_payment = async (orderId) => {
+    try {
+      const placedOrder = await customerOrderModel.findById(orderId);
+      if (!placedOrder) {
+        console.error("No order found with the given ID.");
+        return;
+      }
+
+      const productList = placedOrder.products; // Assuming products is an array of { _id, quantity }
+      for (const product of productList) {
+        const productId = product._id;
+        const placedQuantity = product.quantity;
+
+        // Decrement stock
+        await productModel.findByIdAndUpdate(productId, {
+          $inc: { stock: placedQuantity },
+        });
+      }
+
+      console.log("Stock updated successfully!");
+    } catch (error) {
+      console.error("Error processing stock update:", error);
+    }
+  };
 
   paymentCheck = async (id) => {
     try {
@@ -26,6 +75,7 @@ class orderController {
             delivery_status: "cancelled",
           }
         );
+        this.add_stock_on_failed_payment(id);
       }
       return true;
     } catch (error) {
@@ -34,7 +84,7 @@ class orderController {
   };
   // End method
   place_order = async (req, res) => {
-    console.log("product in the controller");
+    console.log("product in the place order controller");
     const { price, products, shipping_fee, shippingInfo, userId } = req.body;
 
     let adminOrderData = [];
@@ -104,9 +154,12 @@ class orderController {
       for (let k = 0; k < cartId.length; k++) {
         await cartModel.findByIdAndDelete(cartId[k]);
       }
-      // setTimeout(() => {
-      //   this.paymentCheck(order.id);
-      // }, 15000);
+      // Reduce the quantity in the stock
+      this.reduce_stock_on_orderPlace(order.id);
+
+      setTimeout(() => {
+        this.paymentCheck(order.id);
+      }, 900000);
 
       return responseReturn(res, 200, {
         message: "Order placed successfully",
@@ -170,7 +223,7 @@ class orderController {
           error: "Failed to cancel the order",
         });
       }
-
+      this.add_stock_on_failed_payment(orderId);
       // Successful response
       return responseReturn(res, 200, {
         message: "Order canceled successfully",
