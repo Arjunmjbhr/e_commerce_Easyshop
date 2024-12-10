@@ -141,7 +141,8 @@ const Details = () => {
           heading="Product Details"
           breadcrumbs={{
             Home: "/",
-            "Product Deatils": "",
+            Category: `/products?category=${product.category}`,
+            product: "",
           }}
         />
       </section>
@@ -153,7 +154,9 @@ const Details = () => {
             <span>
               <FaAngleRight />
             </span>
-            <Link to="/">{product.category}</Link>
+            <Link to={`/products?category=${product.category}`}>
+              {product.category}
+            </Link>
             <span>
               <FaAngleRight />
             </span>
