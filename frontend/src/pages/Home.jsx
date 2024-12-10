@@ -19,7 +19,7 @@ const Home = () => {
   } = useSelector((store) => store.home);
   useEffect(() => {
     dispatch(get_products());
-  }, []);
+  }, [dispatch]);
   return (
     <div className="">
       <Header />

@@ -196,7 +196,6 @@ class homeController {
       isDeleted: false,
       ...(category && { category }),
       ...(rating && { rating: { $gte: ratingInt } }),
-      ...(searchValue && { $text: { $search: searchValue } }),
     };
 
     const sortFilter = {};
@@ -215,6 +214,11 @@ class homeController {
     try {
       // Aggregation 1: Total count of matching products
       const totalCountResult = await productModel.aggregate([
+        // First stage: $text search, if searchValue exists
+        ...(searchValue
+          ? [{ $match: { $text: { $search: searchValue } } }]
+          : []),
+        // Add discountedPrice field
         {
           $addFields: {
             discountedPrice: {
@@ -225,12 +229,14 @@ class homeController {
             },
           },
         },
+        // Filter by other criteria
         {
           $match: {
             ...matchFilter,
             discountedPrice: { $gte: lowPriceInt, $lte: highPriceInt },
           },
         },
+        // Count total documents
         { $count: "totalCount" },
       ]);
 
@@ -238,6 +244,11 @@ class homeController {
 
       // Aggregation 2: Fetch paginated products
       const totalProducts = await productModel.aggregate([
+        // First stage: $text search, if searchValue exists
+        ...(searchValue
+          ? [{ $match: { $text: { $search: searchValue } } }]
+          : []),
+        // Add discountedPrice field
         {
           $addFields: {
             discountedPrice: {
@@ -248,15 +259,18 @@ class homeController {
             },
           },
         },
+        // Filter by other criteria
         {
           $match: {
             ...matchFilter,
             discountedPrice: { $gte: lowPriceInt, $lte: highPriceInt },
           },
         },
-        { $sort: sortFilter }, // Sort
-        { $skip: skip }, // Skip for pagination
-        { $limit: perPage }, // Limit for pagination
+        // Sorting
+        { $sort: sortFilter },
+        // Pagination
+        { $skip: skip },
+        { $limit: perPage },
       ]);
 
       // Return response

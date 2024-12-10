@@ -97,15 +97,23 @@ const FeaturedProducts = ({ products }) => {
                 </div>
               </div>
               {/* details */}
-              <div className="px-3 text-black font-semibold m-3 flex flex-col gap-2">
+              <div className=" text-black font-semibold flex  flex-col gap-2 px-3 my-1 overflow-x-hidden">
                 <h2 className="text-sm">{product.name}</h2>
-                <span className="font-bold">
-                  ₹
-                  {product.discount
-                    ? product.price -
-                      Math.floor((product.price * product.discount) / 100)
-                    : product.price}
-                </span>
+                <div className="flex gap-3">
+                  <span className="line-through text-red-600">
+                    ₹ {product.price}
+                  </span>
+                  <span className="text-green-600">
+                    ₹
+                    {product.discount
+                      ? product.price -
+                        Math.floor((product.price * product.discount) / 100)
+                      : product.price}
+                  </span>
+                </div>
+                <div className="text-slate-600 text-[12px]">
+                  stock left: {product.stock ? product.stock : "out of stock"}
+                </div>
                 <div className="flex">
                   <Ratings ratings={product.rating} />
                 </div>

@@ -54,6 +54,7 @@ const SearchProducts = () => {
       searchValue,
     };
     dispatch(query_proudcts(query));
+    console.log(query);
   }, [
     state.values,
     category,
