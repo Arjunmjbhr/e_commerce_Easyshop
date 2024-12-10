@@ -36,29 +36,31 @@ const HeaderSearchAndCategory = ({
             </div>
             {/*  category list  */}
             <div
-              className={`bg-green-300 absolute w-full  md-lg:relative transition-all duration-500 overflow-hidden z-[9999]  ${
+              className={` absolute w-full shadow-xl bg-slate-400 text-center  md-lg:relative transition-all duration-500 overflow-hidden z-[9999]  ${
                 showCategory ? "h-auto rounded-b-md" : "h-0"
               }`}
             >
-              <ul className="flex flex-col justify-center items-center gap-4 mt-3 mx-3  ">
+              <div className="flex flex-col justify-center items-center gap-2 py-2  ">
                 {categories.map((item) => {
                   return (
-                    <li
+                    <Link
                       key={item._id}
-                      className="font-semibold hover:bg-white w-full py-2 flex justify-start cursor-pointer"
+                      className="w-full px-4  "
+                      to={`/products?category=${item.categoryName}`}
                     >
-                      <img
-                        src={item.image}
-                        className="w-[30px] h-[30px] rounded-full overflow-hidden mx-5"
-                        alt=""
-                      />
-                      <Link to={`/products?category=${item.categoryName}`}>
+                      <div className="font-semibold rounded-lg bg-white py-2 w-full flex justify-start cursor-pointer">
+                        <img
+                          src={item.image}
+                          className="w-[30px] h-[30px]  overflow-hidden mx-5"
+                          alt=""
+                        />
+
                         {item.categoryName}
-                      </Link>
-                    </li>
+                      </div>
+                    </Link>
                   );
                 })}
-              </ul>
+              </div>
             </div>
           </div>
         </div>
