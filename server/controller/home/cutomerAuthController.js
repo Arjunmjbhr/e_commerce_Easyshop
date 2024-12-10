@@ -182,6 +182,7 @@ class cutomerAuthController {
 
       // Set cookie with the token
       res.cookie("customerToken", token, {
+        sameSite: "lax",
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week
       });
 
@@ -367,6 +368,7 @@ class cutomerAuthController {
 
       // Set cookie with the token
       res.cookie("customerToken", token, {
+        sameSite: "lax",
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week expiration
       });
 

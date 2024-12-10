@@ -1,23 +1,35 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../../controller/order/orderController");
+const checkUserStatus = require("../../middleweres/authCustomerMiddleware");
 
 ////////////////////// customer////////////////////
 
-router.post("/home/order/place-order", orderController.place_order);
+router.post(
+  "/home/order/place-order",
+  checkUserStatus,
+  orderController.place_order
+);
 router.get(
   "/home/customer/get-orders/:customerId/:status",
+  checkUserStatus,
   orderController.get_orders
 );
 router.get(
   "/home/customer/get-order-details/:orderId",
+  checkUserStatus,
   orderController.get_order_details
 );
 router.put(
   "/home/customer/cancel-order/:orderId",
+  checkUserStatus,
   orderController.cancel_order
 );
-router.put("/home/customer/cod-payment/:orderId", orderController.cod_payment);
+router.put(
+  "/home/customer/cod-payment/:orderId",
+  checkUserStatus,
+  orderController.cod_payment
+);
 
 //////////////////// admin/////////////////////////
 

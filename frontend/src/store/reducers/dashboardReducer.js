@@ -6,7 +6,8 @@ export const get_dashboard_index_data = createAsyncThunk(
     try {
       console.log(userId);
       const { data } = await api.get(
-        `/home/customer/get-dashboard-data/${userId}`
+        `/home/customer/get-dashboard-data/${userId}`,
+        { withCredentials: true }
       );
       console.log(data);
       return fulfillWithValue(data);

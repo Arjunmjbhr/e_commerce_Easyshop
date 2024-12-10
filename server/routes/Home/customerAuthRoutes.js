@@ -1,6 +1,7 @@
 const customerAuthController = require("../../controller/home/cutomerAuthController");
 const express = require("express");
 const router = express();
+const checkUserStatus = require("../../middleweres/authCustomerMiddleware");
 
 router.post(
   "/customer/customer-register",
@@ -14,18 +15,22 @@ router.post("/customer/verify-otp", customerAuthController.verify_otp);
 // customer profile
 router.put(
   "/customer/update-user-profile/:userId",
+  checkUserStatus,
   customerAuthController.update_user_profile
 );
 router.get(
   "/customer/get-user-profile/:userId",
+  checkUserStatus,
   customerAuthController.get_user_profile
 );
 router.post(
   "/customer/forgot-password",
+  checkUserStatus,
   customerAuthController.forgot_password
 );
 router.post(
   "/customer/reset-password/:userId/:token",
+  checkUserStatus,
   customerAuthController.reset_password
 );
 router.get("/customer/logout", customerAuthController.customer_logout);
