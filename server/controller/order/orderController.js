@@ -35,6 +35,7 @@ class orderController {
       console.error("Error processing stock update:", error);
     }
   };
+  // End Method
   add_stock_on_order_cancelled = async (orderId) => {
     try {
       const placedOrder = await customerOrderModel.findById(orderId);
@@ -59,6 +60,7 @@ class orderController {
       console.error("Error processing stock update:", error);
     }
   };
+  // End Method
   ////////////////////////////customer order/////////////////////////////////////
   paymentCheck = async (id) => {
     try {
@@ -244,6 +246,51 @@ class orderController {
       });
     }
   };
+  // End Method
+
+  cod_payment = async (req, res) => {
+    console.log("Processing COD payment...");
+    console.log(req.params);
+
+    const { orderId } = req.params;
+
+    try {
+      if (!ObjectId.isValid(orderId)) {
+        return responseReturn(res, 400, { message: "Invalid order ID" });
+      }
+
+      // Update customer order
+      const order = await customerOrderModel.findByIdAndUpdate(
+        orderId,
+        { delivery_status: "placed", payment_status: "cod" },
+        { new: true }
+      );
+
+      if (!order) {
+        return responseReturn(res, 404, {
+          message: "Customer order not found",
+        });
+      }
+
+      // Update admin orders
+      const adminOrder = await adminOrderModel.updateMany(
+        { orderId: new ObjectId(orderId) },
+        { delivery_status: "placed", payment_status: "cod" },
+        { new: true }
+      );
+
+      console.log(`Order ${orderId} updated for COD successfully.`);
+      return responseReturn(res, 200, {
+        message: "Order placed with cash on delivery",
+      });
+    } catch (error) {
+      console.error("Error in COD payment:", error.message);
+      return responseReturn(res, 500, {
+        error: "Error while placing the order",
+      });
+    }
+  };
+  // End Method
 
   ////////////////////////////////// Admin order///////////////////////////////////
 
@@ -380,6 +427,7 @@ class orderController {
       });
     }
   };
+  // End Method
 
   ////////////////////////////////// seller order///////////////////////////////////
   get_seller_order = async (req, res) => {
@@ -497,6 +545,7 @@ class orderController {
       });
     }
   };
+  // End Method
 }
 
 module.exports = new orderController();

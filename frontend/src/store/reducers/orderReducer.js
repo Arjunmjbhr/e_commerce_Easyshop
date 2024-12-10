@@ -82,6 +82,18 @@ export const cancel_order = createAsyncThunk(
   }
 ); // End Method
 
+export const cod_payment = createAsyncThunk(
+  "order/cod_payment",
+  async (orderId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.put(`/home/customer/cod-payment/${orderId}`);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+); // End Method
+
 const orderReducer = createSlice({
   name: "order",
   initialState: {
@@ -108,7 +120,13 @@ const orderReducer = createSlice({
         state.successMessage = action.payload.message;
       })
       .addCase(cancel_order.rejected, (state, action) => {
-        state.successMessage = action.payload.error;
+        state.errorMessage = action.payload.error;
+      })
+      .addCase(cod_payment.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(cod_payment.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
       });
   },
 });

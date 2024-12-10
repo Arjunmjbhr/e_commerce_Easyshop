@@ -17,6 +17,7 @@ router.put(
   "/home/customer/cancel-order/:orderId",
   orderController.cancel_order
 );
+router.put("/home/customer/cod-payment/:orderId", orderController.cod_payment);
 
 //////////////////// admin/////////////////////////
 
