@@ -204,6 +204,8 @@ class homeController {
       sortFilter.discountedPrice = 1;
     } else if (sortPrice === "high-to-low") {
       sortFilter.discountedPrice = -1;
+    } else if (sortPrice === "zZ-aA") {
+      sortFilter.createdAt = 1;
     } else {
       sortFilter.createdAt = -1;
     }

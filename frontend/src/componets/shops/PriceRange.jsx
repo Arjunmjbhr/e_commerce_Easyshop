@@ -29,7 +29,7 @@ const PriceRange = ({ state, setState, priceRange }) => {
           )}
         />
         <span className="text-slate-800 font-bold text-lg">
-          ₹{Math.floor(state.values[0])} - ₹{Math.floor(state.values[1])}
+          ₹{Math.floor(state.values[0])} - ₹{Math.ceil(state.values[1])}
         </span>
       </div>
     </div>

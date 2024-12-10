@@ -1,12 +1,44 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CiHeart } from "react-icons/ci";
 import { IoCartOutline } from "react-icons/io5";
 import { IoEyeOutline } from "react-icons/io5";
 import Ratings from "../Ratings";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { add_to_cart, messageClear } from "../../store/reducers/cartReducer";
+import toast from "react-hot-toast";
 
 // this component is for the product to show in the shops page in list and grid feature
 const ShopProducts = ({ styles, products }) => {
+  const { userInfo } = useSelector((store) => store.authUser);
+  const { errorMessage, successMessage } = useSelector((store) => store.cart);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // add to cart
+  const add_cart = (productId) => {
+    if (userInfo) {
+      const details = {
+        userId: userInfo.id,
+        quantity: 1,
+        productId,
+      };
+      console.log(details);
+      dispatch(add_to_cart(details));
+    } else {
+      navigate("/login");
+    }
+  };
+  // toaster message for success and failure
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch]);
   return (
     <div
       className={` overflow-x-hidden grid gap-3 ${
@@ -46,7 +78,12 @@ const ShopProducts = ({ styles, products }) => {
                   <Link className="h-[38px] w-[38px] bg-slate-300 rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl">
                     <CiHeart />
                   </Link>
-                  <Link className="h-[38px] w-[38px] bg-slate-300 rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl">
+                  <Link
+                    onClick={() => {
+                      add_cart(prod._id);
+                    }}
+                    className="h-[38px] w-[38px] bg-slate-300 rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                  >
                     <IoCartOutline />
                   </Link>
                   <Link

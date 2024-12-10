@@ -38,7 +38,7 @@ const FeaturedProducts = ({ products }) => {
       toast.error(errorMessage);
       dispatch(messageClear());
     }
-  }, [successMessage, errorMessage]);
+  }, [successMessage, errorMessage, dispatch]);
 
   return (
     <div className="w-[85%] mx-auto">

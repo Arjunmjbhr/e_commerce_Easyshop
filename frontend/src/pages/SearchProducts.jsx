@@ -36,7 +36,7 @@ const SearchProducts = () => {
   // useEffect
   useEffect(() => {
     dispatch(price_range_product());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setState({
@@ -45,8 +45,8 @@ const SearchProducts = () => {
   }, [priceRange]);
   useEffect(() => {
     const query = {
-      low: state.values[0],
-      high: state.values[1],
+      low: state.values[0] - 1,
+      high: state.values[1] + 1,
       category,
       rating,
       sortPrice,
@@ -55,13 +55,13 @@ const SearchProducts = () => {
     };
     dispatch(query_proudcts(query));
   }, [
-    state.values[0],
-    state.values[1],
+    state.values,
     category,
     rating,
     sortPrice,
     pageNumber,
     searchValue,
+    dispatch,
   ]);
 
   return (
@@ -135,6 +135,8 @@ const SearchProducts = () => {
                         <option>--Sort By--</option>
                         <option value="high-to-low">Higher to Lower</option>
                         <option value="low-to-high">Lower to Higher</option>
+                        <option value="zZ-aA"> New Arrival zZ-aA</option>
+                        <option value="aA-Zz"> New Arrival aA-Zz</option>
                       </select>
                     </div>
                     {/* grid view */}
