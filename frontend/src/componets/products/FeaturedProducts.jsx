@@ -22,9 +22,9 @@ const FeaturedProducts = ({ products }) => {
         quantity: 1,
         productId,
       };
-      console.log(details);
       dispatch(add_to_cart(details));
     } else {
+      toast.error("Please login to add product to cart");
       navigate("/login");
     }
   };

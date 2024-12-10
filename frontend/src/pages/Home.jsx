@@ -10,13 +10,9 @@ import { get_products } from "../store/reducers/homeReducer";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const {
-    categories,
-    products,
-    latest_product,
-    topRated_product,
-    discounted_product,
-  } = useSelector((store) => store.home);
+  const { products, latest_product, topRated_product, discounted_product } =
+    useSelector((store) => store.home);
+
   useEffect(() => {
     dispatch(get_products());
   }, [dispatch]);
