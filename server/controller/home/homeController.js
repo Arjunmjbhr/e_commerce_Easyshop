@@ -134,13 +134,26 @@ class homeController {
           $match: { isDeleted: { $ne: true } }, // Exclude products with isDeleted: true
         },
         {
+          // Step 1: Calculate the discounted price for each product
+          $addFields: {
+            discountedPrice: {
+              $subtract: [
+                "$price",
+                { $multiply: ["$price", { $divide: ["$discount", 100] }] }, // price - (price * discount / 100)
+              ],
+            },
+          },
+        },
+        {
+          // Step 2: Group to find the min and max of the discounted price
           $group: {
             _id: null,
-            low: { $min: "$price" },
-            high: { $max: "$price" },
+            low: { $min: "$discountedPrice" }, // Lowest discounted price
+            high: { $max: "$discountedPrice" }, // Highest discounted price
           },
         },
       ]);
+
       console.log(result);
       // Update priceRange if products are found
       if (result) {
@@ -178,9 +191,9 @@ class homeController {
     const ratingInt = parseInt(rating, 10) || 0;
     const pageNumberInt = parseInt(pageNumber, 10) || 1;
     const perPage = 9;
+
     const matchFilter = {
       isDeleted: false,
-      price: { $gte: lowPriceInt, $lte: highPriceInt },
       ...(category && { category }),
       ...(rating && { rating: { $gte: ratingInt } }),
       ...(searchValue && { $text: { $search: searchValue } }),
@@ -188,9 +201,9 @@ class homeController {
 
     const sortFilter = {};
     if (sortPrice === "low-to-high") {
-      sortFilter.price = 1;
+      sortFilter.discountedPrice = 1;
     } else if (sortPrice === "high-to-low") {
-      sortFilter.price = -1;
+      sortFilter.discountedPrice = -1;
     } else {
       sortFilter.createdAt = -1;
     }
@@ -200,7 +213,22 @@ class homeController {
     try {
       // Aggregation 1: Total count of matching products
       const totalCountResult = await productModel.aggregate([
-        { $match: matchFilter },
+        {
+          $addFields: {
+            discountedPrice: {
+              $subtract: [
+                "$price",
+                { $multiply: ["$price", { $divide: ["$discount", 100] }] },
+              ],
+            },
+          },
+        },
+        {
+          $match: {
+            ...matchFilter,
+            discountedPrice: { $gte: lowPriceInt, $lte: highPriceInt },
+          },
+        },
         { $count: "totalCount" },
       ]);
 
@@ -208,11 +236,27 @@ class homeController {
 
       // Aggregation 2: Fetch paginated products
       const totalProducts = await productModel.aggregate([
-        { $match: matchFilter }, // Apply filters
+        {
+          $addFields: {
+            discountedPrice: {
+              $subtract: [
+                "$price",
+                { $multiply: ["$price", { $divide: ["$discount", 100] }] },
+              ],
+            },
+          },
+        },
+        {
+          $match: {
+            ...matchFilter,
+            discountedPrice: { $gte: lowPriceInt, $lte: highPriceInt },
+          },
+        },
         { $sort: sortFilter }, // Sort
         { $skip: skip }, // Skip for pagination
         { $limit: perPage }, // Limit for pagination
       ]);
+
       // Return response
       return responseReturn(res, 200, { totalCount, totalProducts, perPage });
     } catch (error) {
