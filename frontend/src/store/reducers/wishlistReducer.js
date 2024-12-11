@@ -28,6 +28,19 @@ export const get_wishlist_products = createAsyncThunk(
     }
   }
 );
+export const delete_wishlist_products = createAsyncThunk(
+  "wishlist/delete_wishlist_product",
+  async (wishlistId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.delete(
+        `/home/product/delete-wishlist-product/${wishlistId}`
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const cartReducer = createSlice({
   name: "wishlist",
@@ -61,6 +74,14 @@ const cartReducer = createSlice({
       .addCase(get_wishlist_products.fulfilled, (state, action) => {
         state.wishlist_count = action.payload.wishlist_count;
         state.wishlist = action.payload.wishlist;
+      })
+      .addCase(delete_wishlist_products.rejected, (state, action) => {
+        state.WishlistErrorMessage = action.payload.error;
+        state.wishlist_count = state.wishlist_count - 1;
+      })
+      .addCase(delete_wishlist_products.fulfilled, (state, action) => {
+        state.wishlist_count = state.wishlist_count + 1;
+        state.wishlistSuccessMessage = action.payload.message;
       });
   },
 });

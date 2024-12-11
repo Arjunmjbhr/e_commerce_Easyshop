@@ -7,4 +7,14 @@ router.post(
   authCustomerMiddlewere,
   wishlistController.add_to_wishlist
 );
+router.get(
+  "/home/product/get-wishlist-product/:userId",
+  authCustomerMiddlewere,
+  wishlistController.get_wishlist_product
+);
+router.delete(
+  "/home/product/delete-wishlist-product/:wishlistId",
+  authCustomerMiddlewere,
+  wishlistController.delete_wishlist_product
+);
 module.exports = router;
