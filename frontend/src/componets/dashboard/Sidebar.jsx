@@ -54,7 +54,7 @@ const Sidebar = ({ filterShow, logout }) => {
       >
         <div className="py-3 text-slate-600 px-6 flex flex-col gap-4 ">
           {navigation.map((nav) => (
-            <Link to={nav.path} className="block">
+            <Link to={nav.path} key={nav.name} className="block">
               <div
                 className={`${
                   normalizedPath === nav.path ? "bg-green-300" : ""

@@ -52,7 +52,7 @@ const cartReducer = createSlice({
   },
   reducers: {
     messageClearWishlist: (state, _) => {
-      state.WishlistErrorMessage = "";
+      state.wishlistErrorMessage = "";
       state.wishlistSuccessMessage = "";
     },
     reset_wishlist_count: (state, _) => {
@@ -62,14 +62,14 @@ const cartReducer = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(add_to_wishlist.rejected, (state, action) => {
-        state.WishlistErrorMessage = action.payload.error;
+        state.wishlistErrorMessage = action.payload.error;
       })
       .addCase(add_to_wishlist.fulfilled, (state, action) => {
         state.wishlist_count = state.wishlist_count + 1;
         state.wishlistSuccessMessage = action.payload.message;
       })
       .addCase(get_wishlist_products.rejected, (state, action) => {
-        state.WishlistErrorMessage = action.payload.error;
+        state.wishlistErrorMessage = action.payload.error;
       })
       .addCase(get_wishlist_products.fulfilled, (state, action) => {
         state.wishlist_count = action.payload.wishlist_count;

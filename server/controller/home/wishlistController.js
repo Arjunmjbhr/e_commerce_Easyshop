@@ -56,11 +56,29 @@ class wishlistController {
   };
   // End Method
   delete_wishlist_product = async (req, res) => {
-    console.log("in hte wishlist controller");
-    console.log(req.params);
+    console.log("In the wishlist controller");
+
     const { wishlistId } = req.params;
+    if (!wishlistId) {
+      return responseReturn(res, 400, { error: "Wishlist ID is required" });
+    }
+
     try {
-    } catch (error) {}
+      const deletedWishlist = await wishlistModel.findByIdAndDelete(wishlistId);
+
+      if (!deletedWishlist) {
+        return responseReturn(res, 404, { error: "Wishlist item not found" });
+      }
+
+      console.log(`Product removed from wishlist `);
+      return responseReturn(res, 200, { message: "Removed from the wishlist" });
+    } catch (error) {
+      console.error(
+        "Error while deleting product from the wishlist:",
+        error.message
+      );
+      return responseReturn(res, 500, { error: "Internal server error" });
+    }
   };
 }
 

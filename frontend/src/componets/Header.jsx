@@ -15,10 +15,11 @@ const Header = () => {
   const [showCategory, setShowCategory] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [category, setCategory] = useState("");
-  const wishlist_count = 5;
   const { userInfo } = useSelector((store) => store.authUser);
   const { cart_product_count } = useSelector((store) => store.cart);
   const { categories } = useSelector((store) => store.home);
+  const { wishlist_count } = useSelector((store) => store.wishlist);
+
   // search onclick handle
   const search = () => {
     navigate(
@@ -26,9 +27,16 @@ const Header = () => {
     );
   };
   // cart icon on click handle
-  const redirect_card_page = () => {
+  const redirect_cart_page = () => {
     if (userInfo) {
       navigate("/cart");
+    } else {
+      navigate("/login");
+    }
+  };
+  const redirect_wishlist_page = () => {
+    if (userInfo) {
+      navigate("/dashboard/wishlist");
     } else {
       navigate("/login");
     }
@@ -104,16 +112,21 @@ const Header = () => {
             {/* cart & wishlist */}
             <div className="md-lg:hidden flex justify-center items-center gap-6 ">
               {/* wishlist */}
-              <div className="relative">
+              <div
+                onClick={() => redirect_wishlist_page()}
+                className="relative"
+              >
                 <span className="text-green-600 w-[30px] cursor-pointer h-[30px] rounded-full bg-slate-200 flex justify-center items-center text-lg ">
                   <FaHeart />
                 </span>
-                <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
-                  {wishlist_count}
-                </div>
+                {wishlist_count !== 0 && (
+                  <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
+                    {wishlist_count}
+                  </div>
+                )}
               </div>
               {/* cart*/}
-              <div onClick={redirect_card_page} className="relative">
+              <div onClick={redirect_cart_page} className="relative">
                 <span className="text-green-600 w-[30px] h-[30px] cursor-pointer rounded-full bg-slate-200 flex justify-center items-center text-xl ">
                   <MdShoppingCart />
                 </span>

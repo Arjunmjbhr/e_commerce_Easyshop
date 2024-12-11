@@ -51,7 +51,7 @@ const WishlistProductCard = ({ product }) => {
       <div className="absolute w-full flex justify-center items-center gap-2 -bottom-10 group-hover:bottom-4 transition-all opacity-0 group-hover:opacity-100">
         <div
           onClick={() => delete_wishlist(wishlistId)}
-          className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+          className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-red-500 hover:text-white text-xl"
         >
           <CiHeart />
         </div>

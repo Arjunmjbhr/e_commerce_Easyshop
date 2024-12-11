@@ -35,7 +35,6 @@ const FeaturedProducts = ({ products }) => {
       navigate("/login");
     }
   };
-  // toaster message for success and failure
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -46,14 +45,19 @@ const FeaturedProducts = ({ products }) => {
       dispatch(messageClear());
     }
   }, [successMessage, errorMessage, dispatch]);
-  // add to wishlist
 
+  // add to wishlist
   const add_wishlist = (product) => {
-    const data = {
-      userId: userInfo.id,
-      productId: product._id,
-    };
-    dispatch(add_to_wishlist(data));
+    if (userInfo) {
+      const data = {
+        userId: userInfo.id,
+        productId: product._id,
+      };
+      dispatch(add_to_wishlist(data));
+    } else {
+      toast.error("Please login to add product to wishlist");
+      navigate("/login");
+    }
   };
   useEffect(() => {
     if (wishlistSuccessMessage) {
@@ -65,6 +69,7 @@ const FeaturedProducts = ({ products }) => {
       dispatch(messageClearWishlist());
     }
   }, [WishlistErrorMessage, wishlistSuccessMessage, dispatch]);
+
   return (
     <div className="w-[85%] mx-auto">
       <div className="w-full">
@@ -104,19 +109,19 @@ const FeaturedProducts = ({ products }) => {
                     onClick={() => {
                       add_wishlist(product);
                     }}
-                    className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                    className="h-[38px] w-[38px] cursor-pointer bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
                   >
                     <CiHeart />
                   </div>
                   {/* cart */}
-                  <Link
+                  <div
                     onClick={() => {
                       add_cart(product._id);
                     }}
-                    className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                    className="h-[38px] w-[38px] cursor-pointer bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
                   >
                     <IoCartOutline />
-                  </Link>
+                  </div>
                   {/* view details */}
                   <Link
                     to={`/product/details/${product.slug}`}
