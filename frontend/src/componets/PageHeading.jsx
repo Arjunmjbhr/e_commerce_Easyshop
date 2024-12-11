@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaAngleRight } from "react-icons/fa";
+
 const PageHeading = ({ heading, breadcrumbs }) => {
   return (
     <div>

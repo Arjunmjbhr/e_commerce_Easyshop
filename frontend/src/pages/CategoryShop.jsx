@@ -23,15 +23,8 @@ const CategoryShop = () => {
   const [styles, setStyles] = useState("grid");
   const [pageNumber, setPageNumber] = useState(1);
   const dispatch = useDispatch();
-  const {
-    categories,
-    products,
-    latest_product,
-    priceRange,
-    totalProducts,
-    totalCount,
-    perPage,
-  } = useSelector((store) => store.home);
+  const { latest_product, priceRange, totalProducts, totalCount, perPage } =
+    useSelector((store) => store.home);
   const [state, setState] = useState({
     values: priceRange ? [priceRange.low, priceRange.high] : [0, 100],
   });
@@ -43,9 +36,8 @@ const CategoryShop = () => {
   // useEffect
   useEffect(() => {
     dispatch(price_range_product());
-
     dispatch(get_products());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setState({
@@ -54,22 +46,15 @@ const CategoryShop = () => {
   }, [priceRange]);
   useEffect(() => {
     const query = {
-      low: state.values[0],
-      high: state.values[1],
+      low: state.values[0] - 1,
+      high: state.values[1] + 1,
       category,
       rating,
       sortPrice,
       pageNumber,
     };
     dispatch(query_proudcts(query));
-  }, [
-    state.values[0],
-    state.values[1],
-    category,
-    rating,
-    sortPrice,
-    pageNumber,
-  ]);
+  }, [state.values, category, rating, sortPrice, pageNumber, dispatch]);
 
   return (
     <div className=" ">
@@ -142,6 +127,8 @@ const CategoryShop = () => {
                         <option>--Sort By--</option>
                         <option value="high-to-low">Higher to Lower</option>
                         <option value="low-to-high">Lower to Higher</option>
+                        <option value="zZ-aA"> New Arrival zZ-aA</option>
+                        <option value="aA-Zz"> New Arrival aA-Zz</option>
                       </select>
                     </div>
                     {/* grid view */}
