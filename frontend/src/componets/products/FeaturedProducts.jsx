@@ -5,7 +5,11 @@ import { IoEyeOutline } from "react-icons/io5";
 import Ratings from "../Ratings";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { add_to_cart, messageClear } from "../../store/reducers/cartReducer";
+import {
+  add_to_cart,
+  messageClear,
+  add_to_wishlist,
+} from "../../store/reducers/cartReducer";
 import toast from "react-hot-toast";
 
 const FeaturedProducts = ({ products }) => {
@@ -39,7 +43,22 @@ const FeaturedProducts = ({ products }) => {
       dispatch(messageClear());
     }
   }, [successMessage, errorMessage, dispatch]);
+  // add to wishlist
 
+  const add_wishlist = (product) => {
+    const data = {
+      userId: userInfo.id,
+      productId: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      discount: product.discout,
+      rating: product.rating,
+      slug: product.slug,
+    };
+    console.log(data);
+    dispatch(add_to_wishlist(data));
+  };
   return (
     <div className="w-[85%] mx-auto">
       <div className="w-full">
@@ -75,9 +94,14 @@ const FeaturedProducts = ({ products }) => {
                 {/* Hover Action Icons view cart wishlist */}
                 <div className="absolute w-full flex justify-center items-center gap-2 -bottom-10 group-hover:bottom-4 transition-all opacity-0 group-hover:opacity-100">
                   {/* wishlist */}
-                  <Link className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl">
+                  <div
+                    onClick={() => {
+                      add_wishlist(product);
+                    }}
+                    className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                  >
                     <CiHeart />
-                  </Link>
+                  </div>
                   {/* cart */}
                   <Link
                     onClick={() => {

@@ -20,12 +20,15 @@ import OrderDashboard from "./componets/dashboard/OrderDashboard";
 import OrderDetails from "./componets/dashboard/OrderDetails";
 import UserProfile from "./pages/UserProfile";
 import ResetPassword from "./componets/login_register/ResetPassword";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
+  // for category details for header
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(get_categories());
-  }, []);
+  }, [dispatch]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -44,6 +47,7 @@ function App() {
           path="/customer/reset-password/:userId/:token"
           element={<ResetPassword />}
         />
+        {/* protected routes for the sing in customers */}
 
         <Route path="/dashboard" element={<ProtectUser />}>
           <Route path="" element={<Dashboard />}>
@@ -51,6 +55,7 @@ function App() {
             <Route path="order/details/:orderId" element={<OrderDetails />} />
             <Route path="my-orders" element={<OrderDashboard />} />
             <Route path="user-profile" element={<UserProfile />} />
+            <Route path="wishlist" element={<Wishlist />} />
           </Route>
         </Route>
       </Routes>

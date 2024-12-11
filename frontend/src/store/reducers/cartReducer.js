@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/api";
 
+// cart
+
 export const add_to_cart = createAsyncThunk(
-  "card/add_to_card",
+  "cart/add_to_card",
   async (info, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.post("/home/product/add-to-cart", info);
@@ -72,6 +74,21 @@ export const quantity_decrement = createAsyncThunk(
 );
 // End Method
 
+// wishlist
+
+export const add_to_wishlist = createAsyncThunk(
+  "cart/add_to_wishlist",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      console.log(info);
+      const { data } = await api.post("/home/product/add-to-wishlist", info);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const cartReducer = createSlice({
   name: "cart",
   initialState: {
@@ -120,6 +137,13 @@ const cartReducer = createSlice({
         state.successMessage = action.payload.message;
       })
       .addCase(quantity_decrement.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(add_to_wishlist.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
+      })
+      .addCase(add_to_wishlist.fulfilled, (state, action) => {
+        state.wishlist_count = state.wishlist_count + 1;
         state.successMessage = action.payload.message;
       });
   },

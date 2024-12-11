@@ -57,6 +57,7 @@ class cutomerAuthController {
       };
     }
   };
+  // End method
 
   customer_register = async (req, res) => {
     // Trim inputs
@@ -128,6 +129,7 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Internal server error" });
     }
   };
+  // End method
   customer_login = async (req, res) => {
     // Trim inputs
     const { email, password } = req.body;
@@ -195,6 +197,7 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Internal server error" });
     }
   };
+  // End method
   google_signin = async (req, res) => {
     const { email, name } = req.body.userInfo;
     console.log("in google sign in controller ", req.body.userInfo);
@@ -252,6 +255,7 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Internal server error" });
     }
   };
+  // End method
 
   send_otp = async (req, res) => {
     console.log("Sending OTP", req.body);
@@ -289,6 +293,7 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Error while sending OTP" });
     }
   };
+  // End method
 
   verify_otp = async (req, res) => {
     console.log("Verifying OTP", req.body);
@@ -382,6 +387,7 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Error creating account" });
     }
   };
+  // End method
 
   forgot_password = async (req, res) => {
     console.log("in the forgot password");
@@ -481,8 +487,9 @@ class cutomerAuthController {
       });
     }
   };
+  // End method
 
-  //customer profile
+  ///////////////////customer profile////////////////////
 
   update_user_profile = async (req, res) => {
     console.log(req.body);
@@ -530,7 +537,7 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Internal Server Error." });
     }
   };
-
+  // End method
   get_user_profile = async (req, res) => {
     const { userId } = req.params;
 
@@ -553,13 +560,15 @@ class cutomerAuthController {
       return responseReturn(res, 500, { error: "Internal Server Error." });
     }
   };
-  // logout
+  ////////////////////////// logout/////////////////////
+
   customer_logout = async (req, res) => {
     res.cookie("customerToken", "", {
       expires: new Date(Date.now()),
     });
     responseReturn(res, 200, { message: "Logout Success" });
   };
+  // End method
 }
 
 module.exports = new cutomerAuthController();
