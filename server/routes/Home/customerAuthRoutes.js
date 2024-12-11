@@ -25,12 +25,10 @@ router.get(
 );
 router.post(
   "/customer/forgot-password",
-  checkUserStatus,
   customerAuthController.forgot_password
 );
 router.post(
   "/customer/reset-password/:userId/:token",
-  checkUserStatus,
   customerAuthController.reset_password
 );
 router.get("/customer/logout", customerAuthController.customer_logout);

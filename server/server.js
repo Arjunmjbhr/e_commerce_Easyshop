@@ -13,6 +13,7 @@ const cartRouter = require("./routes/Home/cartRouter");
 const orderRouter = require("./routes/order/orderRoutes");
 const userDashboardRouter = require("./routes/Home/dashboardRoutes");
 const addressRouter = require("./routes/Home/addressRoute");
+const wishlistRouter = require("./routes/Home/wishlistRouter");
 const app = express();
 const PORT = process.env.PORT;
 
@@ -33,6 +34,7 @@ app.use("/api", addressRouter);
 app.use("/api", userDashboardRouter);
 app.use("/api", orderRouter);
 app.use("/api/", cartRouter);
+app.use("/api", wishlistRouter);
 app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", productRouter);

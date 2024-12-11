@@ -5,16 +5,19 @@ import { IoEyeOutline } from "react-icons/io5";
 import Ratings from "../Ratings";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  add_to_cart,
-  messageClear,
-  add_to_wishlist,
-} from "../../store/reducers/cartReducer";
+import { add_to_cart, messageClear } from "../../store/reducers/cartReducer";
 import toast from "react-hot-toast";
+import {
+  add_to_wishlist,
+  messageClearWishlist,
+} from "../../store/reducers/wishlistReducer";
 
 const FeaturedProducts = ({ products }) => {
   const { userInfo } = useSelector((store) => store.authUser);
   const { errorMessage, successMessage } = useSelector((store) => store.cart);
+  const { WishlistErrorMessage, wishlistSuccessMessage } = useSelector(
+    (store) => store.wishlist
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -49,16 +52,19 @@ const FeaturedProducts = ({ products }) => {
     const data = {
       userId: userInfo.id,
       productId: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      discount: product.discout,
-      rating: product.rating,
-      slug: product.slug,
     };
-    console.log(data);
     dispatch(add_to_wishlist(data));
   };
+  useEffect(() => {
+    if (wishlistSuccessMessage) {
+      toast.success(wishlistSuccessMessage);
+      dispatch(messageClearWishlist());
+    }
+    if (WishlistErrorMessage) {
+      toast.error(WishlistErrorMessage);
+      dispatch(messageClearWishlist());
+    }
+  }, [WishlistErrorMessage, wishlistSuccessMessage, dispatch]);
   return (
     <div className="w-[85%] mx-auto">
       <div className="w-full">
