@@ -66,7 +66,7 @@ class couponController {
   };
   update_coupon = async (req, res) => {
     // Extracting the coupon details from the request body
-    const {
+    let {
       couponId,
       discountAmount,
       minOrderValue,
@@ -75,6 +75,7 @@ class couponController {
       totalRedemptionsAllowed,
       isActive,
     } = req.body;
+    couponId = couponId.trim().toUpperCase();
 
     // Basic validation
     if (!couponId) {
