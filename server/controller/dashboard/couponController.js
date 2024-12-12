@@ -110,6 +110,29 @@ class couponController {
       return responseReturn(res, 500, { error: "Failed to update coupon" });
     }
   };
+  delete_coupon = async (req, res) => {
+    // Extracting the coupon details from the request body
+    const { couponId } = req.params;
+
+    // Basic validation
+    if (!couponId) {
+      return responseReturn(res, 400, { error: "Coupon ID is required." });
+    }
+    try {
+      const deletedCoupon = await couponModel.deleteOne({ couponId });
+
+      if (!deletedCoupon) {
+        return responseReturn(res, 404, { error: "Coupon does not exist!" });
+      }
+
+      return responseReturn(res, 200, {
+        message: "Coupon deleted successfully",
+      });
+    } catch (error) {
+      console.error("Error in deleting the coupon:", error.message);
+      return responseReturn(res, 500, { error: "Failed to delete coupon" });
+    }
+  };
 }
 
 module.exports = new couponController();

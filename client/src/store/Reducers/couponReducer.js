@@ -47,7 +47,19 @@ export const update_coupon = createAsyncThunk(
     }
   }
 );
-
+export const delete_coupon = createAsyncThunk(
+  "coupon/delete_coupon",
+  async (couponId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await api.delete(`/admin/delete-coupon/${couponId}`, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 const couponReducer = createSlice({
   name: "category",
   initialState: {
@@ -88,6 +100,14 @@ const couponReducer = createSlice({
         state.errorMessage = action.payload?.error;
       })
       .addCase(update_coupon.fulfilled, (state, action) => {
+        state.loader = false;
+        state.successMessage = action.payload?.message;
+      })
+      .addCase(delete_coupon.rejected, (state, action) => {
+        state.loader = false;
+        state.errorMessage = action.payload?.error;
+      })
+      .addCase(delete_coupon.fulfilled, (state, action) => {
         state.loader = false;
         state.successMessage = action.payload?.message;
       });

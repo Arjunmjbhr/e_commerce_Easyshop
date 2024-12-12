@@ -7,7 +7,11 @@ import AddCouponModal from "./componets/AddCouponModal";
 import { FaEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { messageClear, get_coupon } from "../../store/Reducers/couponReducer";
+import {
+  messageClear,
+  get_coupon,
+  delete_coupon,
+} from "../../store/Reducers/couponReducer";
 
 const Coupon = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -45,6 +49,9 @@ const Coupon = () => {
     });
     setIsEdit(true);
     setIsModalOpen(true);
+  };
+  const handleDelete = (couponId) => {
+    dispatch(delete_coupon(couponId));
   };
   const dispatch = useDispatch();
 
@@ -184,7 +191,11 @@ const Coupon = () => {
                       <span onClick={() => handleEdit(coupon)}>
                         <FaEdit />
                       </span>
-                      <span>
+                      <span
+                        onClick={() => {
+                          handleDelete(couponId);
+                        }}
+                      >
                         <MdDeleteForever />
                       </span>
                     </div>
