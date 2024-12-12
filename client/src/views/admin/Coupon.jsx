@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Search from "../../components/Search";
 import Pagination from "./../Pagination";
 import { MdDeleteForever } from "react-icons/md";
 import { IoMdAddCircle } from "react-icons/io";
 import AddCouponModal from "./componets/AddCouponModal";
 import { FaEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { messageClear } from "../../store/Reducers/couponReducer";
 
 const Coupon = () => {
   const [searchValue, setSearchValue] = useState();
@@ -12,6 +15,9 @@ const Coupon = () => {
   const [currentPage, setCurrentPage] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const { successMessage, errorMessage, coupons, totalCoupons } = useSelector(
+    (store) => store.coupon
+  );
   // State to store form inputs
   const [form, setForm] = useState({
     couponId: "",
@@ -22,6 +28,18 @@ const Coupon = () => {
     totalRedemptionsAllowed: "",
     isActive: true,
   });
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch]);
 
   return (
     <div className="px-2 md:pr-7">
@@ -91,7 +109,7 @@ const Coupon = () => {
               </div>
             </div>
             {/* table content */}
-            {[1, 2, 3, 4, 5].map((product) => (
+            {coupons.map((product) => (
               <div className="bg-white ">
                 <div className="  p-2 my-2 flex">
                   <div className=" text-black text-sm w-[17%] ">Coupon Id</div>
@@ -125,7 +143,7 @@ const Coupon = () => {
           <Pagination
             pageNumber={currentPage}
             setPageNumber={setCurrentPage}
-            totalItem={10}
+            totalItem={totalCoupons}
             perPage={perPage}
             showItem={3}
           />
