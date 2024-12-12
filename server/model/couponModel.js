@@ -32,6 +32,10 @@ const CouponSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    redemptionsCount: {
+      type: Number,
+      default: 0,
+    },
     users: [
       {
         userId: {

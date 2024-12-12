@@ -7,12 +7,12 @@ import AddCouponModal from "./componets/AddCouponModal";
 import { FaEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import { messageClear } from "../../store/Reducers/couponReducer";
+import { messageClear, get_coupon } from "../../store/Reducers/couponReducer";
 
 const Coupon = () => {
-  const [searchValue, setSearchValue] = useState();
-  const [perPage, setPerPage] = useState();
-  const [currentPage, setCurrentPage] = useState();
+  const [searchValue, setSearchValue] = useState("");
+  const [perPage, setPerPage] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { successMessage, errorMessage, coupons, totalCoupons } = useSelector(
@@ -28,7 +28,29 @@ const Coupon = () => {
     totalRedemptionsAllowed: "",
     isActive: true,
   });
+
+  const handleEdit = (coupon) => {
+    setForm({
+      couponId: coupon?.couponId || "",
+      discountAmount: coupon?.discountAmount || "",
+      minOrderValue: coupon?.minOrderValue || "",
+      startingDate: coupon?.startingDate
+        ? new Date(coupon.startingDate).toISOString().split("T")[0]
+        : "",
+      expirationDate: coupon?.expirationDate
+        ? new Date(coupon.expirationDate).toISOString().split("T")[0]
+        : "",
+      totalRedemptionsAllowed: coupon?.totalRedemptionsAllowed || "",
+      isActive: coupon?.isActive,
+    });
+    setIsEdit(true);
+    setIsModalOpen(true);
+  };
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(get_coupon({ searchValue, perPage, page: currentPage }));
+  }, [dispatch, form, searchValue, perPage, currentPage, successMessage]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -109,33 +131,67 @@ const Coupon = () => {
               </div>
             </div>
             {/* table content */}
-            {coupons.map((product) => (
-              <div className="bg-white ">
-                <div className="  p-2 my-2 flex">
-                  <div className=" text-black text-sm w-[17%] ">Coupon Id</div>
-                  <div className=" text-black text-sm w-[10%]  ">discount</div>
-                  <div className=" text-black text-sm w-[10%]  ">minValue</div>
-                  <div className="  text-black text-sm w-[15%]  ">st date</div>
-                  <div className="  text-black text-sm w-[15%]  ">exDate</div>
-                  <div className=" text-black text-sm w-[15%] ">total</div>
-                  <div className=" text-black text-sm w-[15%] ">presesnt</div>
+            {coupons.map((coupon) => {
+              const {
+                couponId,
+                discountAmount,
+                minOrderValue,
+                startingDate,
+                expirationDate,
+                totalRedemptionsAllowed,
+                isActive,
+                redemptionsCount,
+              } = coupon;
 
-                  <div className=" flex gap-3 text-black text-lg w-[8%] cursor-pointer  ">
-                    <span
-                      onClick={() => {
-                        setIsEdit(true);
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      <FaEdit />
-                    </span>
-                    <span>
-                      <MdDeleteForever />
-                    </span>
+              return (
+                <div
+                  className={`${
+                    isActive ? "bg-green-500" : "bg-red-500"
+                  } font-semibold `}
+                >
+                  <div className="  p-2 my-2 flex">
+                    <div className=" text-black text-sm w-[17%] ">
+                      {couponId}
+                    </div>
+                    <div className=" text-black text-sm w-[10%]  ">
+                      {discountAmount}
+                    </div>
+                    <div className=" text-black text-sm w-[10%]  ">
+                      {minOrderValue}
+                    </div>
+                    <div className="  text-black text-sm w-[15%]  ">
+                      {new Date(startingDate).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <div className="  text-black text-sm w-[15%]  ">
+                      {new Date(expirationDate).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <div className=" text-black text-sm w-[15%] ">
+                      {totalRedemptionsAllowed}
+                    </div>
+                    <div className=" text-black text-sm w-[15%] ">
+                      {redemptionsCount}
+                    </div>
+
+                    <div className=" flex gap-3 text-black text-lg w-[8%] cursor-pointer  ">
+                      <span onClick={() => handleEdit(coupon)}>
+                        <FaEdit />
+                      </span>
+                      <span>
+                        <MdDeleteForever />
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         {/* pagination */}

@@ -15,18 +15,15 @@ export const add_coupon = createAsyncThunk(
     }
   }
 );
-
-//
-
-export const get_category = createAsyncThunk(
-  "category/get_category",
+export const get_coupon = createAsyncThunk(
+  "coupon/get_coupon",
   async (
     { perPage, page, searchValue },
     { rejectWithValue, fulfillWithValue }
   ) => {
     try {
       const response = await api.get(
-        `/category-get?page=${page}&&perPage=${perPage}&&searchValue=${searchValue}`,
+        `/admin/get-coupon?page=${page}&&perPage=${perPage}&&searchValue=${searchValue}`,
         {
           withCredentials: true,
         }
@@ -37,6 +34,9 @@ export const get_category = createAsyncThunk(
     }
   }
 );
+
+//
+
 export const updateCategory = createAsyncThunk(
   "category/updateCategory",
   async (
@@ -121,6 +121,10 @@ const couponReducer = createSlice({
       .addCase(add_coupon.fulfilled, (state, action) => {
         state.loader = false;
         state.successMessage = action.payload?.message;
+      })
+      .addCase(get_coupon.fulfilled, (state, action) => {
+        state.coupons = action.payload.coupons;
+        state.totalCoupons = action.payload.totalCoupons;
       });
   },
 });
