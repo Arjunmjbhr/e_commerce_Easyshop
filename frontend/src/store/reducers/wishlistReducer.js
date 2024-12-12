@@ -45,7 +45,7 @@ export const delete_wishlist_products = createAsyncThunk(
 const cartReducer = createSlice({
   name: "wishlist",
   initialState: {
-    WishlistErrorMessage: "",
+    wishlistErrorMessage: "",
     wishlistSuccessMessage: "",
     wishlist_count: 0,
     wishlist: [],
@@ -76,7 +76,7 @@ const cartReducer = createSlice({
         state.wishlist = action.payload.wishlist;
       })
       .addCase(delete_wishlist_products.rejected, (state, action) => {
-        state.WishlistErrorMessage = action.payload.error;
+        state.wishlistErrorMessage = action.payload.error;
         state.wishlist_count = state.wishlist_count - 1;
       })
       .addCase(delete_wishlist_products.fulfilled, (state, action) => {

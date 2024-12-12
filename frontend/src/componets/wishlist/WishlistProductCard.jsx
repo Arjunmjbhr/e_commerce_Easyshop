@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Ratings from "./../Ratings";
 import { CiHeart } from "react-icons/ci";
 import { IoCartOutline, IoEyeOutline } from "react-icons/io5";
 import { delete_wishlist_products } from "../../store/reducers/wishlistReducer";
 import { useDispatch } from "react-redux";
+import { add_to_cart } from "./../../store/reducers/cartReducer";
 
-const WishlistProductCard = ({ product }) => {
+const WishlistProductCard = ({ product, userInfo }) => {
   const productId = product?.productId || {};
   const dispatch = useDispatch();
+
   const {
     discount = 0,
     stock = 0,
@@ -21,12 +23,18 @@ const WishlistProductCard = ({ product }) => {
   } = productId;
   const wishlistId = product._id;
 
-  const add_cart = (id) => {
-    console.log("Adding to cart", id);
-    // Implement the add to cart logic here
-  };
   const delete_wishlist = (wishlistId) => {
     dispatch(delete_wishlist_products(wishlistId));
+  };
+
+  const add_cart = (id) => {
+    const details = {
+      userId: userInfo.id,
+      quantity: 1,
+      productId: id,
+    };
+    dispatch(add_to_cart(details));
+    console.log("Adding to cart", details);
   };
 
   return (

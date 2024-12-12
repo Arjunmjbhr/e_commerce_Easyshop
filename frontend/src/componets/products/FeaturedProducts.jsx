@@ -15,7 +15,7 @@ import {
 const FeaturedProducts = ({ products }) => {
   const { userInfo } = useSelector((store) => store.authUser);
   const { errorMessage, successMessage } = useSelector((store) => store.cart);
-  const { WishlistErrorMessage, wishlistSuccessMessage } = useSelector(
+  const { wishlistErrorMessage, wishlistSuccessMessage } = useSelector(
     (store) => store.wishlist
   );
   const dispatch = useDispatch();
@@ -64,11 +64,11 @@ const FeaturedProducts = ({ products }) => {
       toast.success(wishlistSuccessMessage);
       dispatch(messageClearWishlist());
     }
-    if (WishlistErrorMessage) {
-      toast.error(WishlistErrorMessage);
+    if (wishlistErrorMessage) {
+      toast.error(wishlistErrorMessage);
       dispatch(messageClearWishlist());
     }
-  }, [WishlistErrorMessage, wishlistSuccessMessage, dispatch]);
+  }, [wishlistErrorMessage, wishlistSuccessMessage, dispatch]);
 
   return (
     <div className="w-[85%] mx-auto">

@@ -6,12 +6,16 @@ import {
   messageClearWishlist,
 } from "../store/reducers/wishlistReducer";
 import toast from "react-hot-toast";
+import { messageClear } from "../store/reducers/cartReducer";
 
 const Wishlist = () => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((store) => store.authUser);
+  // subscribe to tht store
   const { wishlist, wishlistErrorMessage, wishlistSuccessMessage } =
     useSelector((store) => store.wishlist);
+  const { errorMessage, successMessage } = useSelector((store) => store.cart);
+  // page content dispatch
 
   useEffect(() => {
     dispatch(get_wishlist_products(userInfo.id));
@@ -27,11 +31,27 @@ const Wishlist = () => {
       dispatch(messageClearWishlist());
     }
   }, [wishlistErrorMessage, wishlistSuccessMessage, dispatch]);
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch]);
+
   return (
     <div>
       <div className="grid grid-cols-3 md-lg:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 ">
         {wishlist.map((product) => (
-          <WishlistProductCard product={product} key={product._id} />
+          <WishlistProductCard
+            product={product}
+            key={product._id}
+            userInfo={userInfo}
+          />
         ))}
       </div>
     </div>

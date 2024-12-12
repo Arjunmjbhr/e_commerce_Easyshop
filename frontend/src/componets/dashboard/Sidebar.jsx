@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { IoPersonCircle } from "react-icons/io5";
 import { GiWallet } from "react-icons/gi";
 import { useLocation } from "react-router-dom";
+import { FaCartArrowDown } from "react-icons/fa";
 
 const Sidebar = ({ filterShow, logout }) => {
   const { pathname } = useLocation();
@@ -27,6 +28,11 @@ const Sidebar = ({ filterShow, logout }) => {
       name: "Wishlist",
       icons: <FaHeart />,
       path: "/dashboard/wishlist",
+    },
+    {
+      name: "Cart",
+      icons: <FaCartArrowDown />,
+      path: "/cart",
     },
     {
       name: "Wallet",
