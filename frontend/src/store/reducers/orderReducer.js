@@ -94,12 +94,25 @@ export const cod_payment = createAsyncThunk(
   }
 ); // End Method
 
+export const apply_coupon = createAsyncThunk(
+  "cart/apply_coupon",
+  async (couponId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post(`/home/product/apply-coupon/${couponId}`);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const orderReducer = createSlice({
   name: "order",
   initialState: {
     myOrders: [],
     errorMessage: "",
     successMessage: "",
+    couponAmount: 0,
     myOrder: {},
   },
   reducers: {
@@ -127,6 +140,9 @@ const orderReducer = createSlice({
       })
       .addCase(cod_payment.rejected, (state, action) => {
         state.errorMessage = action.payload.error;
+      })
+      .addCase(apply_coupon.fulfilled, (state, action) => {
+        state.couponAmount = action.payload.couponAmount;
       });
   },
 });

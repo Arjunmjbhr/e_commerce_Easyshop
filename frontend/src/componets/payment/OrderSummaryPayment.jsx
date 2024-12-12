@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { apply_coupon } from "../../store/reducers/orderReducer";
 
 const OrderSummaryPayment = ({ price, items }) => {
+  const dispatch = useDispatch();
+  const [couponApplied, setCouponApplied] = useState("");
+  const handleApplyCoupon = () => {
+    dispatch(apply_coupon(couponApplied));
+  };
+  const { couponAmount } = useSelector((store) => store.order);
   return (
     <div>
       <div className="pl-2 md:pl-0 md:mb-0">
@@ -10,6 +18,28 @@ const OrderSummaryPayment = ({ price, items }) => {
             <span>{items} Items and Shipping Fee Included </span>
             <span>₹{price} </span>
           </div>
+          {couponAmount !== 0 ? (
+            <div className="flex justify-between items-center">
+              <span>Coupon Amount </span>
+              <span>-₹{couponAmount} </span>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                className="w-full px-3 py-2 border  border-slate-200 outline-0 focus:border-green-500 rounded-sm"
+                type="text"
+                value={couponApplied}
+                onChange={(e) => setCouponApplied(e.target.value.toUpperCase())}
+                placeholder="Input Vauchar Coupon"
+              />
+              <button
+                onClick={handleApplyCoupon}
+                className="px-5 py-[1px] bg-[#059473] text-white rounded-sm uppercase text-sm"
+              >
+                Apply
+              </button>
+            </div>
+          )}
           <div className="flex justify-between items-center font-semibold">
             <span>Total Amount </span>
             <span className="text-lg text-green-600">₹{price}</span>

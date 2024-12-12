@@ -29,6 +29,16 @@ const customerOrder = new Schema(
       type: String,
       required: true,
     },
+    couponId: {
+      type: String,
+      required: true,
+      default: null,
+    },
+    couponAmount: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

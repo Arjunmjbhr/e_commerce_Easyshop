@@ -120,6 +120,8 @@ class orderController {
         payment_status: "unpaid",
         delivery_status: "pending",
         date: tempDate,
+        couponId: null,
+        couponId: 0,
       });
 
       // Create admin order data
@@ -175,6 +177,51 @@ class orderController {
     }
   };
   // End Method
+  cod_payment = async (req, res) => {
+    console.log("Processing COD payment...");
+    console.log(req.params);
+
+    const { orderId } = req.params;
+
+    try {
+      if (!ObjectId.isValid(orderId)) {
+        return responseReturn(res, 400, { message: "Invalid order ID" });
+      }
+
+      // Update customer order
+      const order = await customerOrderModel.findByIdAndUpdate(
+        orderId,
+        { delivery_status: "placed", payment_status: "cod" },
+        { new: true }
+      );
+
+      if (!order) {
+        return responseReturn(res, 404, {
+          message: "Customer order not found",
+        });
+      }
+
+      // Update admin orders
+      const adminOrder = await adminOrderModel.updateMany(
+        { orderId: new ObjectId(orderId) },
+        { delivery_status: "placed", payment_status: "cod" },
+        { new: true }
+      );
+
+      console.log(`Order ${orderId} updated for COD successfully.`);
+      return responseReturn(res, 200, {
+        message: "Order placed with cash on delivery",
+      });
+    } catch (error) {
+      console.error("Error in COD payment:", error.message);
+      return responseReturn(res, 500, {
+        error: "Error while placing the order",
+      });
+    }
+  };
+  // End Method
+
+  ///dashboard
   get_orders = async (req, res) => {
     let { customerId, status } = req.params;
     try {
@@ -243,50 +290,6 @@ class orderController {
       // Internal server error response
       return responseReturn(res, 500, {
         error: "Internal server error. Failed to cancel the order.",
-      });
-    }
-  };
-  // End Method
-
-  cod_payment = async (req, res) => {
-    console.log("Processing COD payment...");
-    console.log(req.params);
-
-    const { orderId } = req.params;
-
-    try {
-      if (!ObjectId.isValid(orderId)) {
-        return responseReturn(res, 400, { message: "Invalid order ID" });
-      }
-
-      // Update customer order
-      const order = await customerOrderModel.findByIdAndUpdate(
-        orderId,
-        { delivery_status: "placed", payment_status: "cod" },
-        { new: true }
-      );
-
-      if (!order) {
-        return responseReturn(res, 404, {
-          message: "Customer order not found",
-        });
-      }
-
-      // Update admin orders
-      const adminOrder = await adminOrderModel.updateMany(
-        { orderId: new ObjectId(orderId) },
-        { delivery_status: "placed", payment_status: "cod" },
-        { new: true }
-      );
-
-      console.log(`Order ${orderId} updated for COD successfully.`);
-      return responseReturn(res, 200, {
-        message: "Order placed with cash on delivery",
-      });
-    } catch (error) {
-      console.error("Error in COD payment:", error.message);
-      return responseReturn(res, 500, {
-        error: "Error while placing the order",
       });
     }
   };
