@@ -4,6 +4,8 @@ import {
   add_coupon,
   update_coupon,
 } from "../../../store/Reducers/couponReducer";
+import { couponValidation } from "../../../utils/couponValidation";
+import toast from "react-hot-toast";
 
 const AddCouponModal = ({
   isOpen,
@@ -25,6 +27,21 @@ const AddCouponModal = ({
 
   // Handle form submission
   const handleSubmit = () => {
+    const errors = couponValidation(
+      form.couponId,
+      form.discountAmount,
+      form.minOrderValue,
+      form.startingDate,
+      form.expirationDate,
+      form.totalRedemptionsAllowed,
+      form.isActive
+    );
+    if (Object.values(errors).length > 0) {
+      for (let error of Object.values(errors)) {
+        toast.error(error);
+      }
+      return null;
+    }
     if (isEdit) {
       dispatch(update_coupon(form));
     } else {
@@ -74,7 +91,7 @@ const AddCouponModal = ({
           <div className="flex justify-between gap-3">
             {/* Coupon ID */}
             <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm  font-medium text-gray-700">
                 Coupon ID
               </label>
               <input
@@ -82,7 +99,7 @@ const AddCouponModal = ({
                 name="couponId"
                 value={form.couponId}
                 onChange={handleChange}
-                className="mt-1 block px-2 py-1 outline-none w-full border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="mt-1 block uppercase px-2 py-1 outline-none w-full border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 required
               />
             </div>
@@ -187,7 +204,7 @@ const AddCouponModal = ({
             className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
             onClick={handleSubmit}
           >
-            {isEdit ? "Edit Coupon" : "Save"}
+            {isEdit ? "Save Changes" : "Add"}
           </button>
         </div>
       </div>

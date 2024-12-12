@@ -12,6 +12,7 @@ import {
   get_coupon,
   delete_coupon,
 } from "../../store/Reducers/couponReducer";
+import ConfirmModal from "./../../components/ConfirmModal";
 
 const Coupon = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -19,6 +20,7 @@ const Coupon = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [modalClose, setModalClose] = useState(true);
   const { successMessage, errorMessage, coupons, totalCoupons } = useSelector(
     (store) => store.coupon
   );
@@ -193,18 +195,28 @@ const Coupon = () => {
                       </span>
                       <span
                         onClick={() => {
-                          handleDelete(couponId);
+                          setModalClose(false);
                         }}
                       >
                         <MdDeleteForever />
                       </span>
                     </div>
                   </div>
+                  <div>
+                    {!modalClose && (
+                      <ConfirmModal
+                        SetModalClose={setModalClose}
+                        confimFunction={() => handleDelete(couponId)}
+                        message="Are you sure want to delete the coupon"
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
+
         {/* pagination */}
         <div className="w-full flex justify-end mt-4 bottom-4 right-4">
           <Pagination

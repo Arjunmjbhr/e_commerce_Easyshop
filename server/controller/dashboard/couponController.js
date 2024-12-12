@@ -4,7 +4,7 @@ const { responseReturn } = require("../../utils/response");
 class couponController {
   add_coupon = async (req, res) => {
     // Extracting the coupon details from the request body
-    const {
+    let {
       couponId,
       discountAmount,
       minOrderValue,
@@ -13,7 +13,7 @@ class couponController {
       totalRedemptionsAllowed,
       isActive,
     } = req.body;
-
+    couponId = couponId.trim().toUpperCase();
     try {
       // Check if the couponId already exists to prevent duplicates
       const existingCoupon = await couponModel.findOne({ couponId });
