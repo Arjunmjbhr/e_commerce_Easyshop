@@ -41,7 +41,6 @@ class couponController {
     }
   };
   get_coupon = async (req, res) => {
-    console.log(req.query);
     let { perPage, searchValue, page } = req.query;
 
     perPage = parseInt(perPage);
@@ -63,6 +62,52 @@ class couponController {
     } catch (error) {
       console.log("error in fetching the data", error.message);
       return responseReturn(res, 500, { error: "Failed to fatech the data" });
+    }
+  };
+  update_coupon = async (req, res) => {
+    // Extracting the coupon details from the request body
+    const {
+      couponId,
+      discountAmount,
+      minOrderValue,
+      startingDate,
+      expirationDate,
+      totalRedemptionsAllowed,
+      isActive,
+    } = req.body;
+
+    // Basic validation
+    if (!couponId) {
+      return responseReturn(res, 400, { error: "Coupon ID is required." });
+    }
+
+    try {
+      // Find and update the coupon
+      const updatedCoupon = await couponModel.findOneAndUpdate(
+        { couponId }, // Find by couponId
+        {
+          discountAmount,
+          minOrderValue,
+          startingDate,
+          expirationDate,
+          totalRedemptionsAllowed,
+          isActive,
+        },
+        { new: true } // Return the updated document
+      );
+
+      // Check if the coupon exists
+      if (!updatedCoupon) {
+        return responseReturn(res, 404, { error: "Coupon does not exist!" });
+      }
+
+      // Return success response
+      return responseReturn(res, 200, {
+        message: "Coupon updated successfully",
+      });
+    } catch (error) {
+      console.error("Error in updating the coupon:", error.message);
+      return responseReturn(res, 500, { error: "Failed to update coupon" });
     }
   };
 }

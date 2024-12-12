@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { add_coupon } from "../../../store/Reducers/couponReducer";
+import {
+  add_coupon,
+  update_coupon,
+} from "../../../store/Reducers/couponReducer";
 
 const AddCouponModal = ({
   isOpen,
@@ -23,7 +26,7 @@ const AddCouponModal = ({
   // Handle form submission
   const handleSubmit = () => {
     if (isEdit) {
-      console.log(form);
+      dispatch(update_coupon(form));
     } else {
       dispatch(add_coupon(form));
     }
@@ -42,6 +45,15 @@ const AddCouponModal = ({
   const onClose = () => {
     setIsModalOpen(false);
     setIsEdit(false);
+    setForm({
+      couponId: "",
+      discountAmount: "",
+      minOrderValue: "",
+      startingDate: "",
+      expirationDate: "",
+      totalRedemptionsAllowed: "",
+      isActive: true,
+    });
   };
 
   if (!isOpen) return null;
