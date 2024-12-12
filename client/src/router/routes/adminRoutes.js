@@ -7,6 +7,7 @@ const Sellers = lazy(() => import("./../../views/admin/Sellers"));
 const SellerDetails = lazy(() => import("./../../views/admin/SellerDetails"));
 const Customers = lazy(() => import("../../views/admin/Customers"));
 const OrderDetails = lazy(() => import("../../views/admin/OrderDetails"));
+const Coupon = lazy(() => import("./../../views/admin/Coupon"));
 
 export const adminRoutes = [
   {
@@ -32,6 +33,11 @@ export const adminRoutes = [
   {
     path: "/admin/dashboard/customers",
     element: <Customers />,
+    role: "admin",
+  },
+  {
+    path: "/admin/dashboard/coupon",
+    element: <Coupon />,
     role: "admin",
   },
   {
