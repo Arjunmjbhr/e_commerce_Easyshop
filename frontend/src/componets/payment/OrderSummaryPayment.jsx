@@ -1,14 +1,40 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { apply_coupon } from "../../store/reducers/orderReducer";
+import {
+  apply_coupon,
+  remove_apply_coupon,
+} from "../../store/reducers/orderReducer";
+import { IoCloseCircleSharp } from "react-icons/io5";
 
-const OrderSummaryPayment = ({ price, items }) => {
+const OrderSummaryPayment = ({ price, items, orderId }) => {
   const dispatch = useDispatch();
   const [couponApplied, setCouponApplied] = useState("");
+  const { userInfo } = useSelector((store) => store.authUser);
+  const { myOrder } = useSelector((store) => store.order);
+  let { couponAmount } = myOrder;
+
+  console.log(couponAmount);
   const handleApplyCoupon = () => {
-    dispatch(apply_coupon(couponApplied));
+    const data = {
+      userId: userInfo.id,
+      info: {
+        couponId: couponApplied,
+        orderId,
+      },
+    };
+    dispatch(apply_coupon(data));
   };
-  const { couponAmount } = useSelector((store) => store.order);
+  const handleDeleteCoupon = () => {
+    const data = {
+      userId: userInfo.id,
+      info: {
+        couponId: myOrder.couponId,
+        orderId,
+      },
+    };
+    dispatch(remove_apply_coupon(data));
+  };
+
   return (
     <div>
       <div className="pl-2 md:pl-0 md:mb-0">
@@ -18,9 +44,14 @@ const OrderSummaryPayment = ({ price, items }) => {
             <span>{items} Items and Shipping Fee Included </span>
             <span>₹{price} </span>
           </div>
-          {couponAmount !== 0 ? (
+          {couponAmount ? (
             <div className="flex justify-between items-center">
-              <span>Coupon Amount </span>
+              <div className="flex items-center gap-3">
+                <span>Coupon Amount </span>
+                <span onClick={handleDeleteCoupon} className="cursor-pointer">
+                  <IoCloseCircleSharp />
+                </span>
+              </div>
               <span>-₹{couponAmount} </span>
             </div>
           ) : (
@@ -42,7 +73,9 @@ const OrderSummaryPayment = ({ price, items }) => {
           )}
           <div className="flex justify-between items-center font-semibold">
             <span>Total Amount </span>
-            <span className="text-lg text-green-600">₹{price}</span>
+            <span className="text-lg text-green-600">
+              ₹{couponAmount ? price - couponAmount : price}
+            </span>
           </div>
         </div>
       </div>

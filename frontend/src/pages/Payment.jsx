@@ -11,6 +11,7 @@ import { cod_payment, messageClear } from "../store/reducers/orderReducer";
 import ConfirmModal from "./../componets/ConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { get_order_details } from "../store/reducers/orderReducer";
 
 const Payment = () => {
   const {
@@ -20,7 +21,9 @@ const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState("stripe");
   const [modalClose, SetModalClose] = useState(true);
   const { errorMessage, successMessage } = useSelector((store) => store.order);
-
+  useEffect(() => {
+    dispatch(get_order_details(orderId));
+  }, [dispatch, orderId, successMessage]);
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -60,7 +63,11 @@ const Payment = () => {
             </div>
             {/* summary */}
             <div className="w-5/12 md:w-full">
-              <OrderSummaryPayment price={price} items={items} />
+              <OrderSummaryPayment
+                price={price}
+                items={items}
+                orderId={orderId}
+              />
             </div>
           </div>
         </div>

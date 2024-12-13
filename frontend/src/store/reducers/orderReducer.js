@@ -37,8 +37,21 @@ export const place_order = createAsyncThunk(
   }
 );
 // End Method
+export const cod_payment = createAsyncThunk(
+  "order/cod_payment",
+  async (orderId, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.put(`/home/customer/cod-payment/${orderId}`);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
-// method for getting details of the order in the dashboard
+/////////////////Dashboard/////////////////
+
 export const get_orders = createAsyncThunk(
   "order/get_orders",
   async ({ customerId, status }, { rejectWithValue, fulfillWithValue }) => {
@@ -53,8 +66,6 @@ export const get_orders = createAsyncThunk(
   }
 );
 // End Method
-
-// method for order details of each order in the customer dashboard
 export const get_order_details = createAsyncThunk(
   "order/get_order_details",
   async (orderId, { rejectWithValue, fulfillWithValue }) => {
@@ -67,7 +78,8 @@ export const get_order_details = createAsyncThunk(
       return rejectWithValue(error.response.data);
     }
   }
-); // End Method
+);
+// End Method
 export const cancel_order = createAsyncThunk(
   "order/cancel_order",
 
@@ -80,25 +92,35 @@ export const cancel_order = createAsyncThunk(
       return rejectWithValue(error.response.data);
     }
   }
-); // End Method
+);
+// End Method
 
-export const cod_payment = createAsyncThunk(
-  "order/cod_payment",
-  async (orderId, { rejectWithValue, fulfillWithValue }) => {
+/////////////applay coupon////////////////////
+
+export const apply_coupon = createAsyncThunk(
+  "cart/apply_coupon",
+  async ({ info, userId }, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.put(`/home/customer/cod-payment/${orderId}`);
+      const { data } = await api.put(
+        `/home/product/apply-coupon/${userId}`,
+        info,
+        { withCredentials: true }
+      );
       return fulfillWithValue(data);
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
-); // End Method
-
-export const apply_coupon = createAsyncThunk(
-  "cart/apply_coupon",
-  async (couponId, { rejectWithValue, fulfillWithValue }) => {
+);
+export const remove_apply_coupon = createAsyncThunk(
+  "cart/remove_apply_coupon",
+  async ({ info, userId }, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.post(`/home/product/apply-coupon/${couponId}`);
+      const { data } = await api.put(
+        `/home/product/remove-apply-coupon/${userId}`,
+        info,
+        { withCredentials: true }
+      );
       return fulfillWithValue(data);
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -112,7 +134,6 @@ const orderReducer = createSlice({
     myOrders: [],
     errorMessage: "",
     successMessage: "",
-    couponAmount: 0,
     myOrder: {},
   },
   reducers: {
@@ -141,8 +162,17 @@ const orderReducer = createSlice({
       .addCase(cod_payment.rejected, (state, action) => {
         state.errorMessage = action.payload.error;
       })
+      .addCase(apply_coupon.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
+      })
       .addCase(apply_coupon.fulfilled, (state, action) => {
-        state.couponAmount = action.payload.couponAmount;
+        state.successMessage = action.payload.message;
+      })
+      .addCase(remove_apply_coupon.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
+      })
+      .addCase(remove_apply_coupon.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
       });
   },
 });

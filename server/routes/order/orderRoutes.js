@@ -25,10 +25,22 @@ router.put(
   checkUserStatus,
   orderController.cancel_order
 );
+//payment
 router.put(
   "/home/customer/cod-payment/:orderId",
   checkUserStatus,
   orderController.cod_payment
+);
+// coupon
+router.put(
+  "/home/product/apply-coupon/:userId",
+  checkUserStatus,
+  orderController.apply_coupon
+);
+router.put(
+  "/home/product/remove-apply-coupon/:userId",
+  checkUserStatus,
+  orderController.remove_apply_coupon
 );
 
 //////////////////// admin/////////////////////////

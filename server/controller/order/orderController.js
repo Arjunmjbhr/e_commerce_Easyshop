@@ -8,6 +8,7 @@ const {
   mongo: { ObjectId },
 } = require("mongoose");
 const customerModel = require("../../model/customerModel");
+const couponModel = require("../../model/couponModel");
 
 class orderController {
   //////////////////////////// add and remove stock while cancel //////////////////
@@ -220,6 +221,141 @@ class orderController {
     }
   };
   // End Method
+  apply_coupon = async (req, res) => {
+    console.log("In the apply coupon controller", req.params);
+    const { userId } = req.params;
+    const { orderId, couponId } = req.body;
+    // Validate inputs
+    if (!couponId || !orderId || !userId) {
+      return responseReturn(res, 400, { error: "Missing required fields." });
+    }
+    const today = new Date();
+
+    try {
+      // Check if the coupon is active and not expired
+      const isActiveOrExpire = await couponModel.findOne({
+        couponId,
+        isActive: true,
+        expirationDate: { $gt: today },
+      });
+
+      if (!isActiveOrExpire) {
+        return responseReturn(res, 400, {
+          error: "Coupon is either inactive or expired or Not a valid Coupon.",
+        });
+      }
+
+      // Check coupon redemption limit
+      const couponDetails = await couponModel.findOne({ couponId });
+      if (
+        couponDetails.totalRedemptionsAllowed <= couponDetails.redemptionsCount
+      ) {
+        return responseReturn(res, 400, {
+          error: "Coupon redemption limit reached.",
+        });
+      }
+
+      // Check if the user has already applied the coupon
+      const isAppliedBefore = await couponModel.findOne({
+        couponId,
+        "users.userId": userId,
+      });
+
+      if (isAppliedBefore) {
+        return responseReturn(res, 400, {
+          error: "Coupon already used .",
+        });
+      }
+
+      // Add the user to the coupon's users array and update redemptions count
+      const coupon = await couponModel.findOneAndUpdate(
+        { couponId },
+        {
+          $addToSet: { users: { userId, couponApplied: today } },
+          $inc: { redemptionsCount: 1 },
+        },
+        { new: true } // Return the updated document
+      );
+
+      if (!coupon) {
+        return responseReturn(res, 404, { error: "Coupon not found." });
+      }
+
+      const order = await customerOrderModel.findById(orderId);
+      // Check minimum order value for coupon application
+      console.log(order);
+      const isMinOrderAssure = order.price >= coupon.minOrderValue;
+      if (!isMinOrderAssure) {
+        return responseReturn(res, 400, {
+          error: `Minimum order value should be ${coupon.minOrderValue}.`,
+        });
+      }
+      // apply to the order after coupon validation
+      const applyCouponOnOrder = await customerOrderModel.findByIdAndUpdate(
+        orderId,
+        { couponId, couponAmount: coupon.discountAmount },
+        { new: true }
+      );
+      if (!applyCouponOnOrder) {
+        return responseReturn(res, 404, { error: "Order not found." });
+      }
+
+      return responseReturn(res, 200, {
+        message: "Coupon applied successfully.",
+        couponAmount: coupon.discountAmount,
+        coupon,
+      });
+    } catch (error) {
+      console.error("Error in apply_coupon controller:", error);
+      return responseReturn(res, 500, {
+        error: "An internal server error occurred.",
+        details: error.message, // Include the error message for debugging
+      });
+    }
+  };
+  remove_apply_coupon = async (req, res) => {
+    console.log("In the remove coupon controller");
+    const { couponId, orderId } = req.body;
+    const { userId } = req.params;
+    console.log("coupon id", couponId);
+
+    try {
+      // Find the coupon and remove the user from the users array
+      const coupon = await couponModel.updateOne(
+        { couponId: couponId }, // Ensure couponId is correct
+        { $pull: { users: { userId: userId } } }, // Correct syntax for pulling from array of objects
+        { new: true }
+      );
+
+      if (coupon.nModified === 0) {
+        return responseReturn(res, 404, {
+          error: "Coupon not found or user not associated.",
+        });
+      }
+
+      // Find the order and reset the coupon data
+      const order = await customerOrderModel.findByIdAndUpdate(
+        orderId,
+        { couponId: "", couponAmount: 0 },
+        { new: true }
+      );
+
+      if (!order) {
+        return responseReturn(res, 404, { error: "Order not found." });
+      }
+
+      // Return success message
+      return responseReturn(res, 200, {
+        message: "Coupon removed successfully.",
+      });
+    } catch (error) {
+      console.error("Error in remove_apply_coupon controller:", error);
+      return responseReturn(res, 500, {
+        error: "An internal server error occurred while removing the coupon.",
+        details: error.message,
+      });
+    }
+  };
 
   ///dashboard
   get_orders = async (req, res) => {
