@@ -243,6 +243,7 @@ const categoryReducer = createSlice({
       })
       .addCase(get_category_offer.fulfilled, (state, action) => {
         state.categoryOffer = action.payload?.categoryOffer;
+        state.totalOffer = action.payload.totalOffer;
       })
       .addCase(delete_category_offer.rejected, (state, action) => {
         state.errorMessage = action.payload?.error;

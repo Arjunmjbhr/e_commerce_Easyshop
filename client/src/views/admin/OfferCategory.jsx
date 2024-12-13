@@ -223,7 +223,7 @@ const OfferCategory = () => {
           <Pagination
             pageNumber={currentPage}
             setPageNumber={setCurrentPage}
-            totalItem={10}
+            totalItem={totalOffer}
             perPage={perPage}
             showItem={3}
           />
