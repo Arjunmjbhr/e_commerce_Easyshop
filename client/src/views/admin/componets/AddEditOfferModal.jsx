@@ -6,6 +6,7 @@ import {
 } from "../../../store/Reducers/categoryReducer";
 
 import toast from "react-hot-toast";
+import { categoryOfferValidation } from "../../../utils/categoryOfferValidation";
 
 const AddEditOfferModal = ({
   isOpen,
@@ -28,19 +29,17 @@ const AddEditOfferModal = ({
 
   // Handle form submission
   const handleSubmit = () => {
-    // const errors = couponValidation(
-    //   form.offerCategory,
-    //   form.offerPercentage,
-    //   form.startingDate,
-    //   form.expirationDate,
-    //   form.isActive
-    // );
-    // if (Object.values(errors).length > 0) {
-    //   for (let error of Object.values(errors)) {
-    //     toast.error(error);
-    //   }
-    //   return null;
-    // }
+    const errors = categoryOfferValidation(
+      form.offerPercentage,
+      form.startingDate,
+      form.expirationDate
+    );
+    if (Object.values(errors).length > 0) {
+      for (let error of Object.values(errors)) {
+        toast.error(error);
+      }
+      return null;
+    }
 
     if (isEdit) {
       const data = {
@@ -101,7 +100,6 @@ const AddEditOfferModal = ({
                 onChange={handleChange}
                 className="mt-1 block w-full px-2 py-1 outline-none border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               >
-                <option value="">Select category</option>
                 {categories && categories.length > 0 ? (
                   categories.map((category) => (
                     <option key={category.id} value={category.categoryName}>

@@ -1,6 +1,5 @@
 const { responseReturn } = require("../../utils/response");
 const categoryOfferModel = require("../../model/categoryOfferModel");
-const req = require("express/lib/request");
 const { ObjectId } = require("mongoose").Types;
 
 class offerController {
@@ -60,7 +59,6 @@ class offerController {
       });
     }
   };
-
   //End Method
   get_category_offer = async (req, res) => {
     console.log("in the categoy offer controller");
@@ -87,7 +85,7 @@ class offerController {
       return responseReturn(res, 500, { error: "Internal server error" });
     }
   };
-
+  //End Method
   update_category_offer = async (req, res) => {
     console.log("In the update category offer controller", req.body);
     console.log("Request params:", req.params);
@@ -165,7 +163,7 @@ class offerController {
       });
     }
   };
-
+  //End Method
   delete_category_offer = async (req, res) => {
     console.log("in the offer delete controller", req.params);
     const { offerId } = req.params;
@@ -177,6 +175,7 @@ class offerController {
       return responseReturn(res, 500, { error: "internel server error" });
     }
   };
+  //End Method
 }
 
 module.exports = new offerController();
