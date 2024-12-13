@@ -12,6 +12,7 @@ import { FaCartArrowDown } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
 import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
+import { BiSolidOffer } from "react-icons/bi";
 
 export const allNav = [
   // admin navigation
@@ -66,6 +67,13 @@ export const allNav = [
   },
   {
     id: 8,
+    title: "Offer",
+    icon: <BiSolidOffer />,
+    role: "admin",
+    path: "/admin/dashboard/offer-category",
+  },
+  {
+    id: 9,
     title: "Live Chat",
     icon: <IoIosChatbubbles />,
     role: "admin",
