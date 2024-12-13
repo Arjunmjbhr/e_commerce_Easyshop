@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import {
-  add_coupon,
-  update_coupon,
-} from "../../../store/Reducers/couponReducer";
-import { couponValidation } from "../../../utils/couponValidation";
+  add_category_offer,
+  update_category_offer,
+} from "../../../store/Reducers/categoryReducer";
+
 import toast from "react-hot-toast";
 
-const AddCouponModal = ({
+const AddEditOfferModal = ({
   isOpen,
   setIsModalOpen,
   isEdit,
   setIsEdit,
   form,
   setForm,
+  categories,
 }) => {
   const dispatch = useDispatch();
   // Handle input change
@@ -27,45 +28,43 @@ const AddCouponModal = ({
 
   // Handle form submission
   const handleSubmit = () => {
-    const errors = couponValidation(
-      form.couponId,
-      form.discountAmount,
-      form.minOrderValue,
-      form.startingDate,
-      form.expirationDate,
-      form.totalRedemptionsAllowed,
-      form.isActive
-    );
-    if (Object.values(errors).length > 0) {
-      for (let error of Object.values(errors)) {
-        toast.error(error);
-      }
-      return null;
-    }
+    // const errors = couponValidation(
+    //   form.offerCategory,
+    //   form.offerPercetage,
+    //   form.startingDate,
+    //   form.expirationDate,
+    //   form.isActive
+    // );
+    // if (Object.values(errors).length > 0) {
+    //   for (let error of Object.values(errors)) {
+    //     toast.error(error);
+    //   }
+    //   return null;
+    // }
+
     if (isEdit) {
-      dispatch(update_coupon(form));
+      dispatch(update_category_offer(form));
     } else {
-      dispatch(add_coupon(form));
+      dispatch(add_category_offer(form));
     }
     setIsModalOpen(false);
     setIsEdit(false);
     setForm({
-      couponId: "",
-      discountAmount: "",
-      minOrderValue: "",
+      offerCategory: "",
+      offerPercetage: 0,
       startingDate: "",
       expirationDate: "",
       totalRedemptionsAllowed: "",
       isActive: true,
     });
   };
+
   const onClose = () => {
     setIsModalOpen(false);
     setIsEdit(false);
     setForm({
-      couponId: "",
-      discountAmount: "",
-      minOrderValue: "",
+      offerCategory: "",
+      offerPercetage: 0,
       startingDate: "",
       expirationDate: "",
       totalRedemptionsAllowed: "",
@@ -84,66 +83,45 @@ const AddCouponModal = ({
       >
         <div className="p-4 border-b">
           <h2 className="text-lg font-bold text-center">
-            {isEdit ? "Edit Coupon" : "Add New Coupon"}
+            {isEdit ? "Edit Offer" : "Add New Offer"}
           </h2>
         </div>
         <div className="p-4 space-y-4">
           <div className="flex justify-between gap-3">
-            {/* Coupon ID */}
-            <div className="w-full">
-              <label className="block text-sm  font-medium text-gray-700">
-                Coupon ID
-              </label>
-              <input
-                disabled={isEdit}
-                type="text"
-                name="couponId"
-                value={form.couponId}
-                onChange={handleChange}
-                className="mt-1 block uppercase px-2 py-1 outline-none w-full border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-              />
-            </div>
-
-            {/* Total Redemptions Allowed */}
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700">
-                Total Redemptions Allowed
-              </label>
-              <input
-                type="number"
-                name="totalRedemptionsAllowed"
-                value={form.totalRedemptionsAllowed}
-                onChange={handleChange}
-                className="mt-1 block px-2 py-1 outline-none  w-full border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-              />
-            </div>
-          </div>
-          <div className="flex justify-between gap-3">
             {/* Discount Amount */}
             <div className="w-full">
               <label className="block text-sm font-medium text-gray-700">
-                Discount Amount
+                Offer Category
               </label>
-              <input
-                type="number"
-                name="discountAmount"
-                value={form.discountAmount}
+              <select
+                disabled={isEdit}
+                name="offerCategory"
+                value={form.offerCategory}
                 onChange={handleChange}
-                className="mt-1 block w-full px-2 py-1 outline-none  border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-              />
+                className="mt-1 block w-full px-2 py-1 outline-none border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                <option value="">Select category</option>
+                {categories && categories.length > 0 ? (
+                  categories.map((category) => (
+                    <option key={category.id} value={category.categoryName}>
+                      {category.categoryName}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No categories available</option>
+                )}
+              </select>
             </div>
+
             {/* Minimum Order Value */}
             <div className="w-full">
               <label className="block text-sm font-medium text-gray-700">
-                Minimum Order Value
+                offer Percentage
               </label>
               <input
                 type="number"
-                name="minOrderValue"
-                value={form.minOrderValue}
+                name="offerPercetage"
+                value={form.offerPercetage}
                 onChange={handleChange}
                 className="mt-1 block w-full px-2 py-1 outline-none  border-2 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
@@ -213,4 +191,4 @@ const AddCouponModal = ({
   );
 };
 
-export default AddCouponModal;
+export default AddEditOfferModal;

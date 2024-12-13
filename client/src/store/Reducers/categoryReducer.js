@@ -98,6 +98,70 @@ export const deleteCategory = createAsyncThunk(
   }
 );
 
+// offer category
+export const add_category_offer = createAsyncThunk(
+  "category/add_category_offer",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await api.post("/category/add-category-offer", info, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const update_category_offer = createAsyncThunk(
+  "category/update_category_offer",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await api.post("/category/update-category-offer", info, {
+        withCredentials: true,
+      });
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const get_category_offer = createAsyncThunk(
+  "category/get_category_offer",
+  async (
+    { searchValue, perPage, page },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
+    try {
+      const response = await api.get(
+        `/category/get-category-offer?perpage=${perPage}&&searchValue=${searchValue}&&page=${page}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+export const delete_category_offer = createAsyncThunk(
+  "category/delete_category_offer",
+  async (info, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await api.delete(
+        `/category/delete-category-offer`,
+        info,
+        {
+          withCredentials: true,
+        }
+      );
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const categoryReducer = createSlice({
   name: "category",
   initialState: {
@@ -106,6 +170,8 @@ const categoryReducer = createSlice({
     loader: false,
     categories: [],
     totalCategory: 0,
+    categoryOffer: [],
+    totalOffer: 0,
   },
   reducers: {
     messageClear: (state, _) => {
@@ -158,6 +224,27 @@ const categoryReducer = createSlice({
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loader = false;
         state.errorMessage = action.payload.error;
+      })
+      .addCase(add_category_offer.rejected, (state, action) => {
+        state.errorMessage = action.payload?.error;
+      })
+      .addCase(add_category_offer.fulfilled, (state, action) => {
+        state.successMessage = action.payload?.message;
+      })
+      .addCase(update_category_offer.rejected, (state, action) => {
+        state.errorMessage = action.payload?.error;
+      })
+      .addCase(update_category_offer.fulfilled, (state, action) => {
+        state.successMessage = action.payload?.message;
+      })
+      .addCase(get_category_offer.fulfilled, (state, action) => {
+        state.categoryOffer = action.payload?.categoryOffer;
+      })
+      .addCase(delete_category_offer.rejected, (state, action) => {
+        state.errorMessage = action.payload?.error;
+      })
+      .addCase(delete_category_offer.fulfilled, (state, action) => {
+        state.successMessage = action.payload?.message;
       });
   },
 });
