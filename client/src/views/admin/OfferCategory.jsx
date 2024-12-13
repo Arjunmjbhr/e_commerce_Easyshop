@@ -16,6 +16,7 @@ import ConfirmModal from "./../../components/ConfirmModal";
 import AddEditOfferModal from "./componets/AddEditOfferModal";
 
 const OfferCategory = () => {
+  const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
   const [perPage, setPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,7 +58,6 @@ const OfferCategory = () => {
   const handleDelete = (offerId) => {
     dispatch(delete_category_offer(offerId));
   };
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(get_category_offer({ searchValue, perPage, page: currentPage }));
@@ -223,7 +223,7 @@ const OfferCategory = () => {
           <Pagination
             pageNumber={currentPage}
             setPageNumber={setCurrentPage}
-            totalItem={totalOffer}
+            totalItem={10}
             perPage={perPage}
             showItem={3}
           />

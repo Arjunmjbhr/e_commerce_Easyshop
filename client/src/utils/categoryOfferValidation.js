@@ -1,10 +1,13 @@
 export const categoryOfferValidation = (
   offerPercentage,
   startingDate,
-  expirationDate
+  expirationDate,
+  offerCategory
 ) => {
   const errors = {};
-
+  if (!offerCategory) {
+    errors.offerCategory = "you should select category before proceed";
+  }
   if (isNaN(offerPercentage) || offerPercentage > 99 || offerPercentage < 0) {
     errors.offerPercentage = "Offer percentage should be between 0 and 99.";
   }
