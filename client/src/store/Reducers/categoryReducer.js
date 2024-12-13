@@ -114,11 +114,15 @@ export const add_category_offer = createAsyncThunk(
 );
 export const update_category_offer = createAsyncThunk(
   "category/update_category_offer",
-  async (info, { rejectWithValue, fulfillWithValue }) => {
+  async ({ offerId, info }, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const response = await api.post("/category/update-category-offer", info, {
-        withCredentials: true,
-      });
+      const response = await api.put(
+        `/category/update-category-offer/${offerId}`,
+        info,
+        {
+          withCredentials: true,
+        }
+      );
       return fulfillWithValue(response.data);
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -146,11 +150,11 @@ export const get_category_offer = createAsyncThunk(
 );
 export const delete_category_offer = createAsyncThunk(
   "category/delete_category_offer",
-  async (info, { rejectWithValue, fulfillWithValue }) => {
+  async (offerId, { rejectWithValue, fulfillWithValue }) => {
     try {
       const response = await api.delete(
-        `/category/delete-category-offer`,
-        info,
+        `/category/delete-category-offer/${offerId}`,
+
         {
           withCredentials: true,
         }

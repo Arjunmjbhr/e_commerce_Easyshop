@@ -32,39 +32,37 @@ const OfferCategory = () => {
   // State to store form inputs
   const [form, setForm] = useState({
     offerCategory: "",
-    offerPercetage: 0,
+    offerPercentage: 0,
     startingDate: "",
     expirationDate: "",
-    totalRedemptionsAllowed: "",
     isActive: true,
   });
 
-  const handleEdit = (coupon) => {
+  const handleEdit = (offer) => {
     setForm({
-      couponId: coupon?.couponId || "",
-      discountAmount: coupon?.discountAmount || "",
-      minOrderValue: coupon?.minOrderValue || "",
-      startingDate: coupon?.startingDate
-        ? new Date(coupon.startingDate).toISOString().split("T")[0]
+      offerCategory: offer.offerCategory,
+      offerPercentage: offer.offerPercentage,
+      offerId: offer._id,
+      startingDate: offer?.startingDate
+        ? new Date(offer.startingDate).toISOString().split("T")[0]
         : "",
-      expirationDate: coupon?.expirationDate
-        ? new Date(coupon.expirationDate).toISOString().split("T")[0]
+      expirationDate: offer?.expirationDate
+        ? new Date(offer.expirationDate).toISOString().split("T")[0]
         : "",
-      totalRedemptionsAllowed: coupon?.totalRedemptionsAllowed || "",
-      isActive: coupon?.isActive,
+      isActive: offer?.isActive,
     });
     setIsEdit(true);
     setIsModalOpen(true);
   };
-  const handleDelete = (couponId) => {
-    dispatch(delete_category_offer(couponId));
+  const handleDelete = (offerId) => {
+    dispatch(delete_category_offer(offerId));
   };
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(get_category_offer({ searchValue, perPage, page: currentPage }));
     dispatch(get_category({ perPage: 10, page: 1, searchValue }));
-  }, [dispatch, form, searchValue, perPage, currentPage, successMessage]);
+  }, [dispatch, searchValue, perPage, currentPage, successMessage]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -74,46 +72,18 @@ const OfferCategory = () => {
     if (successMessage) {
       toast.success(successMessage);
       dispatch(messageClear());
+      setIsModalOpen(false);
+      setIsEdit(false);
+      setForm({
+        offerCategory: "",
+        offerPercentage: 0,
+        startingDate: "",
+        expirationDate: "",
+
+        isActive: true,
+      });
     }
   }, [successMessage, errorMessage, dispatch]);
-
-  const offers = [
-    {
-      offerId: 557556,
-      startingDate: "2024-12-15", // YYYY-MM-DD format
-      category: "Electronics",
-      expirationDate: "2024-12-31",
-      isActive: true,
-    },
-    {
-      offerId: 557557,
-      startingDate: "2024-12-10",
-      category: "Fashion",
-      expirationDate: "2024-12-25",
-      isActive: false,
-    },
-    {
-      offerId: 557558,
-      startingDate: "2024-12-20",
-      category: "Home Appliances",
-      expirationDate: "2025-01-10",
-      isActive: true,
-    },
-    {
-      offerId: 557559,
-      startingDate: "2024-11-30",
-      category: "Books",
-      expirationDate: "2024-12-15",
-      isActive: false,
-    },
-    {
-      offerId: 557560,
-      startingDate: "2024-12-01",
-      category: "Groceries",
-      expirationDate: "2024-12-20",
-      isActive: true,
-    },
-  ];
 
   return (
     <div className="px-2 md:pr-7">
@@ -179,30 +149,30 @@ const OfferCategory = () => {
               </div>
             </div>
             {/* table content */}
-            {offers.map((offer) => {
+            {categoryOffer.map((offer) => {
               const {
-                offerId,
+                _id,
+                offerCategory,
+                offerPercentage,
                 startingDate,
-                category,
                 expirationDate,
                 isActive,
               } = offer;
 
               return (
                 <div
+                  key={_id}
                   className={`${
                     isActive ? "bg-green-500" : "bg-red-500"
                   } font-semibold `}
                 >
                   <div className="  p-2 my-2 flex">
-                    <div className=" text-black text-sm w-[25%] ">
-                      {offerId}
+                    <div className=" text-black text-sm w-[25%] ">{_id}</div>
+                    <div className=" text-black text-sm w-[17%] text-center  ">
+                      {offerPercentage} %
                     </div>
                     <div className=" text-black text-sm w-[17%]  ">
-                      offer percentage
-                    </div>
-                    <div className=" text-black text-sm w-[17%]  ">
-                      {category}
+                      {offerCategory}
                     </div>
 
                     <div className="  text-black text-sm w-[17%]  ">
@@ -221,7 +191,7 @@ const OfferCategory = () => {
                     </div>
 
                     <div className=" flex gap-3 text-black text-lg w-[12%] cursor-pointer  ">
-                      <span onClick={() => handleEdit(offerId)}>
+                      <span onClick={() => handleEdit(offer)}>
                         <FaEdit />
                       </span>
                       <span
@@ -237,7 +207,7 @@ const OfferCategory = () => {
                     {!modalClose && (
                       <ConfirmModal
                         SetModalClose={setModalClose}
-                        confimFunction={() => handleDelete(offerId)}
+                        confimFunction={() => handleDelete(_id)}
                         message="Are you sure want to delete the coupon"
                       />
                     )}
