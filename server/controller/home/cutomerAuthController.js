@@ -8,6 +8,7 @@ const addressModel = require("../../model/addressModel");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const walletModel = require("../../model/walletModel");
+const WalletTransactionModel = require("../../model/WalletTransactionModel");
 
 class cutomerAuthController {
   constructor() {
@@ -240,13 +241,20 @@ class cutomerAuthController {
 
       if (!customer) {
         // If user doesn't exist, create a new one
+        const referralId = await this.generateUniqueReferralId();
         customer = new customerModel({
           name,
           email,
           method: "google",
           password: null,
+          referralId: referralId,
         });
         await customer.save();
+        // creating wallet for the customer
+        await walletModel.create({
+          userId: customer._id,
+          balance: 0,
+        });
       }
 
       // Generate JWT token
@@ -314,7 +322,7 @@ class cutomerAuthController {
 
   verify_otp = async (req, res) => {
     console.log("Verifying OTP", req.body);
-    const { email, otp, password, name } = req.body;
+    const { email, otp, password, name, referralId } = req.body;
 
     // Validate that email, OTP, password, and name are provided
     if (!email || !otp || !password || !name) {
@@ -366,18 +374,18 @@ class cutomerAuthController {
 
       // Hash the password securely
       const hashedPassword = await bcrypt.hash(trimmedPassword, 10);
-      const referralId = await this.generateUniqueReferralId();
+      const referralIdNew = await this.generateUniqueReferralId();
       // Create a new customer
       const createCustomer = await customerModel.create({
         name: trimmedName,
         email: trimmedEmail,
         password: hashedPassword,
-        referralId,
+        referralId: referralIdNew,
         method: "manual",
       });
 
       // creating wallet for the customer
-      await walletModel.create({
+      const newUserWallet = await walletModel.create({
         userId: createCustomer._id,
         balance: 0,
       });
@@ -386,6 +394,40 @@ class cutomerAuthController {
       await sellerCustomerModel.create({
         myId: createCustomer._id,
       });
+      if (referralId) {
+        // Find the customer who referred the new user
+        const referedByCustomer = await customerModel.findOne({ referralId });
+
+        if (referedByCustomer) {
+          // Add reward to the referrer's wallet and log the transaction
+          const referelByWallet = await walletModel.findOneAndUpdate(
+            { userId: referedByCustomer._id },
+            { $inc: { balance: 50 } },
+            { new: true }
+          );
+
+          await WalletTransactionModel.create({
+            walletId: referelByWallet._id,
+            type: "credit",
+            amount: 50,
+            description: "Referral Reward: Credit to Referrer",
+          });
+
+          // Add reward to the new user's wallet and log the transaction
+          const ownWallet = await walletModel.findOneAndUpdate(
+            { _id: newUserWallet._id },
+            { $inc: { balance: 25 } },
+            { new: true }
+          );
+
+          await WalletTransactionModel.create({
+            walletId: ownWallet._id,
+            type: "credit",
+            amount: 25,
+            description: "Referral Reward: Credit to New User",
+          });
+        }
+      }
 
       // Generate JWT token
       const token = await createToken({

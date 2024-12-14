@@ -21,6 +21,7 @@ const Register = () => {
     password: "",
     email: "",
     confirmPassword: "",
+    referralId: "",
   });
   const [showModal, setShowModal] = useState(false);
   const [otpInputs, setOtpInputs] = useState(Array(6).fill(""));
@@ -64,7 +65,7 @@ const Register = () => {
     if (userInfo) {
       navigate("/");
     }
-  }, [successMessage, errorMessage, userInfo]);
+  }, [successMessage, errorMessage, userInfo, dispatch]);
 
   // closing modal
   const closeModal = () => setShowModal(false);
@@ -108,6 +109,7 @@ const Register = () => {
       password: state.password,
       name: state.name,
       otp,
+      referralId: state.referralId,
     };
     dispatch(verify_otp(data)); // Verify OTP request
   };
@@ -204,6 +206,18 @@ const Register = () => {
                       value={state.confirmPassword}
                       onChange={handleInput}
                       required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1 mb-2">
+                    <label htmlFor="confirmPassword">Referral Id</label>
+                    <input
+                      className="w-full px-3 py-2 border border-slate-200 outline-none focus:border-green-500 rounded-md"
+                      type="text"
+                      name="referralId"
+                      id="referralId"
+                      placeholder="Referral Id"
+                      value={state.referralId}
+                      onChange={handleInput}
                     />
                   </div>
 
