@@ -6,7 +6,7 @@ import {
   quantity_decrement,
 } from "../../store/reducers/cartReducer";
 
-const CartProduct = ({ shop }) => {
+const ShippingProduct = ({ shop, isShipping }) => {
   const dispatch = useDispatch();
   const incrementCount = (quantity, cartId, stock) => {
     const temp = quantity + 1;
@@ -55,53 +55,7 @@ const CartProduct = ({ shop }) => {
                   <p className="line-through">₹{price}</p>
                   <p> -{discountOrOffer}%</p>
                 </div>
-                <div>
-                  <div className="flex flex-col gap-2 justify-center items-center">
-                    {/* button for adding and reducing */}
-
-                    <div className="flex bg-slate-200 h-[30px] justify-center items-center text-lg">
-                      <div
-                        onClick={() =>
-                          decrementCount(
-                            product.quantity,
-                            product._id,
-                            product.productInfo.stock
-                          )
-                        }
-                        className="cursor-pointer px-2 text-2xl"
-                      >
-                        -
-                      </div>
-                      <div className="cursor-pointer px-2">
-                        {product.quantity}
-                      </div>
-                      <div
-                        onClick={() =>
-                          incrementCount(
-                            product.quantity,
-                            product._id,
-                            product.productInfo.stock
-                          )
-                        }
-                        className="cursor-pointer px-2"
-                      >
-                        +
-                      </div>
-                    </div>
-
-                    {/* button for delete item in the cart */}
-                    <div>
-                      <button
-                        onClick={() =>
-                          dispatch(delete_cart_product(product._id))
-                        }
-                        className="px-5 bg-red-500 text-white"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <div></div>
               </div>
             </div>
           );
@@ -111,4 +65,4 @@ const CartProduct = ({ shop }) => {
   );
 };
 
-export default CartProduct;
+export default ShippingProduct;

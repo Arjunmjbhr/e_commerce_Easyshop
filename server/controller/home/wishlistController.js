@@ -2,6 +2,50 @@ const wishlistModel = require("../../model/wishlistModel");
 const { responseReturn } = require("../../utils/response");
 
 class wishlistController {
+  // adding offer filed in the product
+  getCategoryOfferLookup() {
+    return {
+      $lookup: {
+        from: "categoryoffers",
+        let: { category: "$category" }, // Pass local category field
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$offerCategory", "$$category"] },
+                  { $eq: ["$isActive", true] },
+                  { $gte: ["$expirationDate", new Date()] },
+                  { $lte: ["$startingDate", new Date()] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 }, // Get only the most relevant active offer
+        ],
+        as: "categoryOffers", // Store the result in 'categoryOffers'
+      },
+    };
+  }
+  getValidOfferAddField() {
+    return {
+      $addFields: {
+        validOfferPercentage: {
+          $cond: {
+            if: { $gt: [{ $size: "$categoryOffers" }, 0] }, // Check if any offer exists
+            then: { $arrayElemAt: ["$categoryOffers.offerPercentage", 0] }, // Extract offer percentage
+            else: 0, // If no offer, set to 0
+          },
+        },
+      },
+    };
+  }
+  getProjectCategoryOffers() {
+    return {
+      $project: { categoryOffers: 0 }, // Exclude categoryOffers array from final result
+    };
+  }
+  //////////////
   add_to_wishlist = async (req, res) => {
     console.log("in the wishlist controller");
     console.log(req.body);

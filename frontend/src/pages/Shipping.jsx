@@ -4,7 +4,6 @@ import Footer from "../componets/Footer";
 import PageHeading from "../componets/PageHeading";
 import { useLocation } from "react-router-dom";
 import AddressForm from "../componets/AddressForm";
-import CartProductDetails from "../componets/cart_checkout/CartProductDetails";
 import OrderSummaryShipping from "../componets/cart_checkout/OrderSummaryShipping";
 import { useDispatch, useSelector } from "react-redux";
 import { place_order } from "../store/reducers/orderReducer";
@@ -17,6 +16,7 @@ import {
 } from "./../store/reducers/authUserReducer";
 import AddressItration from "../componets/cart_checkout/AddressItration";
 import toast from "react-hot-toast";
+import ShippingProductDetails from "../componets/cart_checkout/shippingProductDetails";
 
 const Shipping = () => {
   const dispatch = useDispatch();
@@ -205,7 +205,7 @@ const Shipping = () => {
                 </div>
                 {/* product details */}
                 <div className="mt-3">
-                  <CartProductDetails
+                  <ShippingProductDetails
                     cart_products={products}
                     isShipping={true}
                   />
