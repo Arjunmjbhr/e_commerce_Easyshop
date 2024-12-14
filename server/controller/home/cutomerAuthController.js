@@ -7,6 +7,7 @@ const nodemailer = require("nodemailer");
 const addressModel = require("../../model/addressModel");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
+const walletModel = require("../../model/walletModel");
 
 class cutomerAuthController {
   constructor() {
@@ -14,6 +15,21 @@ class cutomerAuthController {
 
     this.otpStore = {};
   }
+  // creating unique referelId
+  generateUniqueReferralId = async () => {
+    let referralId;
+    let isUnique = false;
+
+    while (!isUnique) {
+      referralId = Math.floor(
+        1000000000 + Math.random() * 9000000000
+      ).toString();
+      const exists = await customerModel.findOne({ referralId });
+      if (!exists) isUnique = true;
+    }
+    return referralId;
+  };
+
   // method for creating an otp
   createOtp() {
     const expirationTime = Date.now() + 5 * 60 * 1000; // 5 minutes from now
@@ -101,6 +117,7 @@ class cutomerAuthController {
         password: hashedPassword,
         method: "manual",
       });
+      // create wallet
 
       // Add entry in sellerCustomerModel for chat
       await sellerCustomerModel.create({
@@ -349,13 +366,20 @@ class cutomerAuthController {
 
       // Hash the password securely
       const hashedPassword = await bcrypt.hash(trimmedPassword, 10);
-
+      const referralId = await this.generateUniqueReferralId();
       // Create a new customer
       const createCustomer = await customerModel.create({
         name: trimmedName,
         email: trimmedEmail,
         password: hashedPassword,
-        method: "manual", // Assuming 'manual' is the registration method
+        referralId,
+        method: "manual",
+      });
+
+      // creating wallet for the customer
+      await walletModel.create({
+        userId: createCustomer._id,
+        balance: 0,
       });
 
       // Link customer with seller model (if applicable)

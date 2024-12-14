@@ -26,6 +26,10 @@ const customerSchema = new Schema(
 
       default: null,
     },
+    referralId: {
+      type: String,
+      required: true,
+    },
 
     password: {
       type: String,

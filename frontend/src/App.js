@@ -21,6 +21,7 @@ import OrderDetails from "./componets/dashboard/OrderDetails";
 import UserProfile from "./pages/UserProfile";
 import ResetPassword from "./componets/login_register/ResetPassword";
 import Wishlist from "./pages/Wishlist";
+import Wallet from "./componets/wallet/Wallet";
 
 function App() {
   // for category details for header
@@ -56,6 +57,7 @@ function App() {
             <Route path="my-orders" element={<OrderDashboard />} />
             <Route path="user-profile" element={<UserProfile />} />
             <Route path="wishlist" element={<Wishlist />} />
+            <Route path="wallet" element={<Wallet />} />
           </Route>
         </Route>
       </Routes>
