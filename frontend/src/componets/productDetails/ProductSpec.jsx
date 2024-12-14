@@ -14,47 +14,55 @@ const ProductSpec = ({
   quantity,
   add_cart,
 }) => {
+  const {
+    discount,
+    name,
+    stock,
+    rating,
+    price,
+    description,
+    validOfferPercentage,
+  } = product;
+  let discountOrOffer =
+    discount > validOfferPercentage ? discount : validOfferPercentage;
+
   return (
     <div>
       <div>
         <div className="flex flex-col justify-start gap-4">
-          <h1 className="text-2xl font-bold ">{product.name}</h1>
+          <h1 className="text-2xl font-bold ">{name}</h1>
           {/* rating */}
           <div className="flex justify-start items-center gap-5">
             <div className="flex ">
-              <Ratings ratings={product.rating} />
+              <Ratings ratings={rating} />
             </div>
 
             <span>(32 reviews)</span>
           </div>
           {/* discount and price */}
           <div>
-            {product.discount !== 0 ? (
+            {discountOrOffer !== 0 ? (
               <div className="flex justify-start gap-3">
                 <h2 className=" text-red-600 text-xl font-bold">Price</h2>
                 <h2 className="line-through text-red-600 text-xl font-bold">
-                  {product.price}
+                  {price}
                 </h2>
                 <h2 className=" text-red-600 text-xl font-bold">
-                  ₹
-                  {product.price -
-                    Math.floor((product.discount * product.price) / 100)}
+                  ₹{price - Math.floor((discountOrOffer * price) / 100)}
                   (-
-                  {product.discount}%)
+                  {discountOrOffer}%)
                 </h2>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <h2 className=" text-red-600 text-xl font-bold">Price :</h2>
-                <h2 className=" text-red-600 text-xl font-bold">
-                  {product.price}
-                </h2>
+                <h2 className=" text-red-600 text-xl font-bold">{price}</h2>
               </div>
             )}
           </div>
           {/* description */}
           <div className="text-slate-600">
-            <p>{product.description}</p>
+            <p>{description}</p>
           </div>
           {/* count product & cart &  wishlist  */}
           <div className="flex justify-start items-center gap-4 mt-5">
@@ -100,10 +108,10 @@ const ProductSpec = ({
             <div className="flex  gap-5 flex-col">
               <span
                 className={`${
-                  product.stock ? "text-green-800" : "text-red-500"
+                  stock ? "text-green-800" : "text-red-500"
                 } font-bold`}
               >
-                {product.stock ? `In Stock(${product.stock})` : "Out Of Stock"}
+                {stock ? `In Stock(${stock})` : "Out Of Stock"}
               </span>
               <ul className="flex justify-start items-center gap-3">
                 <li>
@@ -143,7 +151,7 @@ const ProductSpec = ({
           </div>
           {/* buy now and chat  */}
           <div className="flex gap-3 mx-10 mb-5">
-            {product.stock ? (
+            {stock ? (
               <button className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-green-500/40 bg-[#247462] text-white">
                 Buy Now
               </button>
