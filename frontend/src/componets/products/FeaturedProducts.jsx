@@ -81,80 +81,98 @@ const FeaturedProducts = ({ products }) => {
 
         {/* Content of Featured Products */}
         <div className="w-full gap-10 grid grid-cols-4 xs:grid-cols-1  sm:grid-cols-2  md:grid-cols-2 md-lg:grid-cols-3 lg:grid-cols-4 ">
-          {products.map((product) => (
-            <div
-              key={product._id}
-              className="border group relative transition-all duration-500 hover:-mt-2 hover:shadow-lg rounded-md"
-            >
-              {/* Discount & Images & icons for cart view and wishlist*/}
-              <div className="relative">
-                {/* Discount Badge */}
-                <div className="w-[38px] h-[38px] text-[12px] absolute bg-red-700 rounded-full text-white flex justify-center items-center top-4 left-4">
-                  {product.discount}%
-                </div>
-
-                {/* Product Image */}
-                <div className="p-2">
-                  <img
-                    className="w-full h-[240px] rounded-md"
-                    src={product.images[0]}
-                    alt={product.name}
-                  />
-                </div>
-
-                {/* Hover Action Icons view cart wishlist */}
-                <div className="absolute w-full flex justify-center items-center gap-2 -bottom-10 group-hover:bottom-4 transition-all opacity-0 group-hover:opacity-100">
-                  {/* wishlist */}
-                  <div
-                    onClick={() => {
-                      add_wishlist(product);
-                    }}
-                    className="h-[38px] w-[38px] cursor-pointer bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
-                  >
-                    <CiHeart />
+          {products.map((product) => {
+            const {
+              _id,
+              discount,
+              images,
+              name,
+              slug,
+              stock,
+              rating,
+              price,
+              validOfferPercentage,
+            } = product;
+            let discountOrOffer =
+              discount > validOfferPercentage ? discount : validOfferPercentage;
+            let flagOfOffer = discount > validOfferPercentage ? false : true;
+            return (
+              <div
+                key={_id}
+                className="border group relative transition-all duration-500 hover:-mt-2 hover:shadow-lg rounded-md"
+              >
+                {/* Discount & Images & icons for cart view and wishlist*/}
+                <div className="relative">
+                  {/* Discount Badge */}
+                  <div className="w-[38px] h-[38px] text-[12px] absolute bg-red-700 rounded-full text-white flex justify-center items-center top-4 left-4">
+                    {discountOrOffer}%
                   </div>
-                  {/* cart */}
-                  <div
-                    onClick={() => {
-                      add_cart(product._id);
-                    }}
-                    className="h-[38px] w-[38px] cursor-pointer bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
-                  >
-                    <IoCartOutline />
+                  {flagOfOffer && (
+                    <div className=" text-[10px] text-black py-1 absolute bg-yellow-400  flex justify-center items-center rounded-md shadow-md top-2 right-2 px-2">
+                      Category Offer
+                    </div>
+                  )}
+
+                  {/* Product Image */}
+                  <div className="p-2">
+                    <img
+                      className="w-full h-[240px] rounded-md"
+                      src={images[0]}
+                      alt={name}
+                    />
                   </div>
-                  {/* view details */}
-                  <Link
-                    to={`/product/details/${product.slug}`}
-                    className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
-                  >
-                    <IoEyeOutline />
-                  </Link>
+
+                  {/* Hover Action Icons view cart wishlist */}
+                  <div className="absolute w-full flex justify-center items-center gap-2 -bottom-10 group-hover:bottom-4 transition-all opacity-0 group-hover:opacity-100">
+                    {/* wishlist */}
+                    <div
+                      onClick={() => {
+                        add_wishlist(product);
+                      }}
+                      className="h-[38px] w-[38px] cursor-pointer bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                    >
+                      <CiHeart />
+                    </div>
+                    {/* cart */}
+                    <div
+                      onClick={() => {
+                        add_cart(_id);
+                      }}
+                      className="h-[38px] w-[38px] cursor-pointer bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                    >
+                      <IoCartOutline />
+                    </div>
+                    {/* view details */}
+                    <Link
+                      to={`/product/details/${slug}`}
+                      className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
+                    >
+                      <IoEyeOutline />
+                    </Link>
+                  </div>
+                </div>
+                {/* details */}
+                <div className=" text-black font-semibold flex  flex-col gap-2 px-3 my-1 overflow-x-hidden">
+                  <h2 className="text-sm">{name}</h2>
+                  <div className="flex gap-3">
+                    <span className="line-through text-red-600">₹ {price}</span>
+                    <span className="text-green-600">
+                      ₹
+                      {discountOrOffer
+                        ? price - Math.floor((price * discountOrOffer) / 100)
+                        : price}
+                    </span>
+                  </div>
+                  <div className="text-slate-600 text-[12px]">
+                    stock left: {stock ? stock : "out of stock"}
+                  </div>
+                  <div className="flex">
+                    <Ratings ratings={rating} />
+                  </div>
                 </div>
               </div>
-              {/* details */}
-              <div className=" text-black font-semibold flex  flex-col gap-2 px-3 my-1 overflow-x-hidden">
-                <h2 className="text-sm">{product.name}</h2>
-                <div className="flex gap-3">
-                  <span className="line-through text-red-600">
-                    ₹ {product.price}
-                  </span>
-                  <span className="text-green-600">
-                    ₹
-                    {product.discount
-                      ? product.price -
-                        Math.floor((product.price * product.discount) / 100)
-                      : product.price}
-                  </span>
-                </div>
-                <div className="text-slate-600 text-[12px]">
-                  stock left: {product.stock ? product.stock : "out of stock"}
-                </div>
-                <div className="flex">
-                  <Ratings ratings={product.rating} />
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           {/* end of map  */}
         </div>
       </div>

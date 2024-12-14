@@ -3,6 +3,50 @@ const productModel = require("../../model/productModel");
 const { responseReturn } = require("../../utils/response");
 
 class homeController {
+  // adding offer filed in the product
+  getCategoryOfferLookup() {
+    return {
+      $lookup: {
+        from: "categoryoffers",
+        let: { category: "$category" }, // Pass local category field
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$offerCategory", "$$category"] },
+                  { $eq: ["$isActive", true] },
+                  { $gte: ["$expirationDate", new Date()] },
+                  { $lte: ["$startingDate", new Date()] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 }, // Get only the most relevant active offer
+        ],
+        as: "categoryOffers", // Store the result in 'categoryOffers'
+      },
+    };
+  }
+  getValidOfferAddField() {
+    return {
+      $addFields: {
+        validOfferPercentage: {
+          $cond: {
+            if: { $gt: [{ $size: "$categoryOffers" }, 0] }, // Check if any offer exists
+            then: { $arrayElemAt: ["$categoryOffers.offerPercentage", 0] }, // Extract offer percentage
+            else: 0, // If no offer, set to 0
+          },
+        },
+      },
+    };
+  }
+  getProjectCategoryOffers() {
+    return {
+      $project: { categoryOffers: 0 }, // Exclude categoryOffers array from final result
+    };
+  }
+
   formate_product = (products) => {
     const productArray = [];
     let i = 0;
@@ -41,42 +85,9 @@ class homeController {
         {
           $match: { isDeleted: false }, // Filter for valid products
         },
-        {
-          $lookup: {
-            from: "categoryoffers",
-            let: { category: "$category" }, // Pass the category field to the lookup
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      { $eq: ["$offerCategory", "$$category"] }, // Match the same category
-                      { $eq: ["$isActive", true] }, // Offer must be active
-                      { $gte: ["$expirationDate", new Date()] }, // Ensure not expired
-                      { $lte: ["$startingDate", new Date()] }, // Ensure started
-                    ],
-                  },
-                },
-              },
-              { $limit: 1 }, // Only get the most relevant active offer
-            ],
-            as: "categoryOffers", // Resulting field for offers
-          },
-        },
-        {
-          $addFields: {
-            validOfferPercentage: {
-              $cond: {
-                if: { $gt: [{ $size: "$categoryOffers" }, 0] }, // Check if offer exists
-                then: { $arrayElemAt: ["$categoryOffers.offerPercentage", 0] }, // Extract the percentage
-                else: 0, // No valid offer
-              },
-            },
-          },
-        },
-        {
-          $project: { categoryOffers: 0 }, // Exclude full categoryOffers array
-        },
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
         {
           $limit: 12,
         },
@@ -87,36 +98,78 @@ class homeController {
         },
       ]);
 
-      const products = await productModel
-        .find({ isDeleted: false })
-        .limit(12)
-        .sort({
-          createdAt: -1,
-        });
       // latest products
-      const allProducts_1 = await productModel
-        .find({ isDeleted: false })
-        .limit(9)
-        .sort({
-          createdAt: -1,
-        });
+      // const allProducts_1 = await productModel
+      //   .find({ isDeleted: false })
+      //   .limit(9)
+      //   .sort({
+      //     createdAt: -1,
+      //   });
+      const allProducts_1 = await productModel.aggregate([
+        {
+          $match: { isDeleted: false }, // Filter for valid products
+        },
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
+        {
+          $limit: 9,
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+      ]);
       const latest_product = this.formate_product(allProducts_1);
       //discounted products
-      const allProducts_2 = await productModel
-        .find({ isDeleted: false })
-        .limit(9)
-        .sort({
-          discount: -1,
-        });
+      // const allProducts_2 = await productModel
+      //   .find({ isDeleted: false })
+      //   .limit(9)
+      //   .sort({
+      //     discount: -1,
+      //   });
+      const allProducts_2 = await productModel.aggregate([
+        {
+          $match: { isDeleted: false }, // Filter for valid products
+        },
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
+        {
+          $limit: 9,
+        },
+        {
+          $sort: {
+            discount: -1,
+          },
+        },
+      ]);
       const discounted_product = this.formate_product(allProducts_2);
 
       //top rated products
-      const allProducts_3 = await productModel
-        .find({ isDeleted: false })
-        .limit(9)
-        .sort({
-          rating: -1,
-        });
+      // const allProducts_3 = await productModel
+      //   .find({ isDeleted: false })
+      //   .limit(9)
+      //   .sort({
+      //     rating: -1,
+      //   });
+      const allProducts_3 = await productModel.aggregate([
+        {
+          $match: { isDeleted: false },
+        },
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
+        {
+          $limit: 9,
+        },
+        {
+          $sort: {
+            rating: -1,
+          },
+        },
+      ]);
       const topRated_product = this.formate_product(allProducts_3);
 
       responseReturn(res, 200, {
@@ -135,32 +188,58 @@ class homeController {
   product_details = async (req, res) => {
     const { slug } = req.params;
     try {
-      const product = await productModel.findOne({ slug });
+      const product = await productModel.aggregate([
+        {
+          $match: {
+            slug, // Matches a document where the "slug" field equals the provided value
+          },
+        },
+        this.getCategoryOfferLookup(), // Custom method to add a lookup stage for category offers
+        this.getValidOfferAddField(), // Custom method to add a field for valid offers
+        this.getProjectCategoryOffers(), // Custom method to project (shape) category offer data
+      ]);
 
       if (!product) {
         return responseReturn(res, 404, { error: "Product not found" });
       }
 
-      const relatedProducts = await productModel
-        .find({
-          $and: [
-            { isDeleted: false },
-            { _id: { $ne: product._id } },
-            { category: product.category },
-          ],
-        })
-        .limit(12);
+      const relatedProducts = await productModel.aggregate([
+        {
+          $match: {
+            isDeleted: false,
+            _id: { $ne: product[0]._id },
+            category: product[0].category,
+          },
+        },
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
+
+        {
+          $limit: 12,
+        },
+      ]);
 
       // Fetch more products from the same seller, excluding the current product
-      const moreProducts = await productModel
-        .find({
-          $and: [{ _id: { $ne: product._id } }, { sellerId: product.sellerId }],
-        })
-        .limit(3);
+
+      const moreProducts = await productModel.aggregate([
+        {
+          $match: {
+            _id: { $ne: product[0]._id },
+            sellerId: product[0].sellerId,
+          },
+        },
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
+        {
+          $limit: 3,
+        },
+      ]);
 
       // Return the response
       responseReturn(res, 200, {
-        product,
+        product: product[0],
         relatedProducts,
         moreProducts,
       });
@@ -286,6 +365,7 @@ class homeController {
             discountedPrice: { $gte: lowPriceInt, $lte: highPriceInt },
           },
         },
+
         // Count total documents
         { $count: "totalCount" },
       ]);
@@ -293,6 +373,7 @@ class homeController {
       const totalCount = totalCountResult[0]?.totalCount || 0; // Default to 0 if no results
 
       // Aggregation 2: Fetch paginated products
+
       const totalProducts = await productModel.aggregate([
         // First stage: $text search, if searchValue exists
         ...(searchValue
@@ -316,6 +397,10 @@ class homeController {
             discountedPrice: { $gte: lowPriceInt, $lte: highPriceInt },
           },
         },
+        //lookup for adding offer
+        this.getCategoryOfferLookup(),
+        this.getValidOfferAddField(),
+        this.getProjectCategoryOffers(),
         // Sorting
         { $sort: sortFilter },
         // Pagination

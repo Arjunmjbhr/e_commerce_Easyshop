@@ -75,17 +75,37 @@ const ShopProducts = ({ styles, products }) => {
       }`}
     >
       {products.map((prod) => {
+        const {
+          _id,
+          discount,
+          images,
+          name,
+          slug,
+          stock,
+          rating,
+          price,
+          validOfferPercentage,
+        } = prod;
+        let discountOrOffer =
+          discount > validOfferPercentage ? discount : validOfferPercentage;
+        let flagOfOffer = discount > validOfferPercentage ? false : true;
+
         return (
-          <div key={prod._id} className="w-full p-2 overflow-hidden">
+          <div key={_id} className="w-full p-2 overflow-hidden">
             <div
               className={`flex transition-all relative group rounded-md bg-white m-2   duration-1000 shadow-lg hover:-translate-y-3 ${
                 styles === "grid" ? "flex-col h-[350px] " : ""
               }`}
             >
               {/* Discount Badge */}
-              <div className="w-[38px] h-[38px] text-[12px] z-50 absolute bg-red-700 rounded-full text-white flex justify-center items-center top-4 right-4">
-                {prod.discount}%
+              <div className="w-[38px] h-[38px] text-[12px] z-50 absolute bg-red-700 rounded-full text-white flex justify-center items-center top-4 left-4">
+                {discountOrOffer}%
               </div>
+              {flagOfOffer && (
+                <div className=" text-[10px] text-black py-1 absolute bg-yellow-400  flex justify-center items-center rounded-md shadow-md top-2 right-2 px-2">
+                  Category Offer
+                </div>
+              )}
               <div
                 className={`overflow-hidden p-3 ${
                   styles === "grid" ? "h-[200px]" : ""
@@ -95,8 +115,8 @@ const ShopProducts = ({ styles, products }) => {
                   className={`object-fill overflow-hidden w-full rounded-lg ${
                     styles === "grid" ? "h-[200px]" : "h-[120px]"
                   } `}
-                  src={prod.images[0]}
-                  alt={prod.name}
+                  src={images[0]}
+                  alt={name}
                 />
                 {/* Hover Action Icons */}
                 <div
@@ -116,14 +136,14 @@ const ShopProducts = ({ styles, products }) => {
                   </div>
                   <div
                     onClick={() => {
-                      add_cart(prod._id);
+                      add_cart(_id);
                     }}
                     className="h-[38px] w-[38px] bg-white rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
                   >
                     <IoCartOutline />
                   </div>
                   <Link
-                    to={`/product/details/${prod.slug}`}
+                    to={`/product/details/${slug}`}
                     className="h-[38px] w-[38px] bg-white  rounded-full flex justify-center items-center shadow-md hover:bg-green-500 hover:text-white text-xl"
                   >
                     <IoEyeOutline />
@@ -132,24 +152,21 @@ const ShopProducts = ({ styles, products }) => {
               </div>
               {/* details */}
               <div className=" text-black font-semibold flex  flex-col gap-2 px-3 my-1 overflow-x-hidden">
-                <h2 className="text-sm">{prod.name}</h2>
+                <h2 className="text-sm">{name}</h2>
                 <div className="flex gap-3">
-                  <span className="line-through text-red-600">
-                    ₹ {prod.price}
-                  </span>
+                  <span className="line-through text-red-600">₹ {price}</span>
                   <span className="text-green-600">
                     ₹
-                    {prod.discount
-                      ? prod.price -
-                        Math.floor((prod.price * prod.discount) / 100)
-                      : prod.price}
+                    {discountOrOffer
+                      ? price - Math.floor((price * discountOrOffer) / 100)
+                      : price}
                   </span>
                 </div>
                 <div className="text-slate-600 text-[12px]">
-                  stock left: {prod.stock ? prod.stock : "out of stock"}
+                  stock left: {stock ? stock : "out of stock"}
                 </div>
                 <div className="flex">
-                  <Ratings ratings={prod.rating} />
+                  <Ratings ratings={rating} />
                 </div>
               </div>
             </div>

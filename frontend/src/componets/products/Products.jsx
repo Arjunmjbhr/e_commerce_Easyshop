@@ -60,28 +60,49 @@ const Products = ({ title, products }) => {
         {products.map((p, i) => {
           return (
             <div key={i} className="flex flex-col justify-start gap-2 ">
-              {p.map((pl, j) => (
-                <Link
-                  key={j}
-                  className="flex justify-start items-start bg-green-200 rounded-lg"
-                  to={`/product/details/${pl.slug}`}
-                >
-                  <img
-                    className="w-[110px] h-[110px] m-2 rounded-md"
-                    src={pl.images[0]}
-                    alt=""
-                  />
-                  <div className="px-3 flex justify-start items-start gap-1 flex-col mt-2">
-                    <h2 className="text-sm">{pl.name} </h2>
-                    <span className="text-md font-bold">
-                      ₹{" "}
-                      {pl.discount
-                        ? pl.price - Math.floor((pl.price * pl.discount) / 100)
-                        : pl.price}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+              {p.map((pl, j) => {
+                const {
+                  slug,
+                  images,
+                  price,
+                  discount,
+                  name,
+                  validOfferPercentage,
+                } = pl;
+                let discountOrOffer =
+                  discount > validOfferPercentage
+                    ? discount
+                    : validOfferPercentage;
+
+                return (
+                  <Link
+                    key={j}
+                    className="flex justify-start items-start bg-green-200 rounded-lg"
+                    to={`/product/details/${slug}`}
+                  >
+                    <img
+                      className="w-[110px] h-[110px] m-2 rounded-md"
+                      src={images[0]}
+                      alt=""
+                    />
+                    <div className="px-3 flex justify-start items-start gap-2 flex-col mt-2">
+                      <h2 className="text-sm">{name} </h2>
+                      <span className="text-sm font-semibold flex gap-2">
+                        <span className="text-red-500 line-through ">
+                          ₹{price}
+                        </span>
+                        <span className="">
+                          ₹{" "}
+                          {discountOrOffer
+                            ? price -
+                              Math.floor((price * discountOrOffer) / 100)
+                            : price}
+                        </span>
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           );
         })}
