@@ -37,6 +37,56 @@ class homeController {
   };
   get_products = async (req, res) => {
     try {
+      const allProduct = await productModel.aggregate([
+        {
+          $match: { isDeleted: false }, // Filter for valid products
+        },
+        {
+          $lookup: {
+            from: "categoryoffers",
+            let: { category: "$category" }, // Pass the category field to the lookup
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$offerCategory", "$$category"] }, // Match the same category
+                      { $eq: ["$isActive", true] }, // Offer must be active
+                      { $gte: ["$expirationDate", new Date()] }, // Ensure not expired
+                      { $lte: ["$startingDate", new Date()] }, // Ensure started
+                    ],
+                  },
+                },
+              },
+              { $limit: 1 }, // Only get the most relevant active offer
+            ],
+            as: "categoryOffers", // Resulting field for offers
+          },
+        },
+        {
+          $addFields: {
+            validOfferPercentage: {
+              $cond: {
+                if: { $gt: [{ $size: "$categoryOffers" }, 0] }, // Check if offer exists
+                then: { $arrayElemAt: ["$categoryOffers.offerPercentage", 0] }, // Extract the percentage
+                else: 0, // No valid offer
+              },
+            },
+          },
+        },
+        {
+          $project: { categoryOffers: 0 }, // Exclude full categoryOffers array
+        },
+        {
+          $limit: 12,
+        },
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+      ]);
+
       const products = await productModel
         .find({ isDeleted: false })
         .limit(12)
@@ -70,7 +120,7 @@ class homeController {
       const topRated_product = this.formate_product(allProducts_3);
 
       responseReturn(res, 200, {
-        products,
+        products: allProduct,
         topRated_product,
         discounted_product,
         latest_product,

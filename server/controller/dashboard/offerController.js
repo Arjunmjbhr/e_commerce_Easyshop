@@ -87,11 +87,8 @@ class offerController {
   };
   //End Method
   update_category_offer = async (req, res) => {
-    console.log("In the update category offer controller", req.body);
-    console.log("Request params:", req.params);
-
+    console.log("In the update category offer controller");
     const { offerId } = req.params;
-
     let {
       offerCategory,
       offerPercentage,
