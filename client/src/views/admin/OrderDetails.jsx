@@ -159,6 +159,7 @@ const OrderDetails = () => {
                       price,
                       validOfferPercentage,
                       discount,
+                      returnStatus,
                     } = p;
 
                     const discountOrOffer =
@@ -193,39 +194,47 @@ const OrderDetails = () => {
                           <p className="text-gray-600">
                             <strong>Price:</strong> {discountedPrice}
                           </p>
-                          <div className="flex gap-3 mt-3">
-                            <h2>Return Request</h2>
-                            <div
-                              onClick={() => {
-                                setReturnOption({
-                                  productId: _id,
-                                  returnOption: "rejected",
-                                  returnAmount: discountedPrice,
-                                  couponId: order.couponId,
-                                  couponAmount: order.couponAmount,
-                                });
-                                setReturnModalClose(false);
-                              }}
-                              className="bg-red-600 text-sm cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
-                            >
-                              Reject
+                          {returnStatus && (
+                            <p className="text-gray-600">
+                              <strong>Return Status:</strong> {returnStatus}
+                            </p>
+                          )}
+                          {/* return order management button */}
+                          {returnStatus === "requested" && (
+                            <div className="flex gap-3 mt-3">
+                              <h2>Return Request</h2>
+                              <div
+                                onClick={() => {
+                                  setReturnOption({
+                                    productId: _id,
+                                    returnOption: "rejected",
+                                    returnAmount: discountedPrice,
+                                    couponId: order.couponId,
+                                    couponAmount: order.couponAmount,
+                                  });
+                                  setReturnModalClose(false);
+                                }}
+                                className="bg-red-600 text-sm cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
+                              >
+                                Reject
+                              </div>
+                              <div
+                                onClick={() => {
+                                  setReturnOption({
+                                    productId: _id,
+                                    returnOption: "accepted",
+                                    returnAmount: discountedPrice,
+                                    couponId: order.couponId,
+                                    couponAmount: order.couponAmount,
+                                  });
+                                  setReturnModalClose(false);
+                                }}
+                                className="bg-green-600 text-sm cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-green-700 transition duration-200 ease-in-out"
+                              >
+                                Accept
+                              </div>
                             </div>
-                            <div
-                              onClick={() => {
-                                setReturnOption({
-                                  productId: _id,
-                                  returnOption: "accepted",
-                                  returnAmount: discountedPrice,
-                                  couponId: order.couponId,
-                                  couponAmount: order.couponAmount,
-                                });
-                                setReturnModalClose(false);
-                              }}
-                              className="bg-green-600 text-sm cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-green-700 transition duration-200 ease-in-out"
-                            >
-                              Accept
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     );

@@ -21,6 +21,7 @@ const OrderDetails = () => {
   const [confirmSubmit, setConfirmSubmit] = useState(false);
   const navigate = useNavigate();
   const [returnModalClose, SetReturnModalClose] = useState(true);
+  const [returnModalProductId, setReturnModalProductId] = useState(null);
 
   useEffect(() => {
     dispatch(get_order_details(orderId));
@@ -204,7 +205,10 @@ const OrderDetails = () => {
                     {myOrder.delivery_status === "delivered" &&
                       returnStatus === "" && (
                         <div
-                          onClick={() => SetReturnModalClose(false)}
+                          onClick={() => {
+                            setReturnModalProductId(_id);
+                            SetReturnModalClose(false);
+                          }}
                           className="bg-red-600 cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
                         >
                           Return
@@ -218,7 +222,10 @@ const OrderDetails = () => {
                           SetModalClose={SetReturnModalClose}
                           confimFunction={() =>
                             dispatch(
-                              return_product({ orderId, productId: _id })
+                              return_product({
+                                orderId,
+                                productId: returnModalProductId,
+                              })
                             )
                           }
                         />
