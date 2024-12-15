@@ -96,7 +96,7 @@ const OrderDetails = () => {
           {/* Order Status */}
           <div className="flex items-center gap-4">
             <h3 className="text-lg  font-semibold text-gray-700">
-              Order Status
+              Order/Delivery Status
             </h3>
             <p
               className={`py-1 text-xs w-[80px] px-3 rounded-md ${
@@ -180,9 +180,11 @@ const OrderDetails = () => {
                       <p className="text-sm text-gray-600">
                         Quantity: {quantity}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        Return status: {returnStatus}
-                      </p>
+                      {returnStatus !== "" && (
+                        <p className="text-sm text-gray-600">
+                          Return status: {returnStatus}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex justify-center items-center gap-5">
@@ -198,12 +200,16 @@ const OrderDetails = () => {
                         -{discountOrOffer}%
                       </p>
                     </div>
-                    <div
-                      onClick={() => SetReturnModalClose(false)}
-                      className="bg-red-600 cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
-                    >
-                      Return
-                    </div>
+                    {/* return button for deliverd order */}
+                    {myOrder.delivery_status === "delivered" &&
+                      returnStatus === "" && (
+                        <div
+                          onClick={() => SetReturnModalClose(false)}
+                          className="bg-red-600 cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
+                        >
+                          Return
+                        </div>
+                      )}
                     {!returnModalClose && (
                       <div>
                         <ConfirmModal

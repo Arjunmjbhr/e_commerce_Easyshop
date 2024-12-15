@@ -197,6 +197,12 @@ const orderReducer = createSlice({
       })
       .addCase(place_order.rejected, (state, action) => {
         state.placeOrderErrorMessage = action.payload.error;
+      })
+      .addCase(return_product.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(return_product.rejected, (state, action) => {
+        state.placeOrderErrorMessage = action.payload.error;
       });
   },
 });
