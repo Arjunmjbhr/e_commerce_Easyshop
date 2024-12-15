@@ -5,6 +5,7 @@ import {
   get_order_details,
   cancel_order,
   messageClear,
+  return_product,
 } from "../../store/reducers/orderReducer";
 import { Link } from "react-router-dom";
 import ConfirmModal from "../ConfirmModal";
@@ -19,6 +20,7 @@ const OrderDetails = () => {
   const [modalClose, SetModalClose] = useState(true);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
   const navigate = useNavigate();
+  const [returnModalClose, SetReturnModalClose] = useState(true);
 
   useEffect(() => {
     dispatch(get_order_details(orderId));
@@ -66,7 +68,7 @@ const OrderDetails = () => {
           </div>
           <div>
             <p className="text-lg font-semibold text-green-600">
-              ${myOrder.price}
+              ₹{myOrder.price}
             </p>
             <p
               className={`px-3 py-1 text-xs rounded-full ${
@@ -106,6 +108,27 @@ const OrderDetails = () => {
               {myOrder.delivery_status}
             </p>
           </div>
+          <div>
+            <h3 className="text-lg  font-semibold text-gray-700 mb-2">
+              Amount Details
+            </h3>
+            <div className="flex gap-3">
+              <div className="text-sm flex flex-col gap-2">
+                <h6>Total price</h6>
+                <h6>Discount</h6>
+                <h6>Coupon Amount</h6>
+                <h6>Delivery Charge</h6>
+                <h6>Total</h6>
+              </div>
+              <div className="text-sm  flex flex-col gap-2">
+                <h6>: ₹price</h6>
+                <h6>: ₹discount</h6>
+                <h6>: -₹{myOrder.couponAmount}</h6>
+                <h6>: +₹20</h6>
+                <h6>: ₹{myOrder.price}</h6>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Order Products */}
@@ -114,47 +137,91 @@ const OrderDetails = () => {
             Order Products
           </h3>
           <div className="space-y-6 mt-4">
-            {myOrder.products?.map((product, i) => (
-              <div
-                key={i}
-                className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
-              >
-                <div className="flex gap-4">
-                  <img
-                    className="w-20 h-20 object-cover rounded-md"
-                    src={product.images[0]}
-                    alt={product.name}
-                  />
-                  <div className="flex flex-col justify-start">
-                    <Link
-                      to="#"
-                      className="text-lg font-semibold text-blue-600 hover:underline"
+            {myOrder.products?.map((product) => {
+              const {
+                _id,
+                images,
+                name,
+                brand,
+                quantity,
+                discount,
+                price,
+                validOfferPercentage,
+                returnStatus,
+              } = product;
+
+              const discountOrOffer =
+                discount > validOfferPercentage
+                  ? discount
+                  : validOfferPercentage;
+              // total price in the order
+              const discountedPrice =
+                price - Math.floor((price * discountOrOffer) / 100).toFixed(2);
+
+              return (
+                <div
+                  key={_id}
+                  className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
+                >
+                  <div className="flex gap-4">
+                    <img
+                      className="w-20 h-20 object-cover rounded-md"
+                      src={images[0]}
+                      alt={name}
+                    />
+                    <div className="flex flex-col justify-start">
+                      <Link
+                        to="#"
+                        className="text-lg font-semibold text-blue-600 hover:underline"
+                      >
+                        {name}
+                      </Link>
+                      <p className="text-sm text-gray-600">Brand: {brand}</p>
+                      <p className="text-sm text-gray-600">
+                        Quantity: {quantity}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Return status: {returnStatus}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-center items-center gap-5">
+                    <div>
+                      <p className="text-lg font-semibold text-green-600">
+                        ${discountedPrice}
+                      </p>
+
+                      <p className="line-through text-sm text-gray-500">
+                        ${price}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        -{discountOrOffer}%
+                      </p>
+                    </div>
+                    <div
+                      onClick={() => SetReturnModalClose(false)}
+                      className="bg-red-600 cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
                     >
-                      {product.name}
-                    </Link>
-                    <p className="text-sm text-gray-600">
-                      Brand: {product.brand}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Quantity: {product.quantity}
-                    </p>
+                      Return
+                    </div>
+                    {!returnModalClose && (
+                      <div>
+                        <ConfirmModal
+                          message="Please confirm to Request for return this product"
+                          setConfirmSubmit={setConfirmSubmit}
+                          SetModalClose={SetReturnModalClose}
+                          confimFunction={() =>
+                            dispatch(
+                              return_product({ orderId, productId: _id })
+                            )
+                          }
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end">
-                  <p className="text-lg font-semibold text-green-600">
-                    $
-                    {(
-                      product.price -
-                      Math.floor((product.price * product.discount) / 100)
-                    ).toFixed(2)}
-                  </p>
-                  <p className="line-through text-sm text-gray-500">
-                    ${product.price}
-                  </p>
-                  <p className="text-xs text-gray-500">-{product.discount}%</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -164,7 +231,7 @@ const OrderDetails = () => {
             <div className="mt-8 flex gap-6 justify-end">
               {myOrder.payment_status !== "paid" && (
                 <button
-                  className="px-6 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
+                  className="px-3 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200 ease-in-out"
                   onClick={() => redirect(myOrder)}
                 >
                   Make Payment
@@ -173,7 +240,7 @@ const OrderDetails = () => {
               {
                 <button
                   onClick={() => SetModalClose(false)}
-                  className="px-6 py-3 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out"
+                  className="px-3 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out"
                 >
                   Cancel Order
                 </button>
@@ -191,6 +258,8 @@ const OrderDetails = () => {
             />
           </div>
         )}
+
+        {/* modal for return product */}
       </div>
     </div>
   );

@@ -44,7 +44,8 @@ const Shipping = () => {
 
   useEffect(() => {
     dispatch(get_user_profile(userInfo.id));
-  }, [successMessage]);
+  }, [successMessage, dispatch, userInfo]);
+
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -54,7 +55,7 @@ const Shipping = () => {
       toast.error(errorMessage);
       dispatch(messageClear());
     }
-  }, [successMessage, errorMessage]);
+  }, [successMessage, errorMessage, dispatch]);
 
   //   handling form input
   const inputHandle = (e) => {

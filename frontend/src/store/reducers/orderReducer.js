@@ -91,6 +91,23 @@ export const cancel_order = createAsyncThunk(
   }
 );
 // End Method
+export const return_product = createAsyncThunk(
+  "order/return-product",
+
+  async ({ orderId, productId }, { rejectWithValue, fulfillWithValue }) => {
+    console.log(orderId);
+    console.log(productId);
+    try {
+      const { data } = await api.put(
+        `/home/customer/return-product/${orderId}/${productId}`
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 /////////////applay coupon////////////////////
 
