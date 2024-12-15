@@ -20,10 +20,17 @@ router.get(
   checkUserStatus,
   orderController.get_order_details
 );
+// cancel order
 router.put(
   "/home/customer/cancel-order/:orderId",
   checkUserStatus,
   orderController.cancel_order
+);
+//retrun order
+router.put(
+  "/home/customer/return-product/:orderId/:productId",
+  checkUserStatus,
+  orderController.return_product
 );
 //payment
 router.put(
