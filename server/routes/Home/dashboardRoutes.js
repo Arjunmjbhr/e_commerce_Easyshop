@@ -7,5 +7,10 @@ router.get(
   checkUserStatus,
   dashboardController.get_dashboard_data
 );
+router.get(
+  "/home/customer/get-wallet-data/:userId",
+  checkUserStatus,
+  dashboardController.get_wallet_data
+);
 
 module.exports = router;

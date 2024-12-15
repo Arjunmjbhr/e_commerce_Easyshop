@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { get_wallet_data } from "../../store/reducers/dashboardReducer";
 
 const Wallet = () => {
-  const balance = 430.25; // Example balance
+  const dispatch = useDispatch();
+
   const transactions = [
     { id: 1, date: "2024-12-10", description: "Salary Credit", amount: 1500 },
     {
@@ -14,6 +17,15 @@ const Wallet = () => {
     { id: 4, date: "2024-12-13", description: "Online Purchase", amount: -300 },
   ];
 
+  const { userInfo } = useSelector((store) => store.authUser);
+  const { walletBalance, walletTransactions } = useSelector(
+    (store) => store.dashboard
+  );
+
+  useEffect(() => {
+    dispatch(get_wallet_data(userInfo.id));
+  }, [dispatch, userInfo]);
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* Header */}
@@ -25,35 +37,49 @@ const Wallet = () => {
       <div className="mt-6 bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-lg font-medium">Current Balance</h2>
         <p className="text-2xl font-extrabold text-green-600 mt-2">
-          ${balance.toFixed(2)}
+          ₹{walletBalance.toFixed(2)}
         </p>
-        <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
-          Add Funds
-        </button>
       </div>
 
       {/* Transaction History */}
       <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-lg font-medium">Transaction History</h2>
         <ul className="mt-4 divide-y divide-gray-300">
-          {transactions.map((txn) => (
-            <li
-              key={txn.id}
-              className="py-4 flex justify-between items-center text-gray-700"
-            >
-              <div>
-                <p className="font-semibold">{txn.description}</p>
-                <p className="text-sm text-gray-500">{txn.date}</p>
-              </div>
-              <p
-                className={`font-semibold ${
-                  txn.amount < 0 ? "text-red-500" : "text-green-500"
-                }`}
+          {walletTransactions.map((txn) => {
+            const { type, amount, description, orderId, createdAt, _id } = txn;
+            return (
+              <li
+                key={_id}
+                className="py-4 flex justify-between items-center text-gray-700"
               >
-                {txn.amount < 0 ? "-" : "+"}${Math.abs(txn.amount).toFixed(2)}
-              </p>
-            </li>
-          ))}
+                <div>
+                  <p className="font-semibold">{description}</p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(createdAt).toLocaleString()}
+                  </p>
+                  {orderId && (
+                    <p className="text-sm text-gray-500">order Id :{orderId}</p>
+                  )}
+                </div>
+                <div
+                  className={`font-semibold ${
+                    type === "Debit" ? "text-red-500" : "text-green-500"
+                  }`}
+                >
+                  <p>{type}</p>
+                </div>
+                <div>
+                  <p
+                    className={`font-semibold ${
+                      type === "Debit" ? "text-red-500" : "text-green-500"
+                    }`}
+                  >
+                    {type === "Debit" ? "-" : "+"}₹{Math.abs(amount).toFixed(2)}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

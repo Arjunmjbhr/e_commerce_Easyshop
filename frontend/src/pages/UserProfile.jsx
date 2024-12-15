@@ -60,7 +60,7 @@ const UserProfile = () => {
   // getting profile page
   useEffect(() => {
     dispatch(get_user_profile(userInfo.id));
-  }, [successMessage]);
+  }, [successMessage, dispatch, userInfo]);
 
   useEffect(() => {
     if (successMessage) {
@@ -68,10 +68,10 @@ const UserProfile = () => {
       dispatch(messageClear());
     }
     if (errorMessage) {
-      toast.success(errorMessage);
+      toast.error(errorMessage);
       dispatch(messageClear());
     }
-  }, [successMessage, errorMessage]);
+  }, [successMessage, errorMessage, dispatch]);
 
   // address management
   const [inputState, setInputState] = useState({
@@ -141,6 +141,7 @@ const UserProfile = () => {
         handleInputChange={handleInputChange}
         isEditing={isEditing}
         userDetails={userDetails}
+        userProfileInfo={userProfileInfo}
       />
       {/* address */}
       <div className="bg-white  px-7 py-10 flex flex-col gap-10 rounded-lg mr-12">

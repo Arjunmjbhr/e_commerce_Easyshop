@@ -1,6 +1,8 @@
 const customerOrderModel = require("../../model/customerOrderModel");
 const mongoose = require("mongoose");
 const { responseReturn } = require("../../utils/response");
+const walletModel = require("../../model/walletModel");
+const walletTransactionModel = require("../../model/WalletTransactionModel");
 
 class dashboardController {
   get_dashboard_data = async (req, res) => {
@@ -53,6 +55,38 @@ class dashboardController {
     } catch (error) {
       console.error("Error in get_dashboard_data:", error);
       return responseReturn(res, 500, { error: "Internal Server Error" });
+    }
+  };
+  get_wallet_data = async (req, res) => {
+    console.log("In the get wallet controller", req.params);
+    const { userId } = req.params;
+
+    try {
+      // Fetch wallet details
+      const wallet = await walletModel.findOne({ userId });
+      // Check if wallet exists
+      if (!wallet) {
+        return responseReturn(res, 404, { message: "Wallet not found" });
+      }
+      // Fetch wallet transactions
+      const walletTransactions = await walletTransactionModel
+        .find({
+          walletId: wallet._id,
+        })
+        .sort({
+          createdAt: -1,
+        });
+      // Return wallet balance and transactions
+      const { balance } = wallet;
+      return responseReturn(res, 200, {
+        walletBalance: balance,
+        walletTransactions: walletTransactions || [],
+      });
+    } catch (error) {
+      console.error("Error in the get wallet data controller:", error.message);
+      return responseReturn(res, 500, {
+        message: "An error occurred while fetching wallet data",
+      });
     }
   };
 }

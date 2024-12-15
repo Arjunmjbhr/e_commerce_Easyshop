@@ -6,6 +6,7 @@ const Profile = ({
   handleInputChange,
   saveChanges,
   toggleEdit,
+  userProfileInfo,
 }) => {
   return (
     <div className="w-full">
@@ -21,21 +22,9 @@ const Profile = ({
               alt=""
               className="w-32 h-32 bg-zinc-200 object-cover rounded-full mb-4"
             />
-            <label
-              htmlFor="profilePic"
-              className="block font-medium text-lg text-gray-700"
-            >
-              {userDetails?.username}
-            </label>
-            <input
-              type="file"
-              name="profilePic"
-              id="profilePic"
-              disabled={!isEditing}
-              className={`hidden mt-1 p-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                isEditing ? "bg-white" : "bg-gray-100"
-              }`}
-            />
+            <div>
+              <h4>Referral Id: {userProfileInfo?.referralId}</h4>
+            </div>
           </div>
 
           {/* User Details */}
