@@ -14,7 +14,7 @@ const walletModel = require("../../model/walletModel");
 const WalletTransactionModel = require("../../model/WalletTransactionModel");
 
 class orderController {
-  //////////////////////////// add and remove stock while cancel //////////////////
+  ////////////////////////////common methods //////////////////
   reduce_stock_on_orderPlace = async (orderId) => {
     try {
       const placedOrder = await customerOrderModel.findById(orderId);
@@ -443,7 +443,7 @@ class orderController {
   };
   // End Method
 
-  ///dashboard
+  ///////////dashboard
   get_orders = async (req, res) => {
     let { customerId, status } = req.params;
     try {
@@ -500,6 +500,23 @@ class orderController {
           error: "Failed to cancel the order",
         });
       }
+      let { customerId, price, _id, payment_status, couponAmount } = order;
+
+      if (payment_status === "paid") {
+        const error = await this.credited_to_wallet(
+          customerId,
+          price,
+          "cancelled order Refund",
+          _id
+        );
+        if (error) {
+          console.log(error);
+          return responseReturn(res, 404, {
+            error: "error while amount returned to wallet",
+          });
+        }
+      }
+
       this.add_stock_on_order_cancelled(orderId);
       // Successful response
       return responseReturn(res, 200, {
@@ -703,8 +720,24 @@ class orderController {
         { delivery_status: status },
         { new: true } // Returns the updated document
       );
+      let { customerId, price, _id, payment_status, couponAmount } = order;
       if (status === "cancelled") {
         this.add_stock_on_order_cancelled(orderId);
+
+        if (payment_status === "paid") {
+          const error = await this.credited_to_wallet(
+            customerId,
+            price,
+            "cancelled order Refund",
+            _id
+          );
+          if (error) {
+            console.log(error);
+            return responseReturn(res, 404, {
+              error: "error while amount returned to wallet",
+            });
+          }
+        }
       }
       // Successful response
       return responseReturn(res, 200, {
