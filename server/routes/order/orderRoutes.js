@@ -61,6 +61,11 @@ router.put(
   "/admin/order-status/update/:orderId",
   orderController.admin_order_status_update
 );
+// return product
+router.put(
+  "/admin/return-request-decision/update/:orderId/:productId",
+  orderController.admin_return_request_decision
+);
 
 ////////////////////Seller//////////////////////////
 router.get("/seller/orders/:sellerId", orderController.get_seller_order);

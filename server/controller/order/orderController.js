@@ -10,6 +10,8 @@ const {
 const customerModel = require("../../model/customerModel");
 const couponModel = require("../../model/couponModel");
 const categoryOfferModel = require("../../model/categoryOfferModel");
+const walletModel = require("../../model/walletModel");
+const WalletTransactionModel = require("../../model/WalletTransactionModel");
 
 class orderController {
   //////////////////////////// add and remove stock while cancel //////////////////
@@ -102,6 +104,26 @@ class orderController {
     return null;
   };
   // End Method
+  credited_to_wallet = async (customerId, amount, message, orderId = "") => {
+    try {
+      const wallet = await walletModel.findOneAndUpdate(
+        { userId: customerId },
+        { $inc: { balance: amount } },
+        { new: true }
+      );
+      await WalletTransactionModel.create({
+        walletId: wallet._id,
+        type: "credit",
+        amount: amount,
+        description: message,
+        orderId,
+      });
+      return null;
+    } catch (error) {
+      console.log("error while amount credited to the wallet");
+      return error.message;
+    }
+  };
   ////////////////////////////customer order/////////////////////////////////////
   paymentCheck = async (id) => {
     try {
@@ -495,7 +517,7 @@ class orderController {
   };
   // End Method
   return_product = async (req, res) => {
-    console.log("In the return product controller", req.params);
+    console.log("In the return product controller");
     const { orderId, productId } = req.params;
 
     try {
@@ -696,6 +718,89 @@ class orderController {
     }
   };
   // End Method
+  admin_return_request_decision = async (req, res) => {
+    console.log("In the admin return request decision controller");
+    const { orderId, productId } = req.params;
+    console.log(req.body);
+    const { returnOption, returnAmount } = req.body;
+
+    try {
+      // Update in customerOrderModel
+      const updatedOrder = await customerOrderModel.findOneAndUpdate(
+        {
+          _id: orderId,
+          "products._id": productId,
+        },
+        {
+          $set: {
+            "products.$[product].returnStatus": returnOption,
+          },
+        },
+        {
+          new: true, // Return updated document
+          arrayFilters: [{ "product._id": productId }],
+        }
+      );
+      console.log("''''''''''''''''");
+      // console.log(updatedOrder);
+
+      if (!updatedOrder) {
+        return res.status(404).json({
+          error: "Order or Product not found in customer orders",
+        });
+      }
+
+      // Update in adminOrderModel
+      const updatedOrderInAdmin = await adminOrderModel.findOneAndUpdate(
+        {
+          orderId,
+          "products._id": productId,
+        },
+        {
+          $set: {
+            "products.$[product].returnStatus": returnOption,
+          },
+        },
+        {
+          new: true,
+          arrayFilters: [{ "product._id": productId }],
+        }
+      );
+
+      if (!updatedOrderInAdmin) {
+        return res.status(404).json({
+          error: "Order or Product not found in admin orders",
+        });
+      }
+      // wallet amount addition
+
+      if (returnOption === "accepted") {
+        const { customerId } = updatedOrder;
+        const error = await this.credited_to_wallet(
+          customerId,
+          returnAmount,
+          "Return Product",
+          orderId
+        );
+        if (error) {
+          return responseReturn(res, 404, {
+            error: "error while amount returned to wallet",
+          });
+        }
+      }
+      // Combined success response
+      res.status(200).json({
+        message: "Product return status updated successfully ",
+        customerOrder: updatedOrder,
+        adminOrder: updatedOrderInAdmin,
+      });
+    } catch (error) {
+      console.error("Error updating product return status:", error.message);
+      res.status(500).json({
+        error: "An error occurred while updating the product return status",
+      });
+    }
+  };
 
   ////////////////////////////////// seller order///////////////////////////////////
   get_seller_order = async (req, res) => {

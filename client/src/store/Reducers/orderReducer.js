@@ -52,6 +52,28 @@ export const admin_order_status_update = createAsyncThunk(
   }
 );
 // End Method
+export const admin_return_request_decision = createAsyncThunk(
+  "order/admin_return_request_decision",
+  async (
+    { orderId, productId, info },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
+    console.log(orderId);
+    console.log(productId);
+    console.log(info);
+    try {
+      const { data } = await api.put(
+        `/admin/return-request-decision/update/${orderId}/${productId}`,
+        info,
+        { withCredentials: true }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 //////////////////////seller//////////////////////
 
@@ -155,6 +177,15 @@ const orderReducer = createSlice({
         state.successMessage = payload.message;
       })
       .addCase(seller_order_status_update.rejected, (state, { payload }) => {
+        state.errorMessage = payload.message;
+      })
+      .addCase(
+        admin_return_request_decision.fulfilled,
+        (state, { payload }) => {
+          state.successMessage = payload.message;
+        }
+      )
+      .addCase(admin_return_request_decision.rejected, (state, { payload }) => {
         state.errorMessage = payload.message;
       });
   },

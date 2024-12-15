@@ -5,6 +5,7 @@ import {
   get_admin_specific_order,
   admin_order_status_update,
   messageClear,
+  admin_return_request_decision,
 } from "../../store/Reducers/orderReducer";
 import ConfirmModal from "../../components/ConfirmModal";
 import { toast } from "react-hot-toast";
@@ -17,6 +18,15 @@ const OrderDetails = () => {
   );
   const [status, setStatus] = useState(order.delivery_status);
   const [modalClose, SetModalClose] = useState(true);
+  const [returnOption, setReturnOption] = useState({
+    productId: "",
+    returnOption: "",
+    returnAmount: "",
+    couponId: "",
+    couponAmount: "",
+  });
+
+  const [returnModlalClose, setReturnModalClose] = useState(true);
 
   useEffect(() => {
     dispatch(get_admin_specific_order(orderId));
@@ -124,45 +134,126 @@ const OrderDetails = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               Suborders
             </h3>
-            {order?.suborders?.map((sub, i) => (
-              <div key={i} className="mb-6">
-                <div className="flex items-center justify-between gap-4 mb-3">
-                  <h4 className="font-semibold text-gray-700">
-                    Seller {i + 1} {"-"}
-                    {sub?.sellerId}
-                  </h4>
-                  <div className="flex gap-4">
-                    <span>Order Status:</span>
-                    <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg shadow-sm text-sm">
-                      {sub.delivery_status}
-                    </span>
-                  </div>
-                </div>
-                {sub.products?.map((p, j) => (
-                  <div
-                    key={j}
-                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:shadow-md transition transform hover:-translate-y-1"
-                  >
-                    <img
-                      className="w-16 h-16 object-cover rounded-md shadow-sm"
-                      src={p.images[0]}
-                      alt={p.name}
-                    />
-                    <div>
-                      <h4 className="font-semibold text-gray-800">{p.name}</h4>
-                      <p className="text-gray-600">
-                        <strong>Brand:</strong> {p.brand}
-                      </p>
-                      <p className="text-gray-600">
-                        <strong>Quantity:</strong> {p.quantity}
-                      </p>
+            {order?.suborders?.map((sub, i) => {
+              return (
+                <div key={i} className="mb-6">
+                  <div className="flex items-center justify-between gap-4 mb-3">
+                    <h4 className="font-semibold text-gray-700">
+                      Seller {i + 1} {"-"}
+                      {sub?.sellerId}
+                    </h4>
+                    <div className="flex gap-4">
+                      <span>Order Status:</span>
+                      <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg shadow-sm text-sm">
+                        {sub.delivery_status}
+                      </span>
                     </div>
                   </div>
-                ))}
-              </div>
-            ))}
+                  {sub.products?.map((p, j) => {
+                    const {
+                      images,
+                      name,
+                      brand,
+                      quantity,
+                      _id,
+                      price,
+                      validOfferPercentage,
+                      discount,
+                    } = p;
+
+                    const discountOrOffer =
+                      discount > validOfferPercentage
+                        ? discount
+                        : validOfferPercentage;
+                    // total price in the order
+                    const discountedPrice =
+                      price -
+                      Math.floor((price * discountOrOffer) / 100).toFixed(2);
+
+                    return (
+                      <div
+                        key={_id}
+                        className="flex border-2 my-1 items-center gap-4 p-4 bg-gray-50 rounded-lg hover:shadow-md transition transform hover:-translate-y-1"
+                      >
+                        <img
+                          className="w-16 h-16 object-cover rounded-md shadow-sm"
+                          src={images[0]}
+                          alt={name}
+                        />
+                        <div>
+                          <h4 className="font-semibold text-gray-800">
+                            {name}
+                          </h4>
+                          <p className="text-gray-600">
+                            <strong>Brand:</strong> {brand}
+                          </p>
+                          <p className="text-gray-600">
+                            <strong>Quantity:</strong> {quantity}
+                          </p>
+                          <p className="text-gray-600">
+                            <strong>Price:</strong> {discountedPrice}
+                          </p>
+                          <div className="flex gap-3 mt-3">
+                            <h2>Return Request</h2>
+                            <div
+                              onClick={() => {
+                                setReturnOption({
+                                  productId: _id,
+                                  returnOption: "rejected",
+                                  returnAmount: discountedPrice,
+                                  couponId: order.couponId,
+                                  couponAmount: order.couponAmount,
+                                });
+                                setReturnModalClose(false);
+                              }}
+                              className="bg-red-600 text-sm cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-red-700 transition duration-200 ease-in-out"
+                            >
+                              Reject
+                            </div>
+                            <div
+                              onClick={() => {
+                                setReturnOption({
+                                  productId: _id,
+                                  returnOption: "accepted",
+                                  returnAmount: discountedPrice,
+                                  couponId: order.couponId,
+                                  couponAmount: order.couponAmount,
+                                });
+                                setReturnModalClose(false);
+                              }}
+                              className="bg-green-600 text-sm cursor-pointer rounded-lg text-white px-2 py-1 hover:hover:bg-green-700 transition duration-200 ease-in-out"
+                            >
+                              Accept
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
+      </div>
+      <div>
+        {!returnModlalClose && (
+          <div>
+            <ConfirmModal
+              confimFunction={() =>
+                dispatch(
+                  admin_return_request_decision({
+                    orderId,
+                    productId: returnOption.productId,
+                    info: returnOption,
+                  })
+                )
+              }
+              SetModalClose={setReturnModalClose}
+              message="Please confirm to place action in  Return request"
+            />
+          </div>
+        )}
       </div>
       <div>
         {!modalClose && (
