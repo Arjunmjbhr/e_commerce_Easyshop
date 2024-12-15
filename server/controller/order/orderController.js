@@ -9,6 +9,7 @@ const {
 } = require("mongoose");
 const customerModel = require("../../model/customerModel");
 const couponModel = require("../../model/couponModel");
+const categoryOfferModel = require("../../model/categoryOfferModel");
 
 class orderController {
   //////////////////////////// add and remove stock while cancel //////////////////
@@ -62,6 +63,45 @@ class orderController {
     }
   };
   // End Method
+  check_product_and_offer_exist = async (customerOrderProduct) => {
+    const today = new Date();
+
+    for (const product of customerOrderProduct) {
+      const { _id, validOfferId } = product;
+
+      try {
+        // Check if product exists
+        const productExist = await productModel.findOne({
+          _id,
+          isDeleted: false,
+        });
+        if (!productExist) {
+          return `Product with ID ${_id} does not exist`;
+        }
+
+        // Check if valid offer exists
+        if (validOfferId) {
+          const validOffer = await categoryOfferModel.findOne({
+            _id: validOfferId,
+            startingDate: { $lte: today },
+            expirationDate: { $gt: today },
+            isActive: true,
+          });
+
+          if (!validOffer) {
+            return `Valid offer not found or inactive for product: ${productExist.name}`;
+          }
+        }
+      } catch (error) {
+        console.error(`Error processing product ID ${_id}:`, error.message);
+        return `An error occurred while processing product with ID ${_id}`;
+      }
+    }
+
+    // If no errors found, return null
+    return null;
+  };
+  // End Method
   ////////////////////////////customer order/////////////////////////////////////
   paymentCheck = async (id) => {
     try {
@@ -102,6 +142,9 @@ class orderController {
         const tempCustomerProduct = {
           ...pro[j].productInfo,
           quantity: pro[j].quantity,
+          returnStatus: "",
+          validOfferPercentage: pro[j]?.validOfferPercentage || 0,
+          validOfferId: pro[j]?.validOfferId || 0,
         };
         customerOrderProduct.push(tempCustomerProduct);
         if (pro[j]._id) {
@@ -112,6 +155,14 @@ class orderController {
     cartId = [...new Set(cartId)]; // Remove duplicate IDs
 
     try {
+      // cheking product and offer exist in the db
+      const error = await this.check_product_and_offer_exist(
+        customerOrderProduct
+      );
+      if (error) {
+        return responseReturn(res, 400, { error });
+      }
+
       // Create customer order
       const order = await customerOrderModel.create({
         customerId: userId,
@@ -136,6 +187,9 @@ class orderController {
           const tempProduct = {
             ...productList[j].productInfo,
             quantity: productList[j].quantity,
+            validOfferPercentage: productList[j]?.validOfferPercentage || 0,
+            validOfferId: productList[j]?.validOfferId || 0,
+            returnStatus: "",
           };
           storeProducts.push(tempProduct);
         }
@@ -293,7 +347,11 @@ class orderController {
       // apply to the order after coupon validation
       const applyCouponOnOrder = await customerOrderModel.findByIdAndUpdate(
         orderId,
-        { couponId, couponAmount: coupon.discountAmount },
+        {
+          couponId,
+          couponAmount: coupon.discountAmount,
+          $inc: { price: -coupon.discountAmount },
+        },
         { new: true }
       );
       if (!applyCouponOnOrder) {
@@ -313,6 +371,7 @@ class orderController {
       });
     }
   };
+  // End Method
   remove_apply_coupon = async (req, res) => {
     console.log("In the remove coupon controller");
     const { couponId, orderId } = req.body;
@@ -321,7 +380,7 @@ class orderController {
 
     try {
       // Find the coupon and remove the user from the users array
-      const coupon = await couponModel.updateOne(
+      const coupon = await couponModel.findOneAndUpdate(
         { couponId: couponId }, // Ensure couponId is correct
         { $pull: { users: { userId: userId } } }, // Correct syntax for pulling from array of objects
         { new: true }
@@ -336,7 +395,11 @@ class orderController {
       // Find the order and reset the coupon data
       const order = await customerOrderModel.findByIdAndUpdate(
         orderId,
-        { couponId: "", couponAmount: 0 },
+        {
+          couponId: "",
+          couponAmount: 0,
+          $inc: { price: coupon.discountAmount },
+        },
         { new: true }
       );
 
@@ -356,6 +419,7 @@ class orderController {
       });
     }
   };
+  // End Method
 
   ///dashboard
   get_orders = async (req, res) => {

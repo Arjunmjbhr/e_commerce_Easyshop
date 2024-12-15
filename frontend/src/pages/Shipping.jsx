@@ -51,7 +51,7 @@ const Shipping = () => {
       dispatch(messageClear());
     }
     if (errorMessage) {
-      toast.success(errorMessage);
+      toast.error(errorMessage);
       dispatch(messageClear());
     }
   }, [successMessage, errorMessage]);

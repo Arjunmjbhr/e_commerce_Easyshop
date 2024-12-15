@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { get_cart_products, messageClear } from "../store/reducers/cartReducer";
 import OutOfStock from "../componets/cart_checkout/OutOfStock";
 import toast from "react-hot-toast";
+import { placeOrderErrorMessageClear } from "../store/reducers/orderReducer";
 
 const Cart = () => {
   const {
@@ -37,16 +38,22 @@ const Cart = () => {
   };
 
   //useEffect for geting cart data
+  const { placeOrderErrorMessage } = useSelector((store) => store.order);
+
   useEffect(() => {
     dispatch(get_cart_products(userInfo.id));
-  }, []);
+  }, [dispatch, userInfo.id]);
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
       dispatch(messageClear());
       dispatch(get_cart_products(userInfo.id));
     }
-  }, [successMessage]);
+    if (placeOrderErrorMessage) {
+      toast.error(placeOrderErrorMessage);
+      dispatch(placeOrderErrorMessageClear());
+    }
+  }, [successMessage, dispatch, userInfo.id, placeOrderErrorMessage]);
 
   return (
     <div>

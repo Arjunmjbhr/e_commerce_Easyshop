@@ -89,6 +89,13 @@ class cartController {
                 else: 0,
               },
             },
+            validOfferId: {
+              $cond: {
+                if: { $gt: [{ $size: "$categoryOffers" }, 0] },
+                then: { $arrayElemAt: ["$categoryOffers._id", 0] },
+                else: 0,
+              },
+            },
           },
         },
       ]);
@@ -190,6 +197,7 @@ class cartController {
                       productInfo: tempProduct,
                       validOfferPercentage:
                         stockProduct[j].validOfferPercentage,
+                      validOfferId: stockProduct[j].validOfferId,
                     },
                   ],
             };

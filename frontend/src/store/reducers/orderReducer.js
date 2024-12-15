@@ -3,15 +3,10 @@ import api from "../../api/api";
 
 export const place_order = createAsyncThunk(
   "order/place_order",
-  async ({
-    price,
-    products,
-    shipping_fee,
-    items,
-    shippingInfo,
-    userId,
-    navigate,
-  }) => {
+  async (
+    { price, products, shipping_fee, items, shippingInfo, userId, navigate },
+    { fulfillWithValue, rejectWithValue }
+  ) => {
     try {
       const { data } = await api.post("/home/order/place-order", {
         price,
@@ -20,7 +15,6 @@ export const place_order = createAsyncThunk(
         items,
         shippingInfo,
         userId,
-        navigate,
       });
       navigate("/payment", {
         state: {
@@ -30,9 +24,12 @@ export const place_order = createAsyncThunk(
         },
       });
 
-      console.log(data);
+      return fulfillWithValue(data);
     } catch (error) {
+      navigate("/cart");
       console.log(error.response);
+
+      return rejectWithValue(error.response.data);
     }
   }
 );
@@ -134,12 +131,16 @@ const orderReducer = createSlice({
     myOrders: [],
     errorMessage: "",
     successMessage: "",
+    placeOrderErrorMessage: "",
     myOrder: {},
   },
   reducers: {
     messageClear: (state, _) => {
       state.errorMessage = "";
       state.successMessage = "";
+    },
+    placeOrderErrorMessageClear: (state, action) => {
+      state.placeOrderErrorMessage = "";
     },
   },
   extraReducers: (builder) => {
@@ -173,8 +174,15 @@ const orderReducer = createSlice({
       })
       .addCase(remove_apply_coupon.fulfilled, (state, action) => {
         state.successMessage = action.payload.message;
+      })
+      .addCase(place_order.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(place_order.rejected, (state, action) => {
+        state.placeOrderErrorMessage = action.payload.error;
       });
   },
 });
-export const { messageClear } = orderReducer.actions;
+export const { messageClear, placeOrderErrorMessageClear } =
+  orderReducer.actions;
 export default orderReducer.reducer;
