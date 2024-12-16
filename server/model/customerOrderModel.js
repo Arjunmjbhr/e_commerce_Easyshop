@@ -39,6 +39,14 @@ const customerOrder = new Schema(
       required: true,
       default: 0,
     },
+    razorpay_payment_id: {
+      type: String,
+      default: "",
+    },
+    razorpay_order_id: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

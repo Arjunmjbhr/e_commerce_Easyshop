@@ -1,6 +1,8 @@
 const Razorpay = require("razorpay");
 const { responseReturn } = require("../../utils/response");
-const customerOrderModle = require("../../model/customerOrderModel");
+const customerOrderModel = require("../../model/customerOrderModel");
+const adminOrderModel = require("../../model/adminOrderModel");
+const crypto = require("crypto");
 
 class PaymentController {
   constructor() {
@@ -12,6 +14,7 @@ class PaymentController {
 
   create_razorpay_payment_order = async (req, res) => {
     const { orderId } = req.params;
+    console.log("orderid in creating the payment order", orderId);
 
     if (!orderId) {
       return responseReturn(res, 400, {
@@ -21,7 +24,8 @@ class PaymentController {
 
     let order;
     try {
-      order = await customerOrderModle.findById(orderId);
+      order = await customerOrderModel.findById(orderId);
+      console.log("the order in the payment", order.price);
       if (!order) {
         return responseReturn(res, 404, {
           error: "Order not found",
@@ -66,6 +70,65 @@ class PaymentController {
       });
     }
   };
+  //   End Method
+  verify_razorpay_payment = async (req, res) => {
+    const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+      req.body;
+    const { orderId } = req.params;
+    console.log("order id while verify the payment", orderId);
+
+    try {
+      // Validate input
+      if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+        return responseReturn(res, 400, { error: "Invalid request data" });
+      }
+
+      // Generate HMAC signature
+      const hmac = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET_KEY);
+      hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+      const generatedSignature = hmac.digest("hex");
+
+      // Verify signature
+      if (generatedSignature !== razorpay_signature) {
+        console.log("Payment verification failed:", {
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature,
+          generatedSignature,
+        });
+        return responseReturn(res, 401, {
+          error: "Payment verification failed",
+        });
+      }
+
+      // Update customer order
+      const order = await customerOrderModel.findByIdAndUpdate(orderId, {
+        delivery_status: "placed",
+        payment_status: "paid",
+        razorpay_payment_id,
+        razorpay_order_id,
+      });
+
+      // Update admin order
+      const adminOrder = await adminOrderModel.findOneAndUpdate(
+        { orderId: orderId },
+        {
+          delivery_status: "placed",
+          payment_status: "paid",
+          razorpay_payment_id,
+          razorpay_order_id,
+        }
+      );
+
+      return responseReturn(res, 200, {
+        message: "Payment done successfully and order place",
+      });
+    } catch (error) {
+      console.error("Error during payment verification:", error);
+      return responseReturn(res, 500, { error: "Internal server error" });
+    }
+  };
+  //   endMethod
 }
 
 module.exports = new PaymentController();

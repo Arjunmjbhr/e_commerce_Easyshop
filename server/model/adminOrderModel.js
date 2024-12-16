@@ -33,6 +33,14 @@ const adminOrderSchema = new Schema(
       type: String,
       required: true,
     },
+    razorpay_payment_id: {
+      type: String,
+      default: "",
+    },
+    razorpay_order_id: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

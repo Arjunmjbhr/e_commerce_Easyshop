@@ -8,5 +8,9 @@ router.post(
   checkUserStatus,
   paymentController.create_razorpay_payment_order
 );
-
+router.patch(
+  "/home/product/verify-razorpay-payment/:orderId",
+  checkUserStatus,
+  paymentController.verify_razorpay_payment
+);
 module.exports = router;

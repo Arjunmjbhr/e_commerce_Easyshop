@@ -46,21 +46,26 @@ export const cod_payment = createAsyncThunk(
   }
 );
 // End Method
-export const create_razorpay_payment_order = createAsyncThunk(
-  "order/create_razorpay_payment_order",
-  async ({ orderId, amount }, { rejectWithValue, fulfillWithValue }) => {
+
+export const verify_razorpay_payment = createAsyncThunk(
+  "order/verify_razorpay_payment",
+  async (
+    { info, orderId, navigate },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
     try {
-      const { data } = await api.post(
-        `home/customer/online-payment/create-order/${orderId}`,
-        amount
+      const { data } = await api.patch(
+        `/home/product/verify-razorpay-payment/${orderId}`,
+        info,
+        { withCredentials: true }
       );
+
       return fulfillWithValue(data);
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
 );
-// End Method
 
 /////////////////Dashboard/////////////////
 
@@ -127,7 +132,7 @@ export const return_product = createAsyncThunk(
 /////////////applay coupon////////////////////
 
 export const apply_coupon = createAsyncThunk(
-  "cart/apply_coupon",
+  "order/apply_coupon",
   async ({ info, userId }, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.put(
@@ -142,7 +147,7 @@ export const apply_coupon = createAsyncThunk(
   }
 );
 export const remove_apply_coupon = createAsyncThunk(
-  "cart/remove_apply_coupon",
+  "order/remove_apply_coupon",
   async ({ info, userId }, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.put(
@@ -162,6 +167,7 @@ const orderReducer = createSlice({
   initialState: {
     myOrders: [],
     errorMessage: "",
+    isLoading: "",
     successMessage: "",
     placeOrderErrorMessage: "",
     myOrder: {},
@@ -220,12 +226,16 @@ const orderReducer = createSlice({
       .addCase(return_product.rejected, (state, action) => {
         state.placeOrderErrorMessage = action.payload.error;
       })
-      .addCase(create_razorpay_payment_order.fulfilled, (state, action) => {
-        state.successMessage = action.payload.message;
-        state.razorpayOrder = action.payload.razorpayOrder;
+      .addCase(verify_razorpay_payment.pending, (state, action) => {
+        state.isLoading = true;
       })
-      .addCase(create_razorpay_payment_order.rejected, (state, action) => {
+      .addCase(verify_razorpay_payment.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successMessage = action.payload.message;
+      })
+      .addCase(verify_razorpay_payment.rejected, (state, action) => {
         state.errorMessage = action.payload.error;
+        state.isLoading = false;
       });
   },
 });
