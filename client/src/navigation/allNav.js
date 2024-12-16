@@ -24,6 +24,13 @@ export const allNav = [
     path: "/admin/dashboard",
   },
   {
+    id: 10,
+    title: "Sales",
+    icon: <MdOutlineDashboardCustomize />,
+    role: "admin",
+    path: "/admin/sales",
+  },
+  {
     id: 2,
     title: "Orders",
     icon: <AiOutlineShoppingCart />,
