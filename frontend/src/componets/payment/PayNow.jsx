@@ -9,7 +9,7 @@ const PayNow = ({ SetModalClose }) => {
           onClick={() => SetModalClose(false)}
           className="px-10 py-[6px] rounded-sm hover:shadow-green-500/20 hover:shadow-lg bg-[#059473] text-white"
         >
-          Pay Now
+          Pay As COD
         </button>
       </div>
     </div>

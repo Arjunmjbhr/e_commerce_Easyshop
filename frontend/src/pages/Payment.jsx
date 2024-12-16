@@ -12,6 +12,7 @@ import ConfirmModal from "./../componets/ConfirmModal";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { get_order_details } from "../store/reducers/orderReducer";
+import Razorpay from "../componets/payment/Razorpay";
 
 const Payment = () => {
   const {
@@ -34,6 +35,11 @@ const Payment = () => {
       dispatch(messageClear());
     }
   }, [errorMessage, successMessage, dispatch]);
+  const handlePayment = () => {
+    if (paymentMethod === "cod") {
+      dispatch(cod_payment(orderId));
+    }
+  };
   return (
     <div>
       <Header />
@@ -50,13 +56,16 @@ const Payment = () => {
                 {paymentMethod === "cod" && (
                   <PayNow SetModalClose={SetModalClose} />
                 )}
+                {paymentMethod === "razorpay" && (
+                  <Razorpay orderId={orderId} price={price} />
+                )}
               </div>
               <div>
                 {!modalClose && (
                   <ConfirmModal
                     message="Please confim pay with cash on delivery"
                     SetModalClose={SetModalClose}
-                    confimFunction={() => dispatch(cod_payment(orderId))}
+                    confimFunction={handlePayment}
                   />
                 )}
               </div>

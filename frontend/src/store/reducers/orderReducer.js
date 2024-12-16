@@ -46,6 +46,21 @@ export const cod_payment = createAsyncThunk(
   }
 );
 // End Method
+export const create_razorpay_payment_order = createAsyncThunk(
+  "order/create_razorpay_payment_order",
+  async ({ orderId, amount }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post(
+        `home/customer/online-payment/create-order/${orderId}`,
+        amount
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// End Method
 
 /////////////////Dashboard/////////////////
 
@@ -150,6 +165,7 @@ const orderReducer = createSlice({
     successMessage: "",
     placeOrderErrorMessage: "",
     myOrder: {},
+    razorpayOrder: {},
   },
   reducers: {
     messageClear: (state, _) => {
@@ -203,6 +219,13 @@ const orderReducer = createSlice({
       })
       .addCase(return_product.rejected, (state, action) => {
         state.placeOrderErrorMessage = action.payload.error;
+      })
+      .addCase(create_razorpay_payment_order.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+        state.razorpayOrder = action.payload.razorpayOrder;
+      })
+      .addCase(create_razorpay_payment_order.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
       });
   },
 });
