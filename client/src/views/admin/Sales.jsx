@@ -9,7 +9,7 @@ import { downloadPDF } from "../../utils/downloadPdfAdmin";
 import SalesSummary from "./componets/SalesSummary";
 import { downloadEXCEL } from "../../utils/downloadExcelAdmin";
 
-const SalesReport = () => {
+const Sales = () => {
   const today = new Date();
   const [filter, setFilter] = useState("Day");
   const [startDate, setStartDate] = useState(today);
@@ -112,10 +112,12 @@ const SalesReport = () => {
         break;
       }
       case "Custom Range": {
-        const start = startDate;
+        const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
         beginDate = start;
-        lastDate = endDate;
+        lastDate = end;
         break;
       }
       default: {
@@ -333,4 +335,4 @@ const SalesReport = () => {
   );
 };
 
-export default SalesReport;
+export default Sales;
