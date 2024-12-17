@@ -81,7 +81,7 @@ export const downloadPDF = (
     // discount total
     const orderDiscount = 100 - (productsSoldPrice / ActualPrice) * 100;
     // delivery charge
-    const deliveryCharge = price - productsSoldPrice;
+    const deliveryCharge = price - (productsSoldPrice - couponAmount);
 
     return [
       _id,

@@ -220,8 +220,11 @@ const SalesReport = () => {
             <thead>
               <tr className="text-sm text-center text-white bg-blue-600">
                 <th className="border px-4 py-2 ">Order ID</th>
-                <th className="border px-4 py-2 ">Date</th>
-                <th className="border px-4 py-2 ">Amount</th>
+                <th className="border px-4 py-2 ">Order Date</th>
+                <th className="border px-4 py-2 ">
+                  Amount <br />
+                  (MRP)
+                </th>
                 <th className="border px-4 py-2 ">Discount</th>
                 <th className="border px-4 py-2">
                   Coupon <br /> Amount
@@ -268,7 +271,8 @@ const SalesReport = () => {
                 const orderDiscount =
                   100 - (productsSoldPrice / ActualPrice) * 100;
                 // delivery charge
-                const deliveryCharge = price - productsSoldPrice;
+                const deliveryCharge =
+                  price - (productsSoldPrice - couponAmount);
 
                 return (
                   <tr key={_id} className="text-sm text-center">

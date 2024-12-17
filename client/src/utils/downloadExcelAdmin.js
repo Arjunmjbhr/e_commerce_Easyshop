@@ -61,7 +61,7 @@ export const downloadEXCEL = (
       return amount + (price - (price * validOfferDiscount) / 100);
     }, 0);
     const orderDiscount = (productsSoldPrice / ActualPrice) * 100;
-    const deliveryCharge = price - productsSoldPrice;
+    const deliveryCharge = price - (productsSoldPrice - couponAmount);
 
     return [
       _id,
