@@ -240,7 +240,8 @@ const Sales = () => {
             </thead>
             <tbody>
               {salesOrders.map((sale) => {
-                const { _id, price, createdAt, couponAmount } = sale;
+                const { _id, price, createdAt, couponAmount, shippingFee } =
+                  sale;
                 // actul price of the product
                 const ActualPrice = sale?.products?.reduce(
                   (amount, product) => {
@@ -272,9 +273,6 @@ const Sales = () => {
                 // discount total
                 const orderDiscount =
                   100 - (productsSoldPrice / ActualPrice) * 100;
-                // delivery charge
-                const deliveryCharge =
-                  price - (productsSoldPrice - couponAmount);
 
                 return (
                   <tr key={_id} className="text-sm text-center">
@@ -305,9 +303,7 @@ const Sales = () => {
                     <td className="border px-4 py-2">
                       {couponAmount ? `₹ ${couponAmount}` : "Nill"}
                     </td>
-                    <td className="border px-4 py-2">
-                      ₹{Math.floor(deliveryCharge)}
-                    </td>
+                    <td className="border px-4 py-2">₹{shippingFee}</td>
                     <td className="border text-md text-green-700 font-bold px-4 py-2">
                       ₹{price}
                     </td>

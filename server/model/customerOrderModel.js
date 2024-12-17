@@ -21,6 +21,10 @@ const customerOrder = new Schema(
       type: Object,
       required: true,
     },
+    shippingFee: {
+      type: Object,
+      required: true,
+    },
     delivery_status: {
       type: String,
       required: true,
@@ -35,6 +39,11 @@ const customerOrder = new Schema(
       default: null,
     },
     couponAmount: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    couponMinOrderValue: {
       type: Number,
       required: true,
       default: 0,

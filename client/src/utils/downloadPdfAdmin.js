@@ -58,7 +58,7 @@ export const downloadPDF = (
 
   // Add table for sales orders
   const tableData = salesOrders.map((order) => {
-    const { _id, price, createdAt, couponAmount } = order;
+    const { _id, price, createdAt, couponAmount, shippingFee } = order;
     // actul price of the product
     const ActualPrice = order?.products?.reduce((amount, product) => {
       const { price, quantity } = product;
@@ -80,8 +80,6 @@ export const downloadPDF = (
     }, 0);
     // discount total
     const orderDiscount = 100 - (productsSoldPrice / ActualPrice) * 100;
-    // delivery charge
-    const deliveryCharge = price - (productsSoldPrice - couponAmount);
 
     return [
       _id,
@@ -89,7 +87,7 @@ export const downloadPDF = (
       `${ActualPrice}`,
       `${orderDiscount.toFixed(2)}%`,
       `${couponAmount.toFixed(2)}`,
-      `${Math.floor(deliveryCharge).toString()}`,
+      `${Math.floor(shippingFee).toString()}`,
       `${price}`,
     ];
   });

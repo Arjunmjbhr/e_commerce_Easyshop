@@ -47,7 +47,7 @@ export const downloadEXCEL = (
   ];
 
   const tableData = salesOrders.map((order) => {
-    const { _id, price, createdAt, couponAmount } = order;
+    const { _id, price, createdAt, couponAmount, shippingFee } = order;
 
     const ActualPrice =
       order?.products?.reduce(
@@ -61,7 +61,6 @@ export const downloadEXCEL = (
       return amount + (price - (price * validOfferDiscount) / 100);
     }, 0);
     const orderDiscount = (productsSoldPrice / ActualPrice) * 100;
-    const deliveryCharge = price - (productsSoldPrice - couponAmount);
 
     return [
       _id,
@@ -69,7 +68,7 @@ export const downloadEXCEL = (
       `${ActualPrice}`,
       `${orderDiscount.toFixed(2)}%`,
       `${couponAmount.toFixed(2)}`,
-      `${Math.floor(deliveryCharge).toString()}`,
+      `${Math.floor(shippingFee).toString()}`,
       `${price}`,
     ];
   });

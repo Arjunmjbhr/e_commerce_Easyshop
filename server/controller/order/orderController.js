@@ -191,6 +191,7 @@ class orderController {
         shippingInfo,
         products: customerOrderProduct,
         price: price + shipping_fee,
+        shippingFee: shipping_fee,
         payment_status: "unpaid",
         delivery_status: "pending",
         date: tempDate,
@@ -372,6 +373,7 @@ class orderController {
         {
           couponId,
           couponAmount: coupon.discountAmount,
+          couponMinOrderValue: coupon.minOrderValue,
           $inc: { price: -coupon.discountAmount },
         },
         { new: true }
@@ -420,6 +422,7 @@ class orderController {
         {
           couponId: "",
           couponAmount: 0,
+          couponMinOrderValue: 0,
           $inc: { price: coupon.discountAmount },
         },
         { new: true }
@@ -754,78 +757,121 @@ class orderController {
   admin_return_request_decision = async (req, res) => {
     console.log("In the admin return request decision controller");
     const { orderId, productId } = req.params;
-    console.log(req.body);
-    const { returnOption, returnAmount } = req.body;
+    const { returnOption } = req.body;
 
     try {
-      // Update in customerOrderModel
-      const updatedOrder = await customerOrderModel.findOneAndUpdate(
-        {
-          _id: orderId,
-          "products._id": productId,
-        },
-        {
-          $set: {
-            "products.$[product].returnStatus": returnOption,
-          },
-        },
-        {
-          new: true, // Return updated document
-          arrayFilters: [{ "product._id": productId }],
+      let amountToReduce = 0;
+
+      if (returnOption === "rejected") {
+        // Rejecting the return request: updating both customer and admin order models
+        const updatedOrder = await customerOrderModel.findOneAndUpdate(
+          { _id: orderId, "products._id": productId },
+          { $set: { "products.$[product].returnStatus": returnOption } },
+          { new: true, arrayFilters: [{ "product._id": productId }] }
+        );
+
+        if (!updatedOrder) {
+          return res.status(404).json({
+            error: "Order or Product not found in customer orders",
+          });
         }
-      );
-      console.log("''''''''''''''''");
-      // console.log(updatedOrder);
 
-      if (!updatedOrder) {
-        return res.status(404).json({
-          error: "Order or Product not found in customer orders",
-        });
-      }
+        // Update in adminOrderModel
+        const updatedOrderInAdmin = await adminOrderModel.findOneAndUpdate(
+          { orderId, "products._id": productId },
+          { $set: { "products.$[product].returnStatus": returnOption } },
+          { new: true, arrayFilters: [{ "product._id": productId }] }
+        );
 
-      // Update in adminOrderModel
-      const updatedOrderInAdmin = await adminOrderModel.findOneAndUpdate(
-        {
-          orderId,
-          "products._id": productId,
-        },
-        {
-          $set: {
-            "products.$[product].returnStatus": returnOption,
-          },
-        },
-        {
-          new: true,
-          arrayFilters: [{ "product._id": productId }],
+        if (!updatedOrderInAdmin) {
+          return res.status(404).json({
+            error: "Order or Product not found in admin orders",
+          });
         }
-      );
+      } else {
+        // Handling the case when the return is not rejected: calculating amount to reduce
+        const matchOrder = await customerOrderModel.findOne({ _id: orderId });
+        const placedPrice = matchOrder["price"];
+        let couponId = matchOrder["couponId"];
+        let couponAmount = matchOrder["couponAmount"];
+        const couponMinOrderValue = matchOrder["couponMinOrderValue"];
 
-      if (!updatedOrderInAdmin) {
-        return res.status(404).json({
-          error: "Order or Product not found in admin orders",
-        });
-      }
-      // wallet amount addition
+        // Filter the products to find the matching product
+        const MatchProduct = matchOrder.products.filter(
+          (product) => product._id.toString() === productId
+        );
 
-      if (returnOption === "accepted") {
+        // Ensure the product is found
+        if (MatchProduct.length > 0) {
+          const { validOfferPercentage, discount, price, quantity } =
+            MatchProduct[0];
+          const validOfferDiscount =
+            validOfferPercentage > discount ? validOfferPercentage : discount;
+          amountToReduce = (
+            (price - Math.floor(price * validOfferDiscount) / 100) *
+            quantity
+          ).toFixed(0);
+        }
+
+        // Adjust the amount to reduce if the coupon minimum order value condition is met
+        if (couponMinOrderValue > placedPrice - amountToReduce) {
+          amountToReduce -= couponAmount;
+          couponId = "";
+          couponAmount = "";
+        }
+
+        // Update the order in the customer order model
+        const updatedOrder = await customerOrderModel.findOneAndUpdate(
+          { _id: orderId, "products._id": productId },
+          {
+            $set: {
+              "products.$[product].returnStatus": returnOption,
+              couponId,
+              couponAmount,
+            },
+            $inc: { price: -amountToReduce }, // Subtract amount from total price
+          },
+          { new: true, arrayFilters: [{ "product._id": productId }] }
+        );
+
+        if (!updatedOrder) {
+          return res.status(404).json({
+            error: "Order or Product not found in customer orders",
+          });
+        }
+
+        // Update in adminOrderModel
+        const updatedOrderInAdmin = await adminOrderModel.findOneAndUpdate(
+          { orderId, "products._id": productId },
+          {
+            $set: { "products.$[product].returnStatus": returnOption },
+            $inc: { price: -Math.floor(0.95 * amountToReduce) },
+          },
+          { new: true, arrayFilters: [{ "product._id": productId }] }
+        );
+
+        if (!updatedOrderInAdmin) {
+          return res.status(404).json({
+            error: "Order or Product not found in admin orders",
+          });
+        }
+
         const { customerId } = updatedOrder;
         const error = await this.credited_to_wallet(
           customerId,
-          returnAmount,
+          amountToReduce,
           "Return Product",
           orderId
         );
         if (error) {
           return responseReturn(res, 404, {
-            error: "error while amount returned to wallet",
+            error: "Error while amount returned to wallet",
           });
         }
       }
-      // Combined success response
+
       res.status(200).json({
-        message: "Product return status updated successfully ",
-        customerOrder: updatedOrder,
-        adminOrder: updatedOrderInAdmin,
+        message: "Product return status updated successfully",
       });
     } catch (error) {
       console.error("Error updating product return status:", error.message);
