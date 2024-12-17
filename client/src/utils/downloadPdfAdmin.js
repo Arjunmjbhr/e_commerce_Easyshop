@@ -59,19 +59,28 @@ export const downloadPDF = (
   // Add table for sales orders
   const tableData = salesOrders.map((order) => {
     const { _id, price, createdAt, couponAmount } = order;
-
-    const ActualPrice =
-      order?.products?.reduce(
-        (amount, product) => amount + (product.price || 0),
-        0
-      ) || 0;
-    const productsSoldPrice = order?.products?.reduce((amount, product) => {
-      const { validOfferPercentage, discount, price } = product;
-      const validOfferDiscount =
-        validOfferPercentage > discount ? validOfferPercentage : discount;
-      return amount + (price - (price * validOfferDiscount) / 100);
+    // actul price of the product
+    const ActualPrice = order?.products?.reduce((amount, product) => {
+      const { price, quantity } = product;
+      const totalPrice = price * quantity;
+      return amount + totalPrice;
     }, 0);
-    const orderDiscount = (productsSoldPrice / ActualPrice) * 100;
+
+    // product sold price using discount and offerdiscount actual price
+
+    const productsSoldPrice = order?.products?.reduce((amount, product) => {
+      const { validOfferPercentage, discount, price, quantity } = product;
+
+      const validOffreDiscount =
+        validOfferPercentage > discount ? validOfferPercentage : discount;
+      const totalPrice =
+        (price - (price * validOffreDiscount) / 100) * quantity;
+
+      return amount + totalPrice;
+    }, 0);
+    // discount total
+    const orderDiscount = 100 - (productsSoldPrice / ActualPrice) * 100;
+    // delivery charge
     const deliveryCharge = price - productsSoldPrice;
 
     return [

@@ -7,6 +7,7 @@ import { get_admin_sales_data } from "../../store/Reducers/dashboardReducer";
 import toast from "react-hot-toast";
 import { downloadPDF } from "../../utils/downloadPdfAdmin";
 import SalesSummary from "./componets/SalesSummary";
+import { downloadEXCEL } from "../../utils/downloadExcelAdmin";
 
 const SalesReport = () => {
   const today = new Date();
@@ -27,9 +28,22 @@ const SalesReport = () => {
     couponUsedAmount,
   } = useSelector((store) => store.dashboard);
 
-  //  download functions
+  //  download pdf functions
   const downloadPdf = (salesOrders) => {
     downloadPDF(
+      salesOrders,
+      totalOrder,
+      totalProductSold,
+      totalProductReturn,
+      pendingOrder,
+      totalSalesRevenue,
+      totalAdminRevenue,
+      couponUsedCount,
+      couponUsedAmount
+    );
+  };
+  const downloadExcel = (salesOrders) => {
+    downloadEXCEL(
       salesOrders,
       totalOrder,
       totalProductSold,
@@ -161,13 +175,16 @@ const SalesReport = () => {
           >
             Download PDF
           </button>
-          <button className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600">
+          <button
+            onClick={() => downloadExcel(salesOrders)}
+            className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600"
+          >
             Download Excel
           </button>
         </div>
       </div>
 
-      {/* Custom Range */}
+      {/* Custom Range calender */}
       {filter === "Custom Range" && (
         <div className="flex items-center gap-4 mb-6">
           <div>
@@ -220,31 +237,36 @@ const SalesReport = () => {
               {salesOrders.map((sale) => {
                 const { _id, price, createdAt, couponAmount } = sale;
                 // actul price of the product
-                const ActualPrice =
-                  sale?.products?.reduce(
-                    (amount, product) => amount + (product.price || 0),
-                    0
-                  ) || 0;
+                const ActualPrice = sale?.products?.reduce(
+                  (amount, product) => {
+                    const { price, quantity } = product;
+                    const totalPrice = price * quantity;
+                    return amount + totalPrice;
+                  },
+                  0
+                );
 
                 // product sold price using discount and offerdiscount actual price
 
                 const productsSoldPrice = sale?.products?.reduce(
                   (amount, product) => {
-                    const { validOfferPercentage, discount, price } = product;
+                    const { validOfferPercentage, discount, price, quantity } =
+                      product;
 
                     const validOffreDiscount =
                       validOfferPercentage > discount
                         ? validOfferPercentage
                         : discount;
+                    const totalPrice =
+                      (price - (price * validOffreDiscount) / 100) * quantity;
 
-                    return (
-                      amount + (price - (price * validOffreDiscount) / 100)
-                    );
+                    return amount + totalPrice;
                   },
                   0
                 );
                 // discount total
-                const orderDiscount = (productsSoldPrice / ActualPrice) * 100;
+                const orderDiscount =
+                  100 - (productsSoldPrice / ActualPrice) * 100;
                 // delivery charge
                 const deliveryCharge = price - productsSoldPrice;
 
@@ -298,8 +320,8 @@ const SalesReport = () => {
         <Pagination
           pageNumber={currentPage}
           setPageNumber={setCurrentPage}
-          totalItem={40}
-          perPage={5}
+          totalItem={totalOrder}
+          perPage={10}
           showItem={3}
         />
       </div>
