@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { saveAs } from "file-saver";
 import Pagination from "./../Pagination";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { get_admin_sales_data } from "../../store/Reducers/dashboardReducer";
 import toast from "react-hot-toast";
+import { downloadPDF } from "../../utils/downloadPdfAdmin";
+import SalesSummary from "./componets/SalesSummary";
 
 const SalesReport = () => {
   const today = new Date();
@@ -14,19 +15,33 @@ const SalesReport = () => {
   const [endDate, setEndDate] = useState(today);
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
+  const {
+    salesOrders,
+    totalOrder,
+    totalProductSold,
+    totalProductReturn,
+    pendingOrder,
+    totalSalesRevenue,
+    totalAdminRevenue,
+    couponUsedCount,
+    couponUsedAmount,
+  } = useSelector((store) => store.dashboard);
 
-  // Mock download functions
-  const downloadPDF = () => {
-    const blob = new Blob(["Sales Report PDF"], { type: "application/pdf" });
-    saveAs(blob, "sales_report.pdf");
+  //  download functions
+  const downloadPdf = (salesOrders) => {
+    downloadPDF(
+      salesOrders,
+      totalOrder,
+      totalProductSold,
+      totalProductReturn,
+      pendingOrder,
+      totalSalesRevenue,
+      totalAdminRevenue,
+      couponUsedCount,
+      couponUsedAmount
+    );
   };
 
-  const downloadExcel = () => {
-    const blob = new Blob(["Sales Report Excel"], {
-      type: "application/vnd.ms-excel",
-    });
-    saveAs(blob, "sales_report.xls");
-  };
   useEffect(() => {
     let beginDate;
     let lastDate;
@@ -106,67 +121,50 @@ const SalesReport = () => {
   }, [filter, startDate, endDate]);
 
   return (
-    <div className="p-6 bg-slate-100 min-h-screen mr-8 ml-2 ">
+    <div className="p-6  min-h-screen mr-8 ml-2 ">
       <h1 className="text-2xl font-bold mb-4 text-gray-700">Sales Report</h1>
 
-      {/* Download Buttons at the Top */}
-      <div className="flex justify-end gap-4 mb-6">
-        <button
-          onClick={downloadPDF}
-          className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
-        >
-          Download PDF
-        </button>
-        <button
-          onClick={downloadExcel}
-          className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600"
-        >
-          Download Excel
-        </button>
-      </div>
-
       {/* Summary Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white shadow rounded-md p-4">
-          <h3 className="text-sm text-gray-500">totalProductSale</h3>
-          <p className="text-xl font-bold text-gray-800">333</p>
-        </div>
-        <div className="bg-white shadow rounded-md p-4">
-          <h3 className="text-sm text-gray-500">totalOrder</h3>
-          <p className="text-xl font-bold text-gray-800">333</p>
-        </div>
-        <div className="bg-white shadow rounded-md p-4">
-          <h3 className="text-sm text-gray-500">totalRevenueToSellers</h3>
-          <p className="text-xl font-bold text-gray-800">33</p>
-        </div>
-        <div className="bg-white shadow rounded-md p-4">
-          <h3 className="text-sm text-gray-500">totalRevenueToAdmin</h3>
-          <p className="text-xl font-bold text-gray-800">44</p>
-        </div>
+      <div>
+        <SalesSummary />
       </div>
 
       {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        {[
-          "Day",
-          "Week",
-          "Month",
-          "Last Month",
-          "Current Year",
-          "Custom Range",
-        ].map((item) => (
+      <div className="flex justify-between flex-wrap">
+        <div className="flex flex-wrap gap-4 mb-6">
+          {[
+            "Day",
+            "Week",
+            "Month",
+            "Last Month",
+            "Current Year",
+            "Custom Range",
+          ].map((item) => (
+            <button
+              key={item}
+              onClick={() => setFilter(item)}
+              className={`px-4 py-2 rounded-md text-sm ${
+                filter === item
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-600"
+              } hover:bg-blue-600 hover:text-white`}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+        {/* Download Buttons at the Top */}
+        <div className="flex justify-end gap-4 mb-6">
           <button
-            key={item}
-            onClick={() => setFilter(item)}
-            className={`px-4 py-2 rounded-md text-sm ${
-              filter === item
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-600"
-            } hover:bg-blue-600 hover:text-white`}
+            onClick={() => downloadPdf(salesOrders)}
+            className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600"
           >
-            {item}
+            Download PDF
           </button>
-        ))}
+          <button className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600">
+            Download Excel
+          </button>
+        </div>
       </div>
 
       {/* Custom Range */}
@@ -200,27 +198,94 @@ const SalesReport = () => {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           Sales Orders
         </h2>
-        {[1, 2, 3, 4].length > 0 ? (
+        {salesOrders.length > 0 ? (
           <table className="w-full table-auto">
             <thead>
-              <tr>
-                <th className="border px-4 py-2 text-left">Order ID</th>
-                <th className="border px-4 py-2 text-left">Amount</th>
-                <th className="border px-4 py-2 text-left">Date</th>
-                <th className="border px-4 py-2 text-left">Discount</th>
-                <th className="border px-4 py-2 text-left">Net Amount</th>
+              <tr className="text-sm text-center text-white bg-blue-600">
+                <th className="border px-4 py-2 ">Order ID</th>
+                <th className="border px-4 py-2 ">Date</th>
+                <th className="border px-4 py-2 ">Amount</th>
+                <th className="border px-4 py-2 ">Discount</th>
+                <th className="border px-4 py-2">
+                  Coupon <br /> Amount
+                </th>
+                <th className="border px-4 py-2">
+                  Delivery <br />
+                  Charge
+                </th>
+                <th className="border px-4 py-2 ">Net Amount</th>
               </tr>
             </thead>
             <tbody>
-              {[1, 2, 3, 4].map((sale) => (
-                <tr key={sale.id}>
-                  <td className="border px-4 py-2">{1}</td>
-                  <td className="border px-4 py-2">{2}</td>
-                  <td className="border px-4 py-2">{3}</td>
-                  <td className="border px-4 py-2">${4}</td>
-                  <td className="border px-4 py-2">${5}</td>
-                </tr>
-              ))}
+              {salesOrders.map((sale) => {
+                const { _id, price, createdAt, couponAmount } = sale;
+                // actul price of the product
+                const ActualPrice =
+                  sale?.products?.reduce(
+                    (amount, product) => amount + (product.price || 0),
+                    0
+                  ) || 0;
+
+                // product sold price using discount and offerdiscount actual price
+
+                const productsSoldPrice = sale?.products?.reduce(
+                  (amount, product) => {
+                    const { validOfferPercentage, discount, price } = product;
+
+                    const validOffreDiscount =
+                      validOfferPercentage > discount
+                        ? validOfferPercentage
+                        : discount;
+
+                    return (
+                      amount + (price - (price * validOffreDiscount) / 100)
+                    );
+                  },
+                  0
+                );
+                // discount total
+                const orderDiscount = (productsSoldPrice / ActualPrice) * 100;
+                // delivery charge
+                const deliveryCharge = price - productsSoldPrice;
+
+                return (
+                  <tr key={_id} className="text-sm text-center">
+                    <td className="border text-slate-600 px-4 uppercase py-2">
+                      {_id}
+                    </td>
+                    <td className="border px-4 py-2 flex  flex-col">
+                      <span>
+                        {" "}
+                        {new Date(createdAt).toLocaleDateString("en-GB", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                      <span className="text-slate-500">
+                        {new Date(createdAt).toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </span>
+                    </td>
+                    <td className="border px-4 py-2">₹{ActualPrice}</td>
+                    <td className="border px-4 py-2">
+                      {orderDiscount.toFixed(2)}%
+                    </td>
+                    <td className="border px-4 py-2">
+                      {couponAmount ? `₹ ${couponAmount}` : "Nill"}
+                    </td>
+                    <td className="border px-4 py-2">
+                      ₹{Math.floor(deliveryCharge)}
+                    </td>
+                    <td className="border text-md text-green-700 font-bold px-4 py-2">
+                      ₹{price}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (

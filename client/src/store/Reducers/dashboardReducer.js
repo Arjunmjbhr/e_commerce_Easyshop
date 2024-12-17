@@ -28,10 +28,14 @@ const dashboardReducer = createSlice({
     salesOrders: [],
     errorMessage: "",
     successMessage: "",
-    totalProductSale: "",
-    totalOrder: "",
-    totalRevenueToSellers: "",
-    totalRevenueToAdmin: "",
+    totalOrder: 0,
+    totalProductSold: 0,
+    totalProductReturn: 0,
+    pendingOrder: 0,
+    totalSalesRevenue: 0,
+    totalAdminRevenue: 0,
+    couponUsedCount: 0,
+    couponUsedAmount: 0,
   },
   reducers: {
     messageClear: (state, _) => {
@@ -42,6 +46,16 @@ const dashboardReducer = createSlice({
   extraReducers: (builder) => {
     builder.addCase(get_admin_sales_data.fulfilled, (state, action) => {
       state.salesOrders = action.payload.salesOrders;
+      state.totalOrder = action.payload.totalOrder;
+      state.totalProductSold = action.payload.totalProductSold;
+      state.totalProductReturn = action.payload.totalProductReturn;
+      state.pendingOrder = action.payload.pendingOrder;
+      state.totalSalesRevenue = action.payload.totalSalesRevenue;
+      state.couponUsedCount = action.payload.couponUsedCount;
+      state.couponUsedAmount = action.payload.couponUsedAmount;
+      state.totalAdminRevenue = action.payload.totalAdminRevenue;
+      state.successMessage = action.payload.successMessage;
+      state.errorMessage = action.payload.errorMessage;
     });
   },
 });
