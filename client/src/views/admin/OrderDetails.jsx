@@ -65,7 +65,7 @@ const OrderDetails = () => {
   }, [successMessage, errorMessage, dispatch]);
 
   return (
-    <div className=" w-[95%] ml-4 px-4 lg:px-10 py-6 bg-gradient-to-br from-indigo-50 to-gray-100 min-h-screen">
+    <div className=" w-[95%] ml-4 px-4 lg:px-10 pb-6  min-h-screen">
       {/* Header Section */}
       <div className="w-full p-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg text-white">
         <div className="flex justify-between items-center">
@@ -96,32 +96,35 @@ const OrderDetails = () => {
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Section */}
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Shipping Information
-          </h3>
           <p className="text-gray-600">
             <strong className="text-gray-800">Deliver To: </strong>
-            {order?.shippingInfo?.name}
           </p>
-          <p className="text-gray-600 mt-2">
+
+          <p className="text-gray-600 text-sm mt-2">
+            {order?.shippingInfo?.name}
             {order?.shippingInfo?.address}, {order?.shippingInfo?.province},
             {order?.shippingInfo?.city}, {order?.shippingInfo?.area}
           </p>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col gap-3">
+            <p className="text-gray-600 mt-2 flex flex-col">
+              <strong className="text-gray-800">Order Date :</strong>
+              <span>{order?.date}</span>
+            </p>
             <p className="text-gray-600">
-              <strong className="text-gray-800">Payment Status:</strong>
-              {order?.payment_status}
+              <strong className="text-gray-800">Payment Status :</strong>
+              <span>{order?.payment_status}</span>
             </p>
             <p className="text-gray-600 mt-2">
               <strong className="text-gray-800"> Total Price :</strong> $
               {order?.price}
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800">Order Date :</strong>
-              {order?.date}
+              <strong className="text-gray-800"> Coupon Applied:</strong> $
+              {order?.couponAmount}
             </p>
+
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800">Total product quantity:</strong>{" "}
+              <strong className="text-gray-800">Total products:</strong>{" "}
               {order?.products?.length}
             </p>
           </div>
