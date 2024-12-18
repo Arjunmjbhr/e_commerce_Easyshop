@@ -7,9 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 const SellerDashboard = () => {
   const dispatch = useDispatch();
+  const { userInfo } = useSelector((store) => store.auth);
 
   useEffect(() => {
-    dispatch(get_seller_dashboard_data());
+    dispatch(get_seller_dashboard_data({ sellerId: userInfo._id }));
   }, [dispatch]);
   return (
     <div className="flex flex-col justify-center">

@@ -3,6 +3,7 @@ const adminOrderModel = require("../../model/adminOrderModel");
 const productModel = require("../../model/productModel");
 const sellerModel = require("../../model/sellerModel");
 const { responseReturn } = require("../../utils/response");
+const { ObjectId } = require("mongoose").Types;
 
 class adminSellerDashboardController {
   get_admin_sales_data = async (req, res) => {
@@ -147,6 +148,7 @@ class adminSellerDashboardController {
       res.status(500).json({ success: false, message: "Server error" });
     }
   };
+  // End Method
   get_admin_dashboard_data = async (req, res) => {
     console.log("in the admin dashboard data");
     try {
@@ -154,14 +156,21 @@ class adminSellerDashboardController {
         await Promise.all([
           customerOrderModel.aggregate([
             {
+              $match: {
+                delivery_status: { $nin: ["cancelled", "pending"] },
+              },
+            },
+            {
               $group: {
                 _id: null,
                 totalAmount: { $sum: "$price" },
               },
             },
           ]),
-          customerOrderModel.countDocuments(),
-          productModel.countDocuments(),
+          customerOrderModel.countDocuments({
+            delivery_status: { $nin: ["cancelled", "pending"] },
+          }),
+          productModel.countDocuments({ isDeleted: false }),
           sellerModel.countDocuments(),
         ]);
 
@@ -169,6 +178,103 @@ class adminSellerDashboardController {
         allSalesSum.length > 0 ? allSalesSum[0].totalAmount : 0;
 
       const monthlyData = await customerOrderModel.aggregate([
+        {
+          $match: {
+            delivery_status: { $nin: ["cancelled", "pending"] },
+          },
+        },
+        {
+          $addFields: {
+            month: { $month: "$createdAt" }, // Extract month from `createdAt`
+          },
+        },
+        {
+          $group: {
+            _id: { month: "$month" },
+            totalOrders: { $sum: 1 },
+            totalRevenue: { $sum: "$price" },
+          },
+        },
+        { $sort: { "_id.month": 1 } },
+      ]);
+
+      // Initialize arrays for consistent 12-month representation
+      const orders = Array(12).fill(0);
+      const revenue = Array(12).fill(0);
+
+      // Map data into arrays
+      monthlyData.forEach((item) => {
+        const monthIndex = item._id.month - 1; // Map month (1-12) to index (0-11)
+        orders[monthIndex] = item.totalOrders;
+        revenue[monthIndex] = item.totalRevenue;
+      });
+
+      return responseReturn(res, 200, {
+        chartOrders: orders,
+        chartRevenue: revenue,
+        allSalesRevenue,
+        allOrders,
+        allProducts,
+        allSellers,
+      });
+    } catch (error) {
+      console.log(
+        "erro while fetching the get admin dashboard data",
+        error.message
+      );
+      return responseReturn(res, 500, { error: "internel server error" });
+    }
+  };
+  // End Method
+  get_seller_dashboard_data = async (req, res) => {
+    console.log("in the get seller dashboard controller ", req.params);
+    const { sellerId } = req.params;
+
+    try {
+      const [
+        totalSales,
+        sellerTotalOrder,
+        sellerTotalProduct,
+        sellerPendingOrder,
+      ] = await Promise.all([
+        // Calculate total sales for the seller
+        adminOrderModel.aggregate([
+          {
+            $match: {
+              sellerId: new ObjectId(sellerId),
+              delivery_status: { $nin: ["cancelled", "pending"] },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$price" },
+            },
+          },
+        ]),
+        // Count total orders for the seller excluding "cancelled" and "pending" statuses
+        adminOrderModel.countDocuments({
+          sellerId,
+          delivery_status: { $nin: ["cancelled", "pending"] }, // Use $nin
+        }),
+        // Count total products for the seller
+        productModel.countDocuments({ sellerId, isDeleted: false }),
+        // Count pending orders for the seller
+        adminOrderModel.countDocuments({
+          sellerId,
+          delivery_status: "placed",
+        }),
+      ]);
+
+      const sellerTotalSales = totalSales[0]?.totalAmount || 0;
+
+      const monthlyData = await adminOrderModel.aggregate([
+        {
+          $match: {
+            sellerId: new ObjectId(sellerId),
+            delivery_status: { $nin: ["cancelled", "pending"] },
+          },
+        },
         {
           $addFields: {
             month: { $month: "$createdAt" }, // Extract month from `createdAt`
@@ -203,21 +309,21 @@ class adminSellerDashboardController {
       });
 
       return responseReturn(res, 200, {
-        chartOrders: orders,
+        sellerTotalSales,
+        sellerTotalOrder,
+        sellerTotalProduct,
+        sellerPendingOrder,
         chartRevenue: revenue,
-        allSalesRevenue,
-        allOrders,
-        allProducts,
-        allSellers,
+        chartOrders: orders,
       });
     } catch (error) {
       console.log(
-        "erro while fetching the get admin dashboard data",
+        "error in the get seller dashbord data controller",
         error.message
       );
-      return responseReturn(res, 500, { error: "internel server error" });
     }
   };
+  // End Method
 }
 
 module.exports = new adminSellerDashboardController();

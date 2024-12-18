@@ -37,11 +37,14 @@ export const get_admin_dashboard_data = createAsyncThunk(
 );
 export const get_seller_dashboard_data = createAsyncThunk(
   "dashboard/get_seller_dashboard_data",
-  async (_, { rejectWithValue, fulfillWithValue }) => {
+  async ({ sellerId }, { rejectWithValue, fulfillWithValue }) => {
     try {
-      const { data } = await api.get(`/admin/get-seller-dashboard-data`, {
-        withCredentials: true,
-      });
+      const { data } = await api.get(
+        `/admin/get-seller-dashboard-data/${sellerId}`,
+        {
+          withCredentials: true,
+        }
+      );
 
       return fulfillWithValue(data);
     } catch (error) {

@@ -56,7 +56,6 @@ const SummaryDashboard = () => {
         <div className="w-[300px] xl:w-[200px]  h-[70px] rounded-md bg-white flex justify-between  items-center px-3">
           <div>
             <div className="flex justify-start items-center gap-1">
-              <FaRupeeSign />
               <h3 className="font-bold text-xl">{allOrders}</h3>
             </div>
             <h6>Orders</h6>

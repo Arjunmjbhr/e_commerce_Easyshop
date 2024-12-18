@@ -9,5 +9,9 @@ router.get(
   "/admin/get-admin-dashboard-data",
   adminSellerDashboardController.get_admin_dashboard_data
 );
+router.get(
+  "/admin/get-seller-dashboard-data/:sellerId",
+  adminSellerDashboardController.get_seller_dashboard_data
+);
 
 module.exports = router;
