@@ -35,6 +35,20 @@ export const get_admin_dashboard_data = createAsyncThunk(
     }
   }
 );
+export const get_seller_dashboard_data = createAsyncThunk(
+  "dashboard/get_seller_dashboard_data",
+  async (_, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(`/admin/get-seller-dashboard-data`, {
+        withCredentials: true,
+      });
+
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 const dashboardReducer = createSlice({
   name: "dashboard",
@@ -56,6 +70,10 @@ const dashboardReducer = createSlice({
     allSellers: 0,
     chartRevenue: [],
     chartOrders: [],
+    sellerTotalOrder: 0,
+    sellerTotalProduct: 0,
+    sellerTotalSales: 0,
+    sellerPendingOrder: 0,
   },
   reducers: {
     messageClear: (state, _) => {
@@ -83,6 +101,14 @@ const dashboardReducer = createSlice({
         state.allOrders = action.payload.allOrders;
         state.allProducts = action.payload.allProducts;
         state.allSellers = action.payload.allSellers;
+        state.chartOrders = action.payload.chartOrders;
+        state.chartRevenue = action.payload.chartRevenue;
+      })
+      .addCase(get_seller_dashboard_data.fulfilled, (state, action) => {
+        state.sellerTotalOrder = action.payload.sellerTotalOrder;
+        state.sellerTotalProduct = action.payload.sellerTotalProduct;
+        state.sellerTotalSales = action.payload.sellerTotalSales;
+        state.sellerPendingOrder = action.payload.sellerPendingOrder;
         state.chartOrders = action.payload.chartOrders;
         state.chartRevenue = action.payload.chartRevenue;
       });
