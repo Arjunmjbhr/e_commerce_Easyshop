@@ -82,12 +82,6 @@ export const sellerRoutes = [
     status: "active",
   },
   {
-    path: "/seller/dashboard/offer",
-    element: <Offer />,
-    role: "seller",
-    status: "active",
-  },
-  {
     path: "/seller/account-pending",
     element: <Pending />,
     ability: "seller",

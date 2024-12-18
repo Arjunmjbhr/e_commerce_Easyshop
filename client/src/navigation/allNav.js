@@ -109,13 +109,6 @@ export const allNav = [
     path: "/seller/dashboard/add-product",
   },
   {
-    id: 4,
-    title: "Offer Product",
-    icon: <MdOutlineLocalOffer />,
-    role: "seller",
-    path: "/seller/dashboard/offer",
-  },
-  {
     id: 5,
     title: "Orders",
     icon: <FaCartArrowDown />,
