@@ -61,9 +61,12 @@ export const downloadPDF = (
     const { _id, price, createdAt, couponAmount, shippingFee } = order;
     // actul price of the product
     const ActualPrice = order?.products?.reduce((amount, product) => {
-      const { price, quantity } = product;
-      const totalPrice = price * quantity;
-      return amount + totalPrice;
+      if (product.returnStatus !== "accepted") {
+        const { price, quantity } = product;
+        const totalPrice = price * quantity;
+        return amount + totalPrice;
+      }
+      return amount;
     }, 0);
 
     // product sold price using discount and offerdiscount actual price
@@ -71,22 +74,30 @@ export const downloadPDF = (
     const productsSoldPrice = order?.products?.reduce((amount, product) => {
       const { validOfferPercentage, discount, price, quantity } = product;
 
-      const validOffreDiscount =
-        validOfferPercentage > discount ? validOfferPercentage : discount;
-      const totalPrice =
-        (price - (price * validOffreDiscount) / 100) * quantity;
+      if (product.returnStatus !== "accepted") {
+        const validOffreDiscount =
+          validOfferPercentage > discount ? validOfferPercentage : discount;
+        const totalPrice =
+          (price - (price * validOffreDiscount) / 100) * quantity;
 
-      return amount + totalPrice;
+        return amount + totalPrice;
+      }
+      return amount;
     }, 0);
     // discount total
     const orderDiscount = 100 - (productsSoldPrice / ActualPrice) * 100;
+
+    const conditionedOrderDiscount = orderDiscount
+      ? orderDiscount.toFixed(2)
+      : "Nil";
+    const conditinedCoupon = couponAmount ? couponAmount : "Nil";
 
     return [
       _id,
       new Date(createdAt).toLocaleDateString(),
       `${ActualPrice}`,
-      `${orderDiscount.toFixed(2)}%`,
-      `${couponAmount.toFixed(2)}`,
+      `${conditionedOrderDiscount}`,
+      `${conditinedCoupon}`,
       `${Math.floor(shippingFee).toString()}`,
       `${price}`,
     ];

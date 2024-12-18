@@ -808,11 +808,11 @@ class orderController {
           const validOfferDiscount =
             validOfferPercentage > discount ? validOfferPercentage : discount;
           amountToReduce = (
-            (price - Math.floor(price * validOfferDiscount) / 100) *
+            (price - Math.floor((price * validOfferDiscount) / 100)) *
             quantity
           ).toFixed(0);
         }
-
+        const adminAmountToReduce = amountToReduce;
         // Adjust the amount to reduce if the coupon minimum order value condition is met
         if (couponMinOrderValue > placedPrice - amountToReduce) {
           amountToReduce -= couponAmount;
@@ -839,13 +839,20 @@ class orderController {
             error: "Order or Product not found in customer orders",
           });
         }
+        const { customerId } = updatedOrder;
+        const error = await this.credited_to_wallet(
+          customerId,
+          amountToReduce,
+          "Return Product",
+          orderId
+        );
 
         // Update in adminOrderModel
         const updatedOrderInAdmin = await adminOrderModel.findOneAndUpdate(
           { orderId, "products._id": productId },
           {
             $set: { "products.$[product].returnStatus": returnOption },
-            $inc: { price: -Math.floor(0.95 * amountToReduce) },
+            $inc: { price: -Math.floor(0.95 * adminAmountToReduce) },
           },
           { new: true, arrayFilters: [{ "product._id": productId }] }
         );
@@ -856,13 +863,6 @@ class orderController {
           });
         }
 
-        const { customerId } = updatedOrder;
-        const error = await this.credited_to_wallet(
-          customerId,
-          amountToReduce,
-          "Return Product",
-          orderId
-        );
         if (error) {
           return responseReturn(res, 404, {
             error: "Error while amount returned to wallet",

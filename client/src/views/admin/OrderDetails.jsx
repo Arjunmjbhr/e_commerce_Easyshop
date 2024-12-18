@@ -115,12 +115,16 @@ const OrderDetails = () => {
               <span>{order?.payment_status}</span>
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800"> Total Price :</strong> $
+              <strong className="text-gray-800"> Sold Price :</strong> ₹
               {order?.price}
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800"> Coupon Applied:</strong> $
+              <strong className="text-gray-800"> Coupon Applied:</strong> ₹
               {order?.couponAmount}
+            </p>
+            <p className="text-gray-600 mt-2">
+              <strong className="text-gray-800"> Deliver charge:</strong> ₹
+              {order?.shippingFee}
             </p>
 
             <p className="text-gray-600 mt-2">
@@ -195,7 +199,8 @@ const OrderDetails = () => {
                             <strong>Quantity:</strong> {quantity}
                           </p>
                           <p className="text-gray-600">
-                            <strong>Price:</strong> {discountedPrice}
+                            <strong>Price:₹</strong>{" "}
+                            {discountedPrice * quantity}
                           </p>
                           {returnStatus && (
                             <p className="text-gray-600">

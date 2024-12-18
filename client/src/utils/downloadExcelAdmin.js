@@ -49,25 +49,39 @@ export const downloadEXCEL = (
   const tableData = salesOrders.map((order) => {
     const { _id, price, createdAt, couponAmount, shippingFee } = order;
 
-    const ActualPrice =
-      order?.products?.reduce(
-        (amount, product) => amount + (product.price || 0),
-        0
-      ) || 0;
+    const ActualPrice = order?.products?.reduce((amount, product) => {
+      if (product.returnStatus !== "accepted") {
+        const { price, quantity } = product;
+        const totalPrice = price * quantity;
+        return amount + totalPrice;
+      }
+      return amount;
+    }, 0);
     const productsSoldPrice = order?.products?.reduce((amount, product) => {
-      const { validOfferPercentage, discount, price } = product;
-      const validOfferDiscount =
-        validOfferPercentage > discount ? validOfferPercentage : discount;
-      return amount + (price - (price * validOfferDiscount) / 100);
+      const { validOfferPercentage, discount, price, quantity } = product;
+
+      if (product.returnStatus !== "accepted") {
+        const validOffreDiscount =
+          validOfferPercentage > discount ? validOfferPercentage : discount;
+        const totalPrice =
+          (price - (price * validOffreDiscount) / 100) * quantity;
+
+        return amount + totalPrice;
+      }
+      return amount;
     }, 0);
     const orderDiscount = (productsSoldPrice / ActualPrice) * 100;
+    const conditionedOrderDiscount = orderDiscount
+      ? orderDiscount.toFixed(2)
+      : "Nil";
+    const conditinedCoupon = couponAmount ? couponAmount : "Nil";
 
     return [
       _id,
       new Date(createdAt).toLocaleDateString(),
       `${ActualPrice}`,
-      `${orderDiscount.toFixed(2)}%`,
-      `${couponAmount.toFixed(2)}`,
+      `${conditionedOrderDiscount}%`,
+      `${conditinedCoupon}`,
       `${Math.floor(shippingFee).toString()}`,
       `${price}`,
     ];

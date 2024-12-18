@@ -212,7 +212,7 @@ const Sales = () => {
         </div>
       )}
 
-      {/* Filtered Data Table */}
+      {/* sales order Data Table */}
       <div className="bg-white shadow rounded-md p-4 mb-6">
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           Sales Orders
@@ -227,7 +227,10 @@ const Sales = () => {
                   Amount <br />
                   (MRP)
                 </th>
-                <th className="border px-4 py-2 ">Discount</th>
+                <th className="border px-4 py-2 ">
+                  Discount <br />
+                  (%)
+                </th>
                 <th className="border px-4 py-2">
                   Coupon <br /> Amount
                 </th>
@@ -245,9 +248,12 @@ const Sales = () => {
                 // actul price of the product
                 const ActualPrice = sale?.products?.reduce(
                   (amount, product) => {
-                    const { price, quantity } = product;
-                    const totalPrice = price * quantity;
-                    return amount + totalPrice;
+                    if (product.returnStatus !== "accepted") {
+                      const { price, quantity } = product;
+                      const totalPrice = price * quantity;
+                      return amount + totalPrice;
+                    }
+                    return amount;
                   },
                   0
                 );
@@ -259,14 +265,17 @@ const Sales = () => {
                     const { validOfferPercentage, discount, price, quantity } =
                       product;
 
-                    const validOffreDiscount =
-                      validOfferPercentage > discount
-                        ? validOfferPercentage
-                        : discount;
-                    const totalPrice =
-                      (price - (price * validOffreDiscount) / 100) * quantity;
+                    if (product.returnStatus !== "accepted") {
+                      const validOffreDiscount =
+                        validOfferPercentage > discount
+                          ? validOfferPercentage
+                          : discount;
+                      const totalPrice =
+                        (price - (price * validOffreDiscount) / 100) * quantity;
 
-                    return amount + totalPrice;
+                      return amount + totalPrice;
+                    }
+                    return amount;
                   },
                   0
                 );
@@ -296,12 +305,14 @@ const Sales = () => {
                         })}
                       </span>
                     </td>
-                    <td className="border px-4 py-2">₹{ActualPrice}</td>
                     <td className="border px-4 py-2">
-                      {orderDiscount.toFixed(2)}%
+                      {ActualPrice ? `₹${ActualPrice}` : "Return"}
                     </td>
                     <td className="border px-4 py-2">
-                      {couponAmount ? `₹ ${couponAmount}` : "Nill"}
+                      {orderDiscount ? `${orderDiscount.toFixed(2)}%` : "Nil"}
+                    </td>
+                    <td className="border px-4 py-2">
+                      {couponAmount ? `₹ ${couponAmount}` : "Nil"}
                     </td>
                     <td className="border px-4 py-2">₹{shippingFee}</td>
                     <td className="border text-md text-green-700 font-bold px-4 py-2">
