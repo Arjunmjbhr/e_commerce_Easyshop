@@ -288,7 +288,7 @@ class orderController {
 
       console.log(`Order ${orderId} updated for COD successfully.`);
       return responseReturn(res, 200, {
-        message: "Order placed with cash on delivery",
+        message: "order placed successfuly",
       });
     } catch (error) {
       console.error("Error in COD payment:", error.message);

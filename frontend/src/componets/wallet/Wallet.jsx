@@ -27,9 +27,9 @@ const Wallet = () => {
   }, [dispatch, userInfo]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen  px-6">
       {/* Header */}
-      <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md">
+      <div className="bg-blue-600 text-white px-6 py-4 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold">Wallet</h1>
       </div>
 

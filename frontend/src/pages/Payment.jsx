@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Stripe from "./../componets/payment/Stripe";
 import Header from "./../componets/Header";
 import Footer from "./../componets/Footer";
@@ -15,6 +15,7 @@ import { get_order_details } from "../store/reducers/orderReducer";
 import Razorpay from "../componets/payment/Razorpay";
 
 const Payment = () => {
+  const navigate = useNavigate();
   const {
     state: { price, items, orderId },
   } = useLocation();
@@ -28,6 +29,9 @@ const Payment = () => {
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
+      if (successMessage === "order placed successfuly") {
+        navigate("/dashboard");
+      }
       dispatch(messageClear());
     }
     if (errorMessage) {

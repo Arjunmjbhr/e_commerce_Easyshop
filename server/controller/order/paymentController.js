@@ -121,7 +121,7 @@ class PaymentController {
       );
 
       return responseReturn(res, 200, {
-        message: "Payment done successfully and order place",
+        message: "order placed successfuly",
       });
     } catch (error) {
       console.error("Error during payment verification:", error);

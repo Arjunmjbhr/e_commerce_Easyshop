@@ -5,7 +5,7 @@ import { FaFacebookF } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa6";
 import { FaLinkedin } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ProductSpec = ({
   product,
@@ -13,7 +13,9 @@ const ProductSpec = ({
   incrementCount,
   quantity,
   add_cart,
+  add_wishlist,
 }) => {
+  const navigate = useNavigate();
   const {
     discount,
     name,
@@ -25,6 +27,37 @@ const ProductSpec = ({
   } = product;
   let discountOrOffer =
     discount > validOfferPercentage ? discount : validOfferPercentage;
+
+  const buyNow = () => {
+    const { discount, price, sellerId, shopName, validOfferPercentage } =
+      product;
+    const discountOrValidOffer = Math.max(discount, validOfferPercentage);
+    let productPrice =
+      (price - Math.floor((price * discountOrValidOffer) / 100)) * quantity;
+    let sellerPrice = Math.floor(0.95 * productPrice);
+    const productDetailsToTransfer = [
+      {
+        sellerId: sellerId,
+        shopName: shopName,
+        price: sellerPrice,
+        products: [
+          {
+            validOfferPercentage,
+            quantity,
+            productInfo: product,
+          },
+        ],
+      },
+    ];
+    navigate("/shipping", {
+      state: {
+        products: productDetailsToTransfer,
+        price: productPrice,
+        shipping_fee: 20,
+        items: 1,
+      },
+    });
+  };
 
   return (
     <div>
@@ -93,7 +126,10 @@ const ProductSpec = ({
             ) : (
               ""
             )}
-            <div className="h-[50px] w-[50px] flex justify-center items-center cursor-pointer hover:shadow-lg hover:shadow-cyan-500/40 bg-cyan-500 text-white">
+            <div
+              onClick={() => add_wishlist(product)}
+              className="h-[50px] w-[50px] flex justify-center items-center cursor-pointer hover:shadow-lg hover:shadow-cyan-500/40 bg-cyan-500 text-white"
+            >
               <FaHeart />
             </div>
           </div>
@@ -152,7 +188,10 @@ const ProductSpec = ({
           {/* buy now and chat  */}
           <div className="flex gap-3 mx-10 mb-5">
             {stock ? (
-              <button className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-green-500/40 bg-[#247462] text-white">
+              <button
+                onClick={buyNow}
+                className="px-8 py-3 h-[50px] cursor-pointer hover:shadow-lg hover:shadow-green-500/40 bg-[#247462] text-white"
+              >
                 Buy Now
               </button>
             ) : (

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./../componets/Header";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -6,17 +5,9 @@ import { FaAngleRight } from "react-icons/fa";
 import Footer from "../componets/Footer";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import Ratings from "../componets/Ratings";
-import { FaHeart } from "react-icons/fa6";
-import { FaFacebookF } from "react-icons/fa";
-import { FaTwitter } from "react-icons/fa6";
-import { FaLinkedin } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa";
 import Reviews from "../componets/Reviews";
-import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { useDispatch, useSelector } from "react-redux";
 import { get_products, get_categories } from "../store/reducers/homeReducer";
 import { product_details } from "../store/reducers/homeReducer";
@@ -24,14 +15,21 @@ import ProductImageZoom from "../componets/ProductImageZoom";
 import PageHeading from "../componets/PageHeading";
 import { toast } from "react-hot-toast";
 import { add_to_cart, messageClear } from "../store/reducers/cartReducer";
+import {
+  add_to_wishlist,
+  messageClearWishlist,
+} from "../store/reducers/wishlistReducer";
 import ProductSpec from "../componets/productDetails/ProductSpec";
 import RelatedProducts from "../componets/productDetails/RelatedProducts";
 import ProductFromSameShop from "../componets/productDetails/ProductFromSameShop";
 
 const Details = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { slug } = useParams();
   const [image, setImage] = useState("");
   const [state, setState] = useState("reviews");
+  const [quantity, setQuantity] = useState(1);
   const elementRef = useRef(null);
   const responsive = {
     superLargeDesktop: {
@@ -63,14 +61,16 @@ const Details = () => {
       items: 2,
     },
   };
-
+  // subscribe to store
   const { product, relatedProducts, moreProducts } = useSelector(
     (store) => store.home
   );
+  const { wishlistErrorMessage, wishlistSuccessMessage } = useSelector(
+    (store) => store.wishlist
+  );
   const { userInfo } = useSelector((state) => state.authUser);
   const { errorMessage, successMessage } = useSelector((state) => state.cart);
-  const { slug } = useParams();
-  const dispatch = useDispatch();
+
   //when ever we select new product then scroll to product details view using useRef
   const handleScroll = () => {
     if (elementRef.current) {
@@ -80,23 +80,69 @@ const Details = () => {
       });
     }
   };
-  useEffect(() => {
-    dispatch(product_details(slug));
-  }, [slug, dispatch]);
+  // useEffect(() => {
+  //   dispatch(product_details(slug));
+  // }, [slug, dispatch]);
 
   useEffect(() => {
     dispatch(get_products());
     dispatch(get_categories());
   }, [dispatch]);
-
   useEffect(() => {
     dispatch(product_details(slug));
     setImage("");
     handleScroll();
   }, [slug, dispatch]);
 
-  //button incement and decrement
-  const [quantity, setQuantity] = useState(1);
+  // toast message for success and failure
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch]);
+  useEffect(() => {
+    if (wishlistSuccessMessage) {
+      toast.success(wishlistSuccessMessage);
+      dispatch(messageClearWishlist());
+    }
+    if (wishlistErrorMessage) {
+      toast.error(wishlistErrorMessage);
+      dispatch(messageClearWishlist());
+    }
+  }, [wishlistErrorMessage, wishlistSuccessMessage, dispatch]);
+
+  // add to wishlist
+  const add_wishlist = (product) => {
+    if (userInfo) {
+      const data = {
+        userId: userInfo.id,
+        productId: product._id,
+      };
+      dispatch(add_to_wishlist(data));
+    } else {
+      toast.error("Please login to add product to wishlist");
+      navigate("/login");
+    }
+  };
+  // add to cart
+  const add_cart = () => {
+    if (userInfo) {
+      dispatch(
+        add_to_cart({
+          userId: userInfo.id,
+          quantity,
+          productId: product._id,
+        })
+      );
+    } else {
+      navigate("/login");
+    }
+  };
   const incrementCount = () => {
     if (quantity >= product.stock) {
       toast.error("Out of Stock");
@@ -111,30 +157,7 @@ const Details = () => {
       setQuantity(quantity - 1);
     }
   };
-  useEffect(() => {
-    if (successMessage) {
-      toast.success(successMessage);
-      dispatch(messageClear());
-    }
-    if (errorMessage) {
-      toast.error(errorMessage);
-      dispatch(messageClear());
-    }
-  }, [successMessage, errorMessage, dispatch]);
 
-  const add_cart = () => {
-    if (userInfo) {
-      dispatch(
-        add_to_cart({
-          userId: userInfo.id,
-          quantity,
-          productId: product._id,
-        })
-      );
-    } else {
-      navigate("/login");
-    }
-  };
   return (
     <div>
       <Header />
@@ -215,6 +238,7 @@ const Details = () => {
             {/* product details layout */}
             <div className="flex flex-col justify-start">
               <ProductSpec
+                add_wishlist={add_wishlist}
                 product={product}
                 decrementCount={decrementCount}
                 incrementCount={incrementCount}

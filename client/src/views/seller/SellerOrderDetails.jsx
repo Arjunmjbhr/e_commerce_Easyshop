@@ -56,7 +56,7 @@ const SellerOrderDetails = () => {
   }, [successMessage, errorMessage, dispatch]);
 
   return (
-    <div className=" w-[95%] ml-4 px-4 lg:px-10 py-6 bg-gradient-to-br from-indigo-50 to-gray-100 min-h-screen">
+    <div className=" w-[95%] ml-4 px-4 lg:px-10 py-6  min-h-screen">
       {/* Header Section */}
       <div className="w-full p-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg text-white">
         <div className="flex justify-between items-center">
@@ -90,15 +90,12 @@ const SellerOrderDetails = () => {
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Section */}
         <div className="bg-white p-6 rounded-xl shadow-lg">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Shipping Information
-          </h3>
           <p className="text-gray-600">
             <strong className="text-gray-800">Deliver To: </strong>
             {order?.shippingInfo?.name}
           </p>
           <p className="text-gray-600 mt-2">{order?.shippingInfo},</p>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col gap-3">
             <p className="text-gray-600">
               <strong className="text-gray-800">Payment Status:</strong>{" "}
               {order?.payment_status}
@@ -108,11 +105,11 @@ const SellerOrderDetails = () => {
               {order?.price}
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800">Order Date :</strong>{" "}
+              <strong className="text-gray-800">Order Date :</strong> <br />
               {order?.date}
             </p>
             <p className="text-gray-600 mt-2">
-              <strong className="text-gray-800">Total product quantity:</strong>{" "}
+              <strong className="text-gray-800"> product quantity:</strong>{" "}
               {order?.products?.length}
             </p>
           </div>

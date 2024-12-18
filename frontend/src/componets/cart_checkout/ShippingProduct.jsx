@@ -1,34 +1,14 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import {
-  delete_cart_product,
-  quantity_increment,
-  quantity_decrement,
-} from "../../store/reducers/cartReducer";
-
 const ShippingProduct = ({ shop, isShipping }) => {
-  const dispatch = useDispatch();
-  const incrementCount = (quantity, cartId, stock) => {
-    const temp = quantity + 1;
-
-    if (temp <= stock && temp <= 5) {
-      dispatch(quantity_increment(cartId));
-    }
-  };
-  const decrementCount = (quantity, cartId, stock) => {
-    const temp = quantity - 1;
-    if (temp !== 0) {
-      dispatch(quantity_decrement(cartId));
-    }
-  };
   return (
     <div>
       <div>
         {shop.products.map((product) => {
-          const { validOfferPercentage } = product;
+          let { validOfferPercentage } = product;
           const { images, name, brand, price, discount } = product?.productInfo;
           let discountOrOffer =
             discount > validOfferPercentage ? discount : validOfferPercentage;
+          console.log("product in the shippig", product);
 
           return (
             <div className="w-full flex flex-wrap bg-white ">

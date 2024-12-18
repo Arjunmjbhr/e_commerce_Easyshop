@@ -13,8 +13,10 @@ const OrderDashboard = () => {
   }, [state]);
   return (
     <div>
-      <div className="bg-white flex items-center justify-between py-3 px-10 rounded-xl my-4 ">
-        <h1 className="text-xl font-bold mb-4 ">My Orders</h1>
+      <div className="bg-blue-600 shadow-lg flex items-center justify-between px-10 rounded-xl my-4 ">
+        <h1 className="text-2xl text-white text-center py-4   font-bold  ">
+          My Orders
+        </h1>
         <select
           className="outline-none px-3 py-1 border rounded-md text-slate-600"
           value={state}
@@ -27,7 +29,7 @@ const OrderDashboard = () => {
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
-      <div className="bg-white p-4 rounded-xl">
+      <div className="bg-white p-4 rounded-xl shadow-xl">
         <CustomerOrders recentOrders={myOrders} />
       </div>
     </div>

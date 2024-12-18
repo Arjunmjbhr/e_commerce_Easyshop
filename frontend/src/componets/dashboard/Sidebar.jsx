@@ -56,7 +56,7 @@ const Sidebar = ({ filterShow, logout }) => {
       <div
         className={`rounded-md z-50 md-lg:absolute ${
           filterShow ? "-left-4" : "-left-[360px]"
-        } w-[270px] ml-4 bg-white`}
+        } w-[270px] ml-4 bg-white shadow-md`}
       >
         <div className="py-3 text-slate-600 px-6 flex flex-col gap-4 ">
           {navigation.map((nav) => (
