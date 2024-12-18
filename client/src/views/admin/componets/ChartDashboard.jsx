@@ -1,28 +1,25 @@
 import React from "react";
 import Chart from "react-apexcharts";
+import { useSelector } from "react-redux";
 
 const ChartDashboard = () => {
+  const { chartRevenue, chartOrders } = useSelector((store) => store.dashboard);
+  const chartRevenueInThousands = chartRevenue.map((revenue) => revenue / 1000);
   const state = {
     series: [
       {
         name: "Orders",
-        data: [23, 34, 45, 56, 76, 34, 23, 76, 87, 78, 34, 45],
+        data: chartOrders,
       },
       {
         name: "Revenue",
-        data: [67, 39, 45, 56, 90, 56, 23, 56, 87, 78, 67, 78],
-      },
-      {
-        name: "Sellers",
-        data: [34, 39, 56, 56, 80, 67, 23, 56, 98, 78, 45, 56],
+        data: chartRevenueInThousands,
       },
     ],
     options: {
-      color: ["#181ee8", "#181ee8"],
-      plotOptions: {
-        radius: 30,
-      },
+      colors: ["#181ee8", "#00d084"], // Updated colors for distinction
       chart: {
+        type: "bar",
         background: "transparent",
         foreColor: "#d0d2d6",
       },
@@ -32,18 +29,14 @@ const ChartDashboard = () => {
       stroke: {
         show: true,
         curve: "smooth",
-        lineCap: "butt",
-        colors: "#f0f0f0",
-        width: 0.5,
-        dashArray: 0,
+        width: 1,
       },
-
       xaxis: {
         categories: [
           "Jan",
           "Feb",
           "Mar",
-          "Apl",
+          "Apr",
           "May",
           "Jun",
           "Jul",
@@ -59,14 +52,15 @@ const ChartDashboard = () => {
       },
     },
   };
+
   return (
     <div className="mb-10">
-      <div className=" flex justify-center flex-wrap mt-7">
-        <div className="lg:w-11/12  lg:pr-3">
+      <div className="flex justify-center flex-wrap mt-7">
+        <div className="lg:w-11/12 lg:pr-3">
           <div className="w-full bg-[#6a5fdf] p-4 rounded-md">
             <Chart
               options={state.options}
-              series={state.series}
+              series={state.series || []}
               type="bar"
               height={350}
             />

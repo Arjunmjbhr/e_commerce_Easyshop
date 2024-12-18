@@ -1,5 +1,8 @@
 const customerOrderModel = require("../../model/customerOrderModel");
 const adminOrderModel = require("../../model/adminOrderModel");
+const productModel = require("../../model/productModel");
+const sellerModel = require("../../model/sellerModel");
+const { responseReturn } = require("../../utils/response");
 
 class adminSellerDashboardController {
   get_admin_sales_data = async (req, res) => {
@@ -142,6 +145,77 @@ class adminSellerDashboardController {
     } catch (error) {
       console.error("Error fetching admin sales data:", error);
       res.status(500).json({ success: false, message: "Server error" });
+    }
+  };
+  get_admin_dashboard_data = async (req, res) => {
+    console.log("in the admin dashboard data");
+    try {
+      const [allSalesSum, allOrders, allProducts, allSellers] =
+        await Promise.all([
+          customerOrderModel.aggregate([
+            {
+              $group: {
+                _id: null,
+                totalAmount: { $sum: "$price" },
+              },
+            },
+          ]),
+          customerOrderModel.countDocuments(),
+          productModel.countDocuments(),
+          sellerModel.countDocuments(),
+        ]);
+
+      const allSalesRevenue =
+        allSalesSum.length > 0 ? allSalesSum[0].totalAmount : 0;
+
+      const monthlyData = await customerOrderModel.aggregate([
+        {
+          $addFields: {
+            month: { $month: "$createdAt" }, // Extract month from `createdAt`
+          },
+        },
+        {
+          $group: {
+            _id: { month: "$month" },
+            totalOrders: { $sum: 1 },
+            totalRevenue: {
+              $sum: {
+                $add: [
+                  "$price",
+                  { $ifNull: ["$couponAmount", 0] }, // Handle null values in `couponAmount`
+                ],
+              },
+            },
+          },
+        },
+        { $sort: { "_id.month": 1 } },
+      ]);
+
+      // Initialize arrays for consistent 12-month representation
+      const orders = Array(12).fill(0);
+      const revenue = Array(12).fill(0);
+
+      // Map data into arrays
+      monthlyData.forEach((item) => {
+        const monthIndex = item._id.month - 1; // Map month (1-12) to index (0-11)
+        orders[monthIndex] = item.totalOrders;
+        revenue[monthIndex] = item.totalRevenue;
+      });
+
+      return responseReturn(res, 200, {
+        chartOrders: orders,
+        chartRevenue: revenue,
+        allSalesRevenue,
+        allOrders,
+        allProducts,
+        allSellers,
+      });
+    } catch (error) {
+      console.log(
+        "erro while fetching the get admin dashboard data",
+        error.message
+      );
+      return responseReturn(res, 500, { error: "internel server error" });
     }
   };
 }
