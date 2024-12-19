@@ -18,6 +18,7 @@ const couponRouter = require("./routes/dashboard/couponRouter");
 const offerRouter = require("./routes/dashboard/offerRoutes");
 const paymentRouter = require("./routes/order/paymentRoutes");
 const adminSellerDashboardRoter = require("./routes/dashboard/adminSellerDashboardRoutes");
+const sellerRouter = require("./routes/dashboard/sellerRoutes");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -49,6 +50,7 @@ app.use("/api", couponRouter);
 app.use("/api", offerRouter);
 app.use("/api", paymentRouter);
 app.use("/api", adminSellerDashboardRoter);
+app.use("/api", sellerRouter);
 
 dbConnect();
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));

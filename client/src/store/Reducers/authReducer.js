@@ -20,7 +20,6 @@ const returnRole = (token) => {
     return ""; // Explicitly return an empty string in case of an error
   }
 };
-
 //redux thunk
 export const admin_login = createAsyncThunk(
   "auth/admin_login",
@@ -38,7 +37,7 @@ export const admin_login = createAsyncThunk(
     }
   }
 );
-
+// end Method
 export const seller_register = createAsyncThunk(
   "auth/seller_register",
   async (info, { rejectWithValue, fulfillWithValue }) => {
@@ -55,6 +54,7 @@ export const seller_register = createAsyncThunk(
     }
   }
 );
+// end Method
 export const seller_login = createAsyncThunk(
   "auth/seller_login",
   async (info, { rejectWithValue, fulfillWithValue }) => {
@@ -71,6 +71,7 @@ export const seller_login = createAsyncThunk(
     }
   }
 );
+// end Method
 export const get_user_info = createAsyncThunk(
   "auth/get_user_info",
   async (_, { rejectWithValue, fulfillWithValue }) => {
@@ -84,6 +85,7 @@ export const get_user_info = createAsyncThunk(
     }
   }
 );
+// end Method
 export const logout = createAsyncThunk(
   "auth/logout",
   async ({ navigate, role }, { rejectWithValue, fulfillWithValue }) => {
@@ -98,6 +100,24 @@ export const logout = createAsyncThunk(
       return fulfillWithValue(data);
     } catch (error) {
       // console.log(error.response.data)
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+// end Method
+export const update_seller_profile_info = createAsyncThunk(
+  "auth/update_seller_profile_info",
+  async (formdata, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const response = await api.post(
+        "/seller/update-seller-profile-info",
+        formdata,
+        {
+          withCredentials: true,
+        }
+      );
+      return fulfillWithValue(response.data);
+    } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
