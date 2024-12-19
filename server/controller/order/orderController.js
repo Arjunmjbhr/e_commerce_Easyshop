@@ -807,10 +807,10 @@ class orderController {
             MatchProduct[0];
           const validOfferDiscount =
             validOfferPercentage > discount ? validOfferPercentage : discount;
-          amountToReduce = (
-            (price - Math.floor((price * validOfferDiscount) / 100)) *
-            quantity
-          ).toFixed(0);
+          amountToReduce =
+            (price - Math.floor((price * validOfferDiscount) / 100)) * quantity;
+          console.log("amount to reduce", amountToReduce);
+          console.log("admin", 0.95 * amountToReduce);
         }
         const adminAmountToReduce = amountToReduce;
         // Adjust the amount to reduce if the coupon minimum order value condition is met
@@ -852,7 +852,7 @@ class orderController {
           { orderId, "products._id": productId },
           {
             $set: { "products.$[product].returnStatus": returnOption },
-            $inc: { price: -Math.floor(0.95 * adminAmountToReduce) },
+            $inc: { price: -Math.ceil(0.95 * adminAmountToReduce) },
           },
           { new: true, arrayFilters: [{ "product._id": productId }] }
         );
