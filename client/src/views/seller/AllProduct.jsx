@@ -3,7 +3,6 @@ import Search from "../../components/Search";
 import { Link } from "react-router-dom";
 import { LiaEditSolid } from "react-icons/lia";
 import { MdAutoDelete } from "react-icons/md";
-import { FaEye } from "react-icons/fa6";
 import Pagination from "../Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";

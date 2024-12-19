@@ -63,6 +63,14 @@ class productController {
       const priceNumber = parseInt(price);
       const discountNumber = parseInt(discount);
 
+      const isAlreadlExist = await productModel.findOne({ slug });
+
+      if (isAlreadlExist) {
+        return responseReturn(res, 404, {
+          error: "Product Name should be unique",
+        });
+      }
+
       if (isNaN(stockNumber) || isNaN(priceNumber) || isNaN(discountNumber)) {
         return responseReturn(res, 400, {
           error: "Stock, price, and discount must be valid numbers",
@@ -126,7 +134,8 @@ class productController {
         return responseReturn(res, 500, { error: "Internal server error" });
       }
     });
-  }; //add_product end method
+  };
+  // end method
   get_product = async (req, res) => {
     const { page, searchValue, perPage } = req.query;
     const { id } = req;
@@ -147,6 +156,7 @@ class productController {
       return responseReturn(res, 500, { message: "Internal Server Error" });
     }
   };
+  // end method
   get_editProduct = async (req, res) => {
     const { productId } = req.params;
     try {
@@ -163,8 +173,9 @@ class productController {
       return responseReturn(res, 500, { error: "internel server error" });
     }
   };
+  // end method
   product_update = async (req, res) => {
-    console.log("this is update");
+    console.log("in the product update controller");
     const form = formidable({ multiples: true });
     form.parse(req, async (err, fields, files) => {
       if (err) {
@@ -202,7 +213,6 @@ class productController {
       if (oldImages) {
         try {
           oldImagesArray = oldImages.split(",").map((url) => url.trim());
-          console.log(oldImagesArray);
         } catch (error) {
           console.error("Error parsing old images:", error.message);
           return responseReturn(res, 400, {
@@ -273,7 +283,6 @@ class productController {
 
         // Add new images to existing ones
         const updatedImages = [...oldImagesArray, ...allImageUrl];
-        console.log("combined array", updatedImages);
 
         const updatedProduct = await productModel.findByIdAndUpdate(
           productId,
@@ -301,6 +310,7 @@ class productController {
       }
     });
   };
+  // end method
   delete_product = async (req, res) => {
     try {
       const { productId } = req.params;
@@ -328,7 +338,8 @@ class productController {
       console.error("Error during deletion:", error);
       return responseReturn(res, 500, { error: "Internal server error" });
     }
-  }; // End of delete_category
+  };
+  // end method
 }
 
 module.exports = new productController();
