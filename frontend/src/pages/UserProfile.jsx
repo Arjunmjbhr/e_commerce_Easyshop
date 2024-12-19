@@ -147,17 +147,20 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-5 ">
-      <Profile
-        toggleEdit={toggleEdit}
-        saveChanges={saveChanges}
-        handleInputChange={handleInputChange}
-        isEditing={isEditing}
-        userDetails={userDetails}
-        userProfileInfo={userProfileInfo}
-      />
+    <div className="min-h-screen flex flex-col items-center justify-center gap-5 px-7 ">
+      <div className="w-full">
+        <Profile
+          toggleEdit={toggleEdit}
+          saveChanges={saveChanges}
+          handleInputChange={handleInputChange}
+          isEditing={isEditing}
+          userDetails={userDetails}
+          userProfileInfo={userProfileInfo}
+        />
+      </div>
+
       {/* address */}
-      <div className="bg-white  px-7 py-10 flex flex-col gap-10 rounded-lg mr-12">
+      <div className="bg-white  px-7 py-10 flex flex-col gap-10 rounded-lg ">
         <h1 className="text-2xl text-center font-bold">Delivery Address</h1>
         <div className="grid grid-cols-2 gap-8 md:grid-cols-1">
           <div className="pr-8">
