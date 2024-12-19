@@ -15,6 +15,7 @@ import { toast } from "react-hot-toast";
 import { overRideStyle } from "./../../utils/spinnerProperty";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { validationProduct } from "../../utils/validationProduct";
 const EditProduct = () => {
   const { categories } = useSelector((store) => store.category);
   const { productId } = useParams();
@@ -143,6 +144,15 @@ const EditProduct = () => {
   // send data to server
   const update = (e) => {
     e.preventDefault();
+    // Validation checks form values and images
+    const errors = validationProduct(state);
+    if (Object.keys(errors).length > 0) {
+      for (let error of Object.values(errors)) {
+        toast.error(error);
+      }
+      return;
+    }
+
     const formData = new FormData();
     if (newImages.length > 0)
       newImages.forEach((img) => formData.append("images", img));

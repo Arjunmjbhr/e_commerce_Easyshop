@@ -11,6 +11,7 @@ import { PropagateLoader } from "react-spinners";
 import { overRideStyle } from "./../../utils/spinnerProperty";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import { validationProduct } from "./../../utils/validationProduct";
 
 const AddProduct = () => {
   const [state, setState] = useState({
@@ -125,18 +126,13 @@ const AddProduct = () => {
     e.preventDefault();
 
     // Validation checks form values and images
-    if (
-      !state.brand ||
-      !state.name ||
-      !state.price ||
-      !state.description ||
-      !state.discount ||
-      !state.stock
-    ) {
-      toast.error("All fields are required");
+    const errors = validationProduct(state);
+    if (Object.keys(errors).length > 0) {
+      for (let error of Object.values(errors)) {
+        toast.error(error);
+      }
       return;
     }
-    console.log(images);
     if (!images || images.length === 0) {
       toast.error("Image of the product is mandatory");
       return;

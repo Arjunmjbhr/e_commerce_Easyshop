@@ -124,12 +124,7 @@ const AllProduct = () => {
                         >
                           <LiaEditSolid />
                         </Link>
-                        <Link
-                          to="#"
-                          className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
-                        >
-                          <FaEye />
-                        </Link>
+
                         <Link
                           to="#"
                           onClick={() => handleDelete(item._id)}
