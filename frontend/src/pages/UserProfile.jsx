@@ -50,6 +50,11 @@ const UserProfile = () => {
   };
   // user profile
   const saveChanges = () => {
+    const { username, fullName, phone } = userDetails;
+    if (!username.trim() || !fullName.trim() || !phone.trim()) {
+      toast.error("all filed are required");
+      return;
+    }
     const data = {
       userId: userInfo.id,
       info: userDetails,
