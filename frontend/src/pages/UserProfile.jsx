@@ -100,7 +100,15 @@ const UserProfile = () => {
 
     const { name, address, phone, post, district, city, area } = inputState;
 
-    if (!name || !address || !phone || !post || !district || !city || !area) {
+    if (
+      !name.trim() ||
+      !address.trim() ||
+      !phone.trim() ||
+      !post.trim() ||
+      !district.trim() ||
+      !city.trim() ||
+      !area.trim()
+    ) {
       toast.error("All fields are mandatory");
       return;
     }
