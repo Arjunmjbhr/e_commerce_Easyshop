@@ -46,6 +46,11 @@ const Category = () => {
   // handling edit and update in single submit
   const addOrUpdateCategory = (e) => {
     e.preventDefault();
+    const error = state.categoryName.trim();
+    if (!error) {
+      toast.error("Category Name required");
+      return;
+    }
     if (isEdit) {
       const obj = {
         id: editId,

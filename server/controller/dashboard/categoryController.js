@@ -29,7 +29,7 @@ class categoryController {
       // Check if category exists
       let categoryExist;
       try {
-        categoryExist = await categoryModel.findOne({ categoryName });
+        categoryExist = await categoryModel.findOne({ slug });
       } catch (err) {
         console.error("Error checking category existence:", err);
         return responseReturn(res, 500, { error: "Internal server error" });
