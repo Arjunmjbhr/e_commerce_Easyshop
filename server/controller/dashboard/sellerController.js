@@ -106,6 +106,39 @@ class sellerControler {
     }
   };
   // end method
+  get_specific_seller_details = async (req, res) => {
+    console.log("in the specfic seller details ", req.params);
+    const { sellerId } = req.params;
+    try {
+      const specificSeller = await sellerModel.findById(sellerId);
+      if (!specificSeller) {
+        return responseReturn(res, 404, { error: "seller does not exist" });
+      }
+      return responseReturn(res, 200, { specificSeller });
+    } catch (error) {
+      console.log("error while fetching the get seller detials");
+    }
+  };
+  // end method
+  update_seller_active_deactive = async (req, res) => {
+    console.log("in the update seller active deactive");
+    const { sellerId } = req.params;
+    const { status } = req.body;
+    try {
+      const specificSeller = await sellerModel.findById(sellerId);
+      if (!specificSeller) {
+        return responseReturn(res, 404, { error: "seller does not exist" });
+      }
+      await sellerModel.findByIdAndUpdate(sellerId, { status });
+      return responseReturn(res, 200, { message: "status updated" });
+    } catch (error) {
+      console.log("error while updting the data");
+      return responseReturn(res, 500, {
+        error: "error while updating the status",
+      });
+    }
+  };
+  // end method
 }
 
 module.exports = new sellerControler();

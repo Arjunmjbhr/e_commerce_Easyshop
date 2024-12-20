@@ -14,37 +14,13 @@ const Sellers = () => {
   const dispatch = useDispatch();
   const { sellers, totalSeller } = useSelector((store) => store.seller);
 
-  // dummy data
-  const data = [
-    {
-      id: 1,
-      image: "http://localhost:3000/images/category/1.jpg",
-      name: "Category 1",
-    },
-    {
-      id: 2,
-      image: "http://localhost:3000/images/category/2.jpg",
-      name: "Category 2",
-    },
-    {
-      id: 3,
-      image: "http://localhost:3000/images/category/3.jpg",
-      name: "Category 3",
-    },
-    {
-      id: 4,
-      image: "http://localhost:3000/images/category/4.jpg",
-      name: "Category 4",
-    },
-    {
-      id: 5,
-      image: "http://localhost:3000/images/category/5.jpg",
-      name: "Category 5",
-    },
-  ];
   useEffect(() => {
     dispatch(get_seller_request({ perPage, searchValue, page: currentPage }));
   }, [dispatch, searchValue, perPage, currentPage]);
+
+  if (!sellers) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="px-2 lg:pr-7">
       <div className="my-3">
