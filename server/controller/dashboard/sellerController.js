@@ -72,6 +72,40 @@ class sellerControler {
       });
     }
   };
+  // end method
+  get_seller_request = async (req, res) => {
+    console.log("In the seller request:");
+    let { page, searchValue, perPage } = req.query;
+
+    page = parseInt(page) || 1;
+    perPage = parseInt(perPage) || 10;
+    const skipPage = (page - 1) * perPage;
+
+    try {
+      // Use searchValue to construct the query
+      const query = searchValue ? { $text: { $search: searchValue } } : {};
+
+      // Fetch sellers with pagination and sorting
+      const sellers = await sellerModel
+        .find(query)
+        .sort({ updatedAt: -1 })
+        .skip(skipPage)
+        .limit(perPage);
+
+      // Count total sellers matching the query
+      const totalSeller = await sellerModel.countDocuments(query);
+
+      // Return response with sellers and total count
+      return res.status(200).json({ sellers, totalSeller });
+    } catch (error) {
+      console.error(
+        "Error while fetching the seller details in get_seller_request controller:",
+        error.message
+      );
+      return res.status(500).json({ error: "Failed to fetch seller details" });
+    }
+  };
+  // end method
 }
 
 module.exports = new sellerControler();

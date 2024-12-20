@@ -17,5 +17,21 @@ const sellerSchema = new Schema(
   },
   { timestamps: true }
 );
+sellerSchema.index(
+  {
+    username: "text",
+    email: "text",
+    status: "text",
+    payment: "text",
+  },
+  {
+    weights: {
+      username: 5, // Higher weight, more relevant
+      email: 3, // Medium weight
+      status: 1, // Lower weight
+      payment: 1, // Lower weight
+    },
+  }
+);
 
 module.exports = model("Seller", sellerSchema);

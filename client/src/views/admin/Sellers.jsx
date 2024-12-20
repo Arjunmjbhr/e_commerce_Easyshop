@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import { LiaEditSolid } from "react-icons/lia";
-import { MdAutoDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 import Pagination from "../Pagination";
 import { FaEye } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import Search from "../../components/Search";
+import { get_seller_request } from "../../store/Reducers/sellerReducer";
 
 const Sellers = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const dispatch = useDispatch();
+  const { sellers, totalSeller } = useSelector((store) => store.seller);
 
   // dummy data
   const data = [
@@ -39,6 +42,9 @@ const Sellers = () => {
       name: "Category 5",
     },
   ];
+  useEffect(() => {
+    dispatch(get_seller_request({ perPage, searchValue, page: currentPage }));
+  }, [dispatch, searchValue, perPage, currentPage]);
   return (
     <div className="px-2 lg:pr-7">
       <div className="my-3">
@@ -47,21 +53,11 @@ const Sellers = () => {
       {/* Sellers List Section */}
       <div className="w-full  bg-white shadow-md rounded-md">
         {/* Table Header */}
-        <div className="h-14 bg-slate-600 rounded-t-md flex justify-between items-center px-4">
-          <select
-            onChange={(e) => setPerPage(parseInt(e.target.value))}
-            className="px-3 py-2 rounded font-semibold"
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-          </select>
-          <input
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="hidden md:block bg-white border border-gray-300 h-10 px-3 py-1 rounded focus:outline-none focus:border-blue-500"
-            type="text"
-            placeholder="Search"
+        <div>
+          <Search
+            setSearchValue={setSearchValue}
+            searchValue={searchValue}
+            setPerPage={setPerPage}
           />
         </div>
         {/* Table Body */}
@@ -74,60 +70,72 @@ const Sellers = () => {
                 <th className="border border-gray-300 px-4 py-2">Name</th>
                 <th className="border border-gray-300 px-4 py-2">Shop Name</th>
                 <th className="border border-gray-300 px-4 py-2">
+                  Account status
+                </th>
+                <th className="border border-gray-300 px-4 py-2">
                   Payment Status
                 </th>
                 <th className="border border-gray-300 px-4 py-2">Email</th>
-                <th className="border border-gray-300 px-4 py-2">District</th>
-                <th className="border border-gray-300 px-4 py-2">State</th>
+
                 <th className="border border-gray-300 px-4 py-2">View</th>
               </tr>
             </thead>
             <tbody>
-              {data.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-100 h-[60px] border-t text-sm"
-                >
-                  <td className="border border-gray-300 px-4 py-2">
-                    {index + 1}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-12 h-12 rounded-full mx-auto"
-                    />
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {item.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <div className="flex justify-center gap-3">
-                      <Link
-                        to={`/admin/dashboard/sellers/details/${item.id}`}
-                        className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
-                      >
-                        <FaEye />
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {sellers.map((item, index) => {
+                const {
+                  _id,
+                  username,
+                  email,
+                  status,
+                  payment,
+                  image,
+                  shopInfo,
+                } = item;
+
+                return (
+                  <tr
+                    key={_id}
+                    className="hover:bg-gray-100 h-[60px] border-t text-sm"
+                  >
+                    <td className="border  border-gray-300 px-4 py-2">
+                      {index + 1}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <img
+                        src={image}
+                        alt={username}
+                        className="w-12 h-12 rounded-full mx-auto"
+                      />
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-black">
+                      {username}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {shopInfo?.shopName}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {status}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {payment}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {email}
+                    </td>
+
+                    <td className="border border-gray-300 px-4 py-2">
+                      <div className="flex justify-center gap-3">
+                        <Link
+                          to={`/admin/dashboard/sellers/details/${_id}`}
+                          className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
+                        >
+                          <FaEye />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
           {/* pagination */}
@@ -135,7 +143,7 @@ const Sellers = () => {
             <Pagination
               pageNumber={currentPage}
               setPageNumber={setCurrentPage}
-              totalItem={50}
+              totalItem={totalSeller}
               perPage={perPage}
               showItem={3}
             />
