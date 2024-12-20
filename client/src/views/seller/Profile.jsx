@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaImages } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { update_seller_profile_info } from "../../store/Reducers/authReducer";
+import {
+  get_user_info,
+  messageClear,
+  update_seller_profile_info,
+} from "../../store/Reducers/authReducer";
 
 const Profile = () => {
   const status = "active";
@@ -18,8 +22,22 @@ const Profile = () => {
     state: "",
     pin: "",
   });
-  const { userInfo } = useSelector((store) => store.auth);
-
+  const { userInfo, successMessage, errorMessage } = useSelector(
+    (store) => store.auth
+  );
+  useEffect(() => {
+    dispatch(get_user_info());
+  }, [successMessage, dispatch]);
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch(messageClear());
+    }
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear());
+    }
+  }, [successMessage, errorMessage, dispatch]);
   // handling the images and shop info
   const handleProfileImage = (e) => {
     const { files } = e.target;

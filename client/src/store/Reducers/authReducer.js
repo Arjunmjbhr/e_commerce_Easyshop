@@ -188,6 +188,14 @@ const authReducer = createSlice({
       .addCase(get_user_info.fulfilled, (state, action) => {
         state.loader = false;
         state.userInfo = action.payload.userInfo;
+      })
+      .addCase(update_seller_profile_info.fulfilled, (state, action) => {
+        state.loader = false;
+        state.successMessage = action.payload.message;
+      })
+      .addCase(update_seller_profile_info.rejected, (state, action) => {
+        state.loader = false;
+        state.errorMessage = action.payload.error;
       });
   },
 });
