@@ -2,6 +2,7 @@ const formidable = require("formidable");
 const { responseReturn } = require("../../utils/response");
 const cloudinary = require("cloudinary").v2;
 const sellerModel = require("../../model/sellerModel");
+const customerOrderModel = require("../../model/customerOrderModel");
 
 class sellerControler {
   update_seller_profile_info = async (req, res) => {
@@ -139,6 +140,9 @@ class sellerControler {
     }
   };
   // end method
+  get_top_data = async (req, res) => {
+    console.log("in the get top data");
+  };
 }
 
 module.exports = new sellerControler();

@@ -10,6 +10,7 @@ const OrderDetails = lazy(() => import("../../views/admin/OrderDetails"));
 const Coupon = lazy(() => import("./../../views/admin/Coupon"));
 const OfferCategory = lazy(() => import("../../views/admin/OfferCategory"));
 const Sales = lazy(() => import("../../views/admin/Sales"));
+const Best = lazy(() => import("../../views/admin/Best"));
 
 export const adminRoutes = [
   {
@@ -60,6 +61,11 @@ export const adminRoutes = [
   {
     path: "/admin/dashboard/offer-category",
     element: <OfferCategory />,
+    role: "admin",
+  },
+  {
+    path: "/admin/dashboard/best",
+    element: <Best />,
     role: "admin",
   },
 ];

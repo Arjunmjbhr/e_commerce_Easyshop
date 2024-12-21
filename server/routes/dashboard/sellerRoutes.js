@@ -15,4 +15,6 @@ router.put(
   sellerControler.update_seller_active_deactive
 );
 
+router.get("/admin/get-top-data", sellerControler.get_top_data);
+
 module.exports = router;

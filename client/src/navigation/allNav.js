@@ -13,6 +13,7 @@ import { MdOutlinePayment } from "react-icons/md";
 import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { BiSolidOffer } from "react-icons/bi";
+import { IoIosPricetags } from "react-icons/io";
 
 export const allNav = [
   // admin navigation
@@ -26,7 +27,7 @@ export const allNav = [
   {
     id: 10,
     title: "Sales",
-    icon: <MdOutlineDashboardCustomize />,
+    icon: <IoIosPricetags />,
     role: "admin",
     path: "/admin/sales",
   },
@@ -81,10 +82,10 @@ export const allNav = [
   },
   {
     id: 9,
-    title: "Live Chat",
+    title: "Top Performence",
     icon: <IoIosChatbubbles />,
     role: "admin",
-    path: "/admin/dashboard/chat-seller",
+    path: "/admin/dashboard/best",
   },
   // seller navigation
   {

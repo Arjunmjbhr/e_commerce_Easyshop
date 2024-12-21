@@ -52,6 +52,20 @@ export const get_seller_dashboard_data = createAsyncThunk(
     }
   }
 );
+export const get_top_data = createAsyncThunk(
+  "dashboard/get_top_data",
+  async (_, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(`/admin/get-top-data`, {
+        withCredentials: true,
+      });
+
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 const dashboardReducer = createSlice({
   name: "dashboard",
@@ -77,6 +91,11 @@ const dashboardReducer = createSlice({
     sellerTotalProduct: 0,
     sellerTotalSales: 0,
     sellerPendingOrder: 0,
+    topSeller: [],
+    topProduct: [],
+    topBrand: [],
+    topCategory: [],
+    seller: 0,
   },
   reducers: {
     messageClear: (state, _) => {
@@ -114,6 +133,13 @@ const dashboardReducer = createSlice({
         state.sellerPendingOrder = action.payload.sellerPendingOrder;
         state.chartOrders = action.payload.chartOrders;
         state.chartRevenue = action.payload.chartRevenue;
+      })
+      .addCase(get_top_data.fulfilled, (state, action) => {
+        state.topSeller = action.payload.topSeller;
+        state.topProduct = action.payload.topProduct;
+        state.topBrand = action.payload.topBrand;
+        state.topCategory = action.payload.topCategory;
+        state.seller = action.payload.seller;
       });
   },
 });
