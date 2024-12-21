@@ -22,7 +22,10 @@ const Payment = () => {
   const dispatch = useDispatch();
   const [paymentMethod, setPaymentMethod] = useState("stripe");
   const [modalClose, SetModalClose] = useState(true);
-  const { errorMessage, successMessage } = useSelector((store) => store.order);
+  const { errorMessage, successMessage, myOrder } = useSelector(
+    (store) => store.order
+  );
+  let { couponAmount, payment_status } = myOrder;
   useEffect(() => {
     dispatch(get_order_details(orderId));
   }, [dispatch, orderId, successMessage]);
@@ -57,9 +60,13 @@ const Payment = () => {
                   paymentMethod={paymentMethod}
                 />
                 {paymentMethod === "stripe" && <Stripe />}
-                {paymentMethod === "cod" && (
-                  <PayNow SetModalClose={SetModalClose} />
-                )}
+                {payment_status !== "cod" &&
+                  paymentMethod === "cod" &&
+                  (price - couponAmount < 1000 ? (
+                    "COD is not applicable below 1000 Rupees order"
+                  ) : (
+                    <PayNow SetModalClose={SetModalClose} />
+                  ))}
                 {paymentMethod === "razorpay" && (
                   <Razorpay orderId={orderId} price={price} />
                 )}
