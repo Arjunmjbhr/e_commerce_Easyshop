@@ -142,6 +142,101 @@ class sellerControler {
   // end method
   get_top_data = async (req, res) => {
     console.log("in the get top data");
+    try {
+      const topProduct = await customerOrderModel.aggregate([
+        {
+          $unwind: "$products",
+        },
+        {
+          $match: {
+            delivery_status: { $nin: ["cancelled", "pending"] },
+            "products.returnStatus": { $ne: "accepted" },
+          },
+        },
+        {
+          $group: {
+            _id: "$products._id",
+            name: { $first: "$products.name" },
+            category: { $first: "$products.category" },
+            brand: { $first: "$products.brand" },
+            price: { $first: "$products.price" },
+            totalQuantity: { $sum: "$products.quantity" },
+            totalRevenue: {
+              $sum: { $multiply: ["$products.quantity", "$products.price"] },
+            },
+          },
+        },
+        {
+          $sort: {
+            totalQuantity: -1,
+          },
+        },
+        {
+          $limit: 10,
+        },
+      ]);
+      const topCategory = await customerOrderModel.aggregate([
+        {
+          $unwind: "$products",
+        },
+        {
+          $match: {
+            delivery_status: { $nin: ["cancelled", "pending"] },
+            "products.returnStatus": { $ne: "accepted" },
+          },
+        },
+        {
+          $group: {
+            _id: "$products.category",
+            totalQuantity: { $sum: "$products.quantity" },
+            totalRevenue: {
+              $sum: { $multiply: ["$products.quantity", "$products.price"] },
+            },
+          },
+        },
+        {
+          $sort: {
+            totalQuantity: -1,
+          },
+        },
+        {
+          $limit: 10,
+        },
+      ]);
+      const topBrand = await customerOrderModel.aggregate([
+        {
+          $unwind: "$products",
+        },
+        {
+          $match: {
+            delivery_status: { $nin: ["cancelled", "pending"] },
+            "products.returnStatus": { $ne: "accepted" },
+          },
+        },
+        {
+          $group: {
+            _id: "$products.brand",
+            totalQuantity: { $sum: "$products.quantity" },
+            totalRevenue: {
+              $sum: { $multiply: ["$products.quantity", "$products.price"] },
+            },
+          },
+        },
+        {
+          $sort: {
+            totalQuantity: -1,
+          },
+        },
+        {
+          $limit: 10,
+        },
+      ]);
+      return responseReturn(res, 200, {
+        topProduct,
+        topCategory,
+        topBrand,
+      });
+    } catch (error) {}
   };
 }
 
