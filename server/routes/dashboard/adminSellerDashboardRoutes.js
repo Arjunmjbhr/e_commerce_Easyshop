@@ -10,6 +10,10 @@ router.get(
   adminSellerDashboardController.get_admin_dashboard_data
 );
 router.get(
+  "/admin/get-admin-dashboard-chart/:option",
+  adminSellerDashboardController.get_admin_dashbord_chart
+);
+router.get(
   "/admin/get-seller-dashboard-data/:sellerId",
   adminSellerDashboardController.get_seller_dashboard_data
 );

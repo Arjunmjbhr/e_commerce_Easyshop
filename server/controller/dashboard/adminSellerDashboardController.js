@@ -177,41 +177,7 @@ class adminSellerDashboardController {
       const allSalesRevenue =
         allSalesSum.length > 0 ? allSalesSum[0].totalAmount : 0;
 
-      const monthlyData = await customerOrderModel.aggregate([
-        {
-          $match: {
-            delivery_status: { $nin: ["cancelled", "pending"] },
-          },
-        },
-        {
-          $addFields: {
-            month: { $month: "$createdAt" }, // Extract month from `createdAt`
-          },
-        },
-        {
-          $group: {
-            _id: { month: "$month" },
-            totalOrders: { $sum: 1 },
-            totalRevenue: { $sum: "$price" },
-          },
-        },
-        { $sort: { "_id.month": 1 } },
-      ]);
-
-      // Initialize arrays for consistent 12-month representation
-      const orders = Array(12).fill(0);
-      const revenue = Array(12).fill(0);
-
-      // Map data into arrays
-      monthlyData.forEach((item) => {
-        const monthIndex = item._id.month - 1; // Map month (1-12) to index (0-11)
-        orders[monthIndex] = item.totalOrders;
-        revenue[monthIndex] = item.totalRevenue;
-      });
-
       return responseReturn(res, 200, {
-        chartOrders: orders,
-        chartRevenue: revenue,
         allSalesRevenue,
         allOrders,
         allProducts,
@@ -225,6 +191,60 @@ class adminSellerDashboardController {
       return responseReturn(res, 500, { error: "internel server error" });
     }
   };
+  // End Method
+  get_admin_dashbord_chart = async (req, res) => {
+    console.log("In the chart controller:", req.params);
+
+    // Initialize arrays for consistent 12-month representation
+    const orders = Array(12).fill(0);
+    const revenue = Array(12).fill(0);
+
+    try {
+      const monthlyData = await customerOrderModel.aggregate([
+        {
+          $match: {
+            delivery_status: { $nin: ["cancelled", "pending"] },
+          },
+        },
+        {
+          $addFields: {
+            month: { $month: "$createdAt" },
+          },
+        },
+        {
+          $group: {
+            _id: { month: "$month" },
+            totalOrders: { $sum: 1 },
+            totalRevenue: { $sum: "$price" },
+          },
+        },
+        { $sort: { "_id.month": 1 } },
+      ]);
+
+      // Map data into arrays
+      monthlyData.forEach((item) => {
+        const monthIndex = item._id.month - 1; // Convert 1-based month to 0-based index
+        orders[monthIndex] = item.totalOrders;
+        revenue[monthIndex] = item.totalRevenue;
+      });
+
+      // Return the result
+      return res.status(200).json({
+        chartOrders: orders,
+        chartRevenue: revenue,
+      });
+    } catch (error) {
+      console.error("Error in get_admin_dashboard_chart:", error.message);
+
+      // Handle the error gracefully
+      return res.status(500).json({
+        message: "Error fetching chart data.",
+        chartOrders: orders,
+        chartRevenue: revenue,
+      });
+    }
+  };
+
   // End Method
   get_seller_dashboard_data = async (req, res) => {
     console.log("in the get seller dashboard controller ", req.params);

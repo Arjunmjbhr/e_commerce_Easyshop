@@ -35,6 +35,22 @@ export const get_admin_dashboard_data = createAsyncThunk(
     }
   }
 );
+export const get_admin_dashboard_chart = createAsyncThunk(
+  "dashboard/get_admin_dashboard_chart",
+  async ({ info }, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `/admin/get-admin-dashboard-chart/${info}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 export const get_seller_dashboard_data = createAsyncThunk(
   "dashboard/get_seller_dashboard_data",
   async ({ sellerId }, { rejectWithValue, fulfillWithValue }) => {
@@ -123,8 +139,6 @@ const dashboardReducer = createSlice({
         state.allOrders = action.payload.allOrders;
         state.allProducts = action.payload.allProducts;
         state.allSellers = action.payload.allSellers;
-        state.chartOrders = action.payload.chartOrders;
-        state.chartRevenue = action.payload.chartRevenue;
       })
       .addCase(get_seller_dashboard_data.fulfilled, (state, action) => {
         state.sellerTotalOrder = action.payload.sellerTotalOrder;
@@ -140,6 +154,10 @@ const dashboardReducer = createSlice({
         state.topBrand = action.payload.topBrand;
         state.topCategory = action.payload.topCategory;
         state.seller = action.payload.seller;
+      })
+      .addCase(get_admin_dashboard_chart.fulfilled, (state, action) => {
+        state.chartOrders = action.payload.chartOrders;
+        state.chartRevenue = action.payload.chartRevenue;
       });
   },
 });

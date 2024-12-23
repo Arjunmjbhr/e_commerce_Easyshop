@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaRupeeSign } from "react-icons/fa";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { MdOutlineSell } from "react-icons/md";
 import { GiShoppingCart } from "react-icons/gi";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { get_admin_dashboard_data } from "../../../store/Reducers/dashboardReducer";
 
 const SummaryDashboard = () => {
-  const { allSalesRevenue, allOrders, allProducts, allSellers } = useSelector(
-    (store) => store.dashboard
-  );
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(get_admin_dashboard_data());
+  }, [dispatch]);
+  const {
+    allSalesRevenue = 0,
+    allOrders = 0,
+    allProducts = 0,
+    allSellers = 0,
+  } = useSelector((store) => store.dashboard);
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-7 ">
