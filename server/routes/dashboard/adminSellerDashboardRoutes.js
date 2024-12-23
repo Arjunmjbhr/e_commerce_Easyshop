@@ -11,7 +11,7 @@ router.get(
 );
 router.get(
   "/admin/get-admin-dashboard-chart/:option",
-  adminSellerDashboardController.get_admin_dashbord_chart
+  adminSellerDashboardController.get_admin_dashboard_chart
 );
 router.get(
   "/admin/get-seller-dashboard-data/:sellerId",

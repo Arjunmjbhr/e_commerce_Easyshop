@@ -192,40 +192,69 @@ class adminSellerDashboardController {
     }
   };
   // End Method
-  get_admin_dashbord_chart = async (req, res) => {
+  get_admin_dashboard_chart = async (req, res) => {
     console.log("In the chart controller:", req.params);
+    const { option } = req.params;
 
-    // Initialize arrays for consistent 12-month representation
-    const orders = Array(12).fill(0);
-    const revenue = Array(12).fill(0);
+    // Get current year
+    const currentYear = new Date().getFullYear();
+
+    // Initialize arrays for 5 years
+    const orders = Array(5).fill(0);
+    const revenue = Array(5).fill(0);
 
     try {
-      const monthlyData = await customerOrderModel.aggregate([
-        {
-          $match: {
-            delivery_status: { $nin: ["cancelled", "pending"] },
-          },
+      const matchCondition = {
+        delivery_status: { $nin: ["cancelled", "pending"] },
+        createdAt: {
+          $gte: new Date(currentYear - 5, 0, 1),
         },
-        {
-          $addFields: {
-            month: { $month: "$createdAt" },
-          },
-        },
-        {
-          $group: {
-            _id: { month: "$month" },
-            totalOrders: { $sum: 1 },
-            totalRevenue: { $sum: "$price" },
-          },
-        },
-        { $sort: { "_id.month": 1 } },
-      ]);
+      };
 
-      // Map data into arrays
-      monthlyData.forEach((item) => {
-        const monthIndex = item._id.month - 1; // Convert 1-based month to 0-based index
-        orders[monthIndex] = item.totalOrders;
-        revenue[monthIndex] = item.totalRevenue;
+      const addFields =
+        option === "year"
+          ? { year: { $year: "$createdAt" } }
+          : { month: { $month: "$createdAt" } };
+
+      const groupBy =
+        option === "year"
+          ? {
+              _id: { year: "$year" },
+              totalOrders: { $sum: 1 },
+              totalRevenue: { $sum: "$price" },
+            }
+          : {
+              _id: { month: "$month" },
+              totalOrders: { $sum: 1 },
+              totalRevenue: { $sum: "$price" },
+            };
+
+      const sortBy = option === "year" ? { "_id.year": 1 } : { "_id.month": 1 };
+
+      const aggregationPipeline = [
+        { $match: matchCondition },
+        { $addFields: addFields },
+        { $group: groupBy },
+        { $sort: sortBy },
+      ];
+
+      const chartData = await customerOrderModel.aggregate(aggregationPipeline);
+
+      // Map data into arrays (adjusting for the last 5 years)
+      chartData.forEach((item) => {
+        if (option === "year") {
+          // For year option, map data to the correct year index (last 5 years)
+          const yearIndex = currentYear - item._id.year;
+          if (yearIndex >= 0 && yearIndex < 5) {
+            orders[yearIndex] = item.totalOrders;
+            revenue[yearIndex] = item.totalRevenue;
+          }
+        } else {
+          // For month option, map data to correct month index
+          const monthIndex = item._id.month - 1;
+          orders[monthIndex] = item.totalOrders;
+          revenue[monthIndex] = item.totalRevenue;
+        }
       });
 
       // Return the result
