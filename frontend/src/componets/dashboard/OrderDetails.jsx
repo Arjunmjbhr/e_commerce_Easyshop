@@ -10,6 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import ConfirmModal from "../ConfirmModal";
 import { toast } from "react-hot-toast";
+import { downloadPDF } from "../../utils/downloadInvoice";
 
 const OrderDetails = () => {
   const dispatch = useDispatch();
@@ -55,10 +56,14 @@ const OrderDetails = () => {
       },
     });
   };
+  const downloadPdf = () => {
+    console.log("download pfd");
+    downloadPDF(myOrder);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-gray-100 rounded-lg shadow-xl">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
+    <div className="max-w-7xl mx-auto   rounded-lg ">
+      <div className="bg-white p-8 shadow-xl rounded-lg shadow-lg">
         {/* Order Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -66,6 +71,14 @@ const OrderDetails = () => {
               Order ID: #{myOrder._id}
             </h2>
             <p className="text-sm text-gray-500">{myOrder.date}</p>
+            {myOrder.delivery_status === "delivered" && (
+              <div
+                onClick={downloadPdf}
+                className="bg-zinc-600 text-white cursor-pointer mt-3 px-2 py-1 rounded-md w-[70px]"
+              >
+                Invoice
+              </div>
+            )}
           </div>
           <div>
             <p className="text-lg font-semibold text-green-600">
@@ -101,7 +114,7 @@ const OrderDetails = () => {
             </h3>
             <p
               className={`py-1 text-xs w-[80px] px-3 rounded-md ${
-                myOrder.delivery_status === "paid"
+                myOrder.delivery_status !== "cancelled"
                   ? "bg-green-300 text-green-800"
                   : "bg-red-300 text-red-800"
               }`}
@@ -115,17 +128,17 @@ const OrderDetails = () => {
             </h3>
             <div className="flex gap-3">
               <div className="text-sm flex flex-col gap-2">
-                <h6>Total price</h6>
-                <h6>Discount</h6>
-                <h6>Coupon Amount</h6>
+                <h6>Product price</h6>
+                {myOrder.couponAmount !== 0 && <h6>Coupon Amount</h6>}
                 <h6>Delivery Charge</h6>
                 <h6>Total</h6>
               </div>
               <div className="text-sm  flex flex-col gap-2">
-                <h6>: ₹price</h6>
-                <h6>: ₹discount</h6>
-                <h6>: -₹{myOrder.couponAmount}</h6>
-                <h6>: +₹20</h6>
+                <h6>: ₹ {myOrder.price - myOrder.shippingFee}</h6>
+                {myOrder.couponAmount !== 0 && (
+                  <h6>: -₹{myOrder.couponAmount}</h6>
+                )}
+                <h6>: +₹{myOrder.shippingFee}</h6>
                 <h6>: ₹{myOrder.price}</h6>
               </div>
             </div>
