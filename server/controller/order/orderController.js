@@ -165,6 +165,7 @@ class orderController {
           ...pro[j].productInfo,
           quantity: pro[j].quantity,
           returnStatus: "",
+          isRated: false,
           validOfferPercentage: pro[j]?.validOfferPercentage || 0,
           validOfferId: pro[j]?.validOfferId || 0,
         };

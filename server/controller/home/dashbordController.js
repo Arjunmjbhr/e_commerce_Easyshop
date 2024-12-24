@@ -5,6 +5,7 @@ const walletModel = require("../../model/walletModel");
 const walletTransactionModel = require("../../model/WalletTransactionModel");
 const reviewModel = require("../../model/reviewModel");
 const productModel = require("../../model/productModel");
+const customerModel = require("../../model/customerModel");
 
 class dashboardController {
   get_dashboard_data = async (req, res) => {
@@ -92,7 +93,7 @@ class dashboardController {
     }
   };
   submit_review = async (req, res) => {
-    console.log("In the submit review controller", req.body);
+    console.log("In the submit review controller");
 
     const { productId, orderId, review, rating, name } = req.body;
 
@@ -116,19 +117,37 @@ class dashboardController {
       }
 
       // Calculate the new average rating
+
       const noOfRating = await reviewModel.countDocuments({ productId });
       const oldRating = product.rating || 0;
       const averageReview =
         (oldRating * (noOfRating - 1) + rating) / noOfRating;
 
-      // Update the product's average rating
       product.rating = averageReview.toFixed(2);
       await product.save();
 
+      //  updating the customer order collection
+      const order = await customerOrderModel.findById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found." });
+      }
+
+      // Update the products array
+      const updatedProducts = order.products.map((product) => {
+        if (product._id.toString() === productId) {
+          product.isRated = true; // Set isRated to true for the specific product
+        }
+        return product;
+      });
+
+      // Save the updated products array back to the order
+      order.products = updatedProducts;
+      // Explicitly mark the 'products' field as modified
+      order.markModified("products");
+      await order.save();
+
       return res.status(201).json({
         message: "Review submitted successfully.",
-        review: newReview,
-        updatedRating: product.rating,
       });
     } catch (error) {
       console.error("Error submitting review:", error);

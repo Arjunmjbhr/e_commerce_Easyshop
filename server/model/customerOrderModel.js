@@ -8,6 +8,7 @@ const customerOrder = new Schema(
     products: {
       type: Array,
       required: true,
+      default: [],
     },
     price: {
       type: Number,
