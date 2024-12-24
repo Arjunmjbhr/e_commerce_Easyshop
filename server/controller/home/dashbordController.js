@@ -5,7 +5,6 @@ const walletModel = require("../../model/walletModel");
 const walletTransactionModel = require("../../model/WalletTransactionModel");
 const reviewModel = require("../../model/reviewModel");
 const productModel = require("../../model/productModel");
-const customerModel = require("../../model/customerModel");
 
 class dashboardController {
   get_dashboard_data = async (req, res) => {
@@ -98,7 +97,7 @@ class dashboardController {
     const { productId, orderId, review, rating, name } = req.body;
 
     if (!productId || !rating || !name || !review) {
-      return res.status(400).json({ message: "Missing required fields." });
+      return res.status(400).json({ error: "Missing required fields." });
     }
 
     try {
@@ -113,7 +112,7 @@ class dashboardController {
       // Fetch the associated product
       const product = await productModel.findById(productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found." });
+        return res.status(404).json({ error: "Product not found." });
       }
 
       // Calculate the new average rating
@@ -129,7 +128,7 @@ class dashboardController {
       //  updating the customer order collection
       const order = await customerOrderModel.findById(orderId);
       if (!order) {
-        return res.status(404).json({ message: "Order not found." });
+        return res.status(404).json({ error: "Order not found." });
       }
 
       // Update the products array
@@ -144,14 +143,16 @@ class dashboardController {
       order.products = updatedProducts;
       // Explicitly mark the 'products' field as modified
       order.markModified("products");
+      console.log("save the order");
       await order.save();
+      console.log("after the save");
 
       return res.status(201).json({
         message: "Review submitted successfully.",
       });
     } catch (error) {
       console.error("Error submitting review:", error);
-      return res.status(500).json({ message: "Internal Server Error." });
+      return res.status(500).json({ error: "Internal Server Error." });
     }
   };
 }

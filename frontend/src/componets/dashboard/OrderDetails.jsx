@@ -64,7 +64,7 @@ const OrderDetails = () => {
 
   return (
     <div className="max-w-7xl mx-auto   rounded-lg ">
-      <div className="bg-white p-8 shadow-xl rounded-lg shadow-lg">
+      <div className="bg-white p-8  rounded-lg shadow-lg">
         {/* Order Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -200,9 +200,12 @@ const OrderDetails = () => {
                           Return status: {returnStatus}
                         </p>
                       )}
-                      <div>
-                        <ProductReview product={product} order={myOrder} />
-                      </div>
+                      {!product.isRated &&
+                        myOrder.delivery_status === "delivered" && (
+                          <div>
+                            <ProductReview product={product} order={myOrder} />
+                          </div>
+                        )}
                     </div>
                   </div>
                   <div className="flex justify-center items-center gap-5">

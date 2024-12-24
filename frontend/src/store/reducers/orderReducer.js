@@ -128,6 +128,19 @@ export const return_product = createAsyncThunk(
   }
 );
 // End Method
+export const customer_review = createAsyncThunk(
+  "dashboard/customer_review",
+  async (info, { fulfillWithValue }) => {
+    try {
+      console.log(info);
+      const { data } = await api.post("/home/customer/submit-review", info);
+      return fulfillWithValue(data);
+    } catch (error) {
+      console.log(error.respone);
+    }
+  }
+);
+// End Method
 
 /////////////applay coupon////////////////////
 
@@ -236,6 +249,12 @@ const orderReducer = createSlice({
       .addCase(verify_razorpay_payment.rejected, (state, action) => {
         state.errorMessage = action.payload.error;
         state.isLoading = false;
+      })
+      .addCase(customer_review.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(customer_review.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
       });
   },
 });

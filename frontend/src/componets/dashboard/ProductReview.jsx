@@ -3,14 +3,14 @@ import RatingReact from "react-rating";
 import { CiStar } from "react-icons/ci";
 import { FaStar } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { customer_review } from "../../store/reducers/dashboardReducer";
+import { customer_review } from "../../store/reducers/orderReducer";
 import toast from "react-hot-toast";
-
 const ProductReview = ({ product, order }) => {
   const [comment, setComment] = useState("");
   const [star, setStar] = useState("");
   const dispatch = useDispatch();
   const { userInfo } = useSelector((store) => store.authUser);
+
   const handleReview = () => {
     if (!comment.trim() || star < 1) {
       toast.error("Rating and Review is Mandatory");
