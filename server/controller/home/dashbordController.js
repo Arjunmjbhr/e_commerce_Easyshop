@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const { responseReturn } = require("../../utils/response");
 const walletModel = require("../../model/walletModel");
 const walletTransactionModel = require("../../model/WalletTransactionModel");
+const reviewModel = require("../../model/reviewModel");
+const productModel = require("../../model/productModel");
 
 class dashboardController {
   get_dashboard_data = async (req, res) => {
@@ -87,6 +89,50 @@ class dashboardController {
       return responseReturn(res, 500, {
         message: "An error occurred while fetching wallet data",
       });
+    }
+  };
+  submit_review = async (req, res) => {
+    console.log("In the submit review controller", req.body);
+
+    const { productId, orderId, review, rating, name } = req.body;
+
+    if (!productId || !rating || !name || !review) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
+    try {
+      // Create a new review document
+      const newReview = await reviewModel.create({
+        productId,
+        name,
+        rating,
+        review,
+      });
+
+      // Fetch the associated product
+      const product = await productModel.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found." });
+      }
+
+      // Calculate the new average rating
+      const noOfRating = await reviewModel.countDocuments({ productId });
+      const oldRating = product.rating || 0;
+      const averageReview =
+        (oldRating * (noOfRating - 1) + rating) / noOfRating;
+
+      // Update the product's average rating
+      product.rating = averageReview.toFixed(2);
+      await product.save();
+
+      return res.status(201).json({
+        message: "Review submitted successfully.",
+        review: newReview,
+        updatedRating: product.rating,
+      });
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      return res.status(500).json({ message: "Internal Server Error." });
     }
   };
 }

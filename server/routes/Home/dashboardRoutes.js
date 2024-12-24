@@ -12,5 +12,10 @@ router.get(
   checkUserStatus,
   dashboardController.get_wallet_data
 );
+router.post(
+  "/home/customer/submit-review",
+  checkUserStatus,
+  dashboardController.submit_review
+);
 
 module.exports = router;
