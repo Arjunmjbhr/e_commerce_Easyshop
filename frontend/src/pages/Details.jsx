@@ -5,7 +5,7 @@ import { FaAngleRight } from "react-icons/fa";
 import Footer from "../componets/Footer";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import Reviews from "../componets/Reviews";
+import Reviews from "../componets/productDetails/Reviews";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,9 +80,6 @@ const Details = () => {
       });
     }
   };
-  // useEffect(() => {
-  //   dispatch(product_details(slug));
-  // }, [slug, dispatch]);
 
   useEffect(() => {
     dispatch(get_products());

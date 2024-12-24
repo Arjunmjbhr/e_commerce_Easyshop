@@ -67,6 +67,19 @@ export const query_proudcts = createAsyncThunk(
     }
   }
 );
+export const get_reviews = createAsyncThunk(
+  "home/get_review",
+  async ({ pageNumber, productId }, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { data } = await api.get(
+        `/home/get-review/${productId}?pageNumber=${pageNumber}`
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const homeReducer = createSlice({
   name: "home",
@@ -87,8 +100,12 @@ const homeReducer = createSlice({
       low: 0,
       high: 100,
     },
+    reviews: [],
+    rating_review: [],
+    totalReviews: 0,
   },
   reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(get_categories.fulfilled, (state, action) => {
@@ -119,6 +136,11 @@ const homeReducer = createSlice({
         state.totalCount = payload.totalCount;
         state.totalProducts = payload.totalProducts;
         state.perPage = payload.perPage;
+      })
+      .addCase(get_reviews.fulfilled, (state, { payload }) => {
+        state.reviews = payload.reviews;
+        state.rating_review = payload.rating_review;
+        state.totalReviews = payload.totalReviews;
       });
   },
 });

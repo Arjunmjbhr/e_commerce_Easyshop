@@ -1,6 +1,8 @@
 const categoryModel = require("../../model/categoryModel");
 const productModel = require("../../model/productModel");
 const { responseReturn } = require("../../utils/response");
+const reviewModel = require("../../model/reviewModel");
+const { ObjectId } = require("mongoose").Types;
 
 class homeController {
   // adding offer filed in the product
@@ -79,6 +81,7 @@ class homeController {
       responseReturn(res, 500, { error: "internel server error" });
     }
   };
+  // end method
   get_products = async (req, res) => {
     try {
       const allProduct = await productModel.aggregate([
@@ -185,6 +188,7 @@ class homeController {
       responseReturn(res, 500, { error: "internel server error" });
     }
   };
+  // end method
   product_details = async (req, res) => {
     const { slug } = req.params;
     try {
@@ -249,6 +253,7 @@ class homeController {
       responseReturn(res, 500, { error: "Internal server error" });
     }
   };
+  // end method
   get_price_range = async (req, res) => {
     try {
       // Initialize the price range
@@ -304,6 +309,7 @@ class homeController {
       return responseReturn(res, 500, { message: "Internal Server Error" });
     }
   };
+  // end method
   query_products = async (req, res) => {
     const {
       lowPrice,
@@ -415,6 +421,56 @@ class homeController {
       return responseReturn(res, 500, { message: "Error fetching products" });
     }
   };
+  // end method
+  get_review = async (req, res) => {
+    console.log("In the get review controller");
+    const perPage = 5;
+    let { pageNumber } = req.query;
+    const { productId } = req.params;
+
+    try {
+      // Ensure pageNumber is an integer and fallback to 1 if it's not provided
+      pageNumber = parseInt(pageNumber) || 1;
+
+      // Aggregation to count reviews by rating for the product
+      const rating_review = await reviewModel.aggregate([
+        { $match: { productId: new ObjectId(productId) } },
+        {
+          $group: {
+            _id: "$rating",
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: -1 } }, // Sort by rating descending (e.g., 5-star first)
+      ]);
+
+      // Pagination
+      const skipPage = (pageNumber - 1) * perPage;
+
+      // Fetch the reviews with pagination (skip and limit)
+      const reviews = await reviewModel
+        .find({ productId: new ObjectId(productId) })
+        .sort({ createdAt: -1 })
+        .skip(skipPage)
+        .limit(perPage);
+
+      // Get total number of reviews for the product
+      const totalReviews = await reviewModel.countDocuments({
+        productId: new ObjectId(productId),
+      });
+
+      return res.status(200).json({
+        reviews: reviews || [],
+        rating_review: rating_review || [],
+        totalReviews: totalReviews || 0,
+      });
+    } catch (error) {
+      console.log("Error in the get review controller:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
+  // end method
 }
 
 module.exports = new homeController();
