@@ -30,6 +30,20 @@ export const get_wallet_data = createAsyncThunk(
     }
   }
 );
+export const customer_review = createAsyncThunk(
+  "dashboard/customer_review",
+  async (info, { fulfillWithValue }) => {
+    try {
+      console.log(info);
+      const { data } = await api.post("/home/customer/submit-review", info);
+
+      return fulfillWithValue(data);
+    } catch (error) {
+      console.log(error.respone);
+    }
+  }
+);
+// End Method
 
 const dashboardReducer = createSlice({
   name: "dashboard",

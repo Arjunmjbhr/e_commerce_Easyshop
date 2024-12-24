@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import ConfirmModal from "../ConfirmModal";
 import { toast } from "react-hot-toast";
 import { downloadPDF } from "../../utils/downloadInvoice";
+import ProductReview from "./ProductReview";
 
 const OrderDetails = () => {
   const dispatch = useDispatch();
@@ -175,7 +176,7 @@ const OrderDetails = () => {
               return (
                 <div
                   key={_id}
-                  className="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm"
+                  className="flex justify-between items-center bg-gray-200 p-4 rounded-lg shadow-sm"
                 >
                   <div className="flex gap-4">
                     <img
@@ -199,6 +200,9 @@ const OrderDetails = () => {
                           Return status: {returnStatus}
                         </p>
                       )}
+                      <div>
+                        <ProductReview product={product} order={myOrder} />
+                      </div>
                     </div>
                   </div>
                   <div className="flex justify-center items-center gap-5">
