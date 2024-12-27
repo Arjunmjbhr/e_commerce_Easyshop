@@ -155,7 +155,7 @@ const Coupon = () => {
               return (
                 <div
                   className={`${
-                    isActive ? "bg-green-500" : "bg-red-500"
+                    isActive ? "bg-green-100" : "bg-red-100"
                   } font-semibold `}
                 >
                   <div className="  p-2 my-2 flex">

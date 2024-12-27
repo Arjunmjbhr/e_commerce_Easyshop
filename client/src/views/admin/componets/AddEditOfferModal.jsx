@@ -29,18 +29,18 @@ const AddEditOfferModal = ({
 
   // Handle form submission
   const handleSubmit = () => {
-    // const errors = categoryOfferValidation(
-    //   form.offerPercentage,
-    //   form.startingDate,
-    //   form.expirationDate,
-    //   form.offerCategory
-    // );
-    // if (Object.values(errors).length > 0) {
-    //   for (let error of Object.values(errors)) {
-    //     toast.error(error);
-    //   }
-    //   return null;
-    // }
+    const errors = categoryOfferValidation(
+      form.offerPercentage,
+      form.startingDate,
+      form.expirationDate,
+      form.offerCategory
+    );
+    if (Object.values(errors).length > 0) {
+      for (let error of Object.values(errors)) {
+        toast.error(error);
+      }
+      return null;
+    }
 
     if (isEdit) {
       const data = {

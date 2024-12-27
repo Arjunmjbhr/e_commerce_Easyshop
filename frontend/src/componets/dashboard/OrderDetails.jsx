@@ -135,7 +135,10 @@ const OrderDetails = () => {
                 <h6>Total</h6>
               </div>
               <div className="text-sm  flex flex-col gap-2">
-                <h6>: ₹ {myOrder.price - myOrder.shippingFee}</h6>
+                <h6>
+                  : ₹{" "}
+                  {myOrder.price - myOrder.shippingFee + myOrder?.couponAmount}
+                </h6>
                 {myOrder.couponAmount !== 0 && (
                   <h6>: -₹{myOrder.couponAmount}</h6>
                 )}
