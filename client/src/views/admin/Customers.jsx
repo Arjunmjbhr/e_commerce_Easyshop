@@ -54,9 +54,6 @@ const Customers = () => {
 
   return (
     <div className="px-2 lg:pr-7">
-      <div className="my-3">
-        <h1 className="text-xl font-bold">Customer Details</h1>
-      </div>
       {/* Sellers List Section */}
       <div className="w-full  bg-white shadow-md rounded-md">
         {/* Table Header */}

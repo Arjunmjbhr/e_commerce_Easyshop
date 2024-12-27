@@ -138,8 +138,6 @@ const Sales = () => {
 
   return (
     <div className="p-6  min-h-screen mr-8 ml-2 ">
-      <h1 className="text-2xl font-bold mb-4 text-gray-700">Sales Report</h1>
-
       {/* Summary Section */}
       <div>
         <SalesSummary />

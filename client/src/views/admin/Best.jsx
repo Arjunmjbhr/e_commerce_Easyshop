@@ -12,21 +12,18 @@ const Best = () => {
   }, []);
   return (
     <div className="p-6  rounded-lg ">
-      <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        Best Highlights
-      </h1>
       <div className="grid grid-cols-1  gap-6">
         {/* Best Selling Product */}
-        <div className="p-4 bg-zinc-400 rounded-lg shadow hover:shadow-lg border">
-          <h2 className="text-xl font-semibold text-center text-gray-700">
+        <div className="p-4 bg-white rounded-lg shadow hover:shadow-lg border">
+          <h2 className="text-xl font-bold mb-6 text-center text-gray-700">
             Best Selling Product
           </h2>
           {topProduct &&
             topProduct.map((product, index) => (
-              <p className="text-gray-600 bg-white mt-2 px-2 py-1 rounded-md flex  gap-3">
+              <p className="shadow-lg rounded-lg mt-2 group font-semibold hover:bg-blue-600 hover:text-white p-3 flex gap-3">
                 <span>{index + 1}</span>
                 <span>{product.name}</span>
-                <span className="text-blue-500">
+                <span className="text-blue-600 font-semibold group-hover:text-white">
                   ({product.totalQuantity} items)
                 </span>
               </p>
@@ -36,15 +33,15 @@ const Best = () => {
         <div className="grid grid-cols-2 gap-3">
           {/* Best Category */}
           <div className="p-4 bg-white rounded-lg shadow hover:shadow-lg">
-            <h2 className="text-xl font-semibold text-center text-gray-700">
+            <h2 className="text-xl font-bold mb-4 text-center text-gray-700">
               Best Category
             </h2>
             {topCategory &&
               topCategory.map((category, index) => (
-                <p className="text-gray-600 mt-2 flex gap-3">
+                <p className="shadow-lg mt-2 group rounded-lg font-semibold hover:bg-blue-600 hover:text-white p-3 flex gap-3">
                   <span>{index + 1}</span>
                   <span>{category._id}</span>
-                  <span className="text-purple-500">
+                  <span className="text-blue-600 font-semibold group-hover:text-white">
                     ({category.totalQuantity} items)
                   </span>
                 </p>
@@ -53,15 +50,15 @@ const Best = () => {
 
           {/* Best Brand */}
           <div className="p-4  bg-white rounded-lg shadow hover:shadow-lg">
-            <h2 className="text-xl text-center font-semibold text-gray-700">
+            <h2 className="text-xl text-center font-bold mb-4 text-gray-700">
               Best Brand
             </h2>
             {topBrand &&
               topBrand.map((category, index) => (
-                <p className="text-gray-600 mt-2 flex gap-3">
+                <p className="shadow-lg mt-2 rounded-lg group font-semibold hover:bg-blue-600 hover:text-white p-3 flex gap-3">
                   <span>{index + 1}</span>
                   <span>{category._id}</span>
-                  <span className="text-purple-500">
+                  <span className="text-blue-600 font-semibold group-hover:text-white">
                     ({category.totalQuantity} items)
                   </span>
                 </p>

@@ -11,6 +11,7 @@ import {
   delete_product,
   messageClear,
 } from "../../store/Reducers/productReducer";
+import ConfirmModal from "../../components/ConfirmModal";
 
 const AllProduct = () => {
   const [perPage, setPerPage] = useState("5");
@@ -20,6 +21,8 @@ const AllProduct = () => {
   const { totalProduct, products, successMessage, errorMessage } = useSelector(
     (store) => store.product
   );
+  const [modalClose, setModalClose] = useState(true);
+  const [deleteItem, setDeleteItem] = useState("");
 
   useEffect(() => {
     const obj = {
@@ -29,13 +32,12 @@ const AllProduct = () => {
     };
     console.log(obj);
     dispatch(get_product(obj));
-  }, [searchValue, currentPage, perPage]);
+  }, [searchValue, currentPage, perPage, dispatch]);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure want to delete the Product ?")) {
-      dispatch(delete_product(id));
-    }
+  const handleDelete = () => {
+    dispatch(delete_product(deleteItem));
   };
+
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
@@ -45,13 +47,10 @@ const AllProduct = () => {
       toast.error(errorMessage);
       dispatch(messageClear());
     }
-  }, [successMessage, errorMessage]);
+  }, [successMessage, errorMessage, dispatch]);
 
   return (
-    <div className="px-2 md:pr-7">
-      <div className="my-5">
-        <h1 className="text-xl font-bold">All Products</h1>
-      </div>
+    <div className="px-2 md:pr-7 pb-4">
       <div>
         {/* Category List Section */}
         <div className="w-full  bg-white shadow-md rounded-md">
@@ -124,19 +123,31 @@ const AllProduct = () => {
                           <LiaEditSolid />
                         </Link>
 
-                        <Link
-                          to="#"
-                          onClick={() => handleDelete(item._id)}
-                          className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
+                        <div
+                          onClick={() => {
+                            setDeleteItem(item._id);
+                            setModalClose(false);
+                          }}
+                          className="px-3 py-2 rounded-full cursor-pointer hover:bg-blue-200 text-lg"
                         >
                           <MdAutoDelete />
-                        </Link>
+                        </div>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {/* confirm modal */}
+            {!modalClose && (
+              <div>
+                <ConfirmModal
+                  message="Are you sure want to delete the Product"
+                  SetModalClose={setModalClose}
+                  confimFunction={handleDelete}
+                />
+              </div>
+            )}
             {/* pagination */}
             <div className="w-full flex justify-end mt-4 bottom-4 right-4">
               <Pagination
