@@ -82,6 +82,20 @@ export const get_top_data = createAsyncThunk(
     }
   }
 );
+export const post_blog = createAsyncThunk(
+  "dashboard/post_blog",
+  async (blogData, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const { data } = await api.post(`/seller/post-blog`, blogData, {
+        withCredentials: true,
+      });
+
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
 
 const dashboardReducer = createSlice({
   name: "dashboard",
@@ -158,6 +172,12 @@ const dashboardReducer = createSlice({
       .addCase(get_admin_dashboard_chart.fulfilled, (state, action) => {
         state.chartOrders = action.payload.chartOrders;
         state.chartRevenue = action.payload.chartRevenue;
+      })
+      .addCase(post_blog.fulfilled, (state, action) => {
+        state.successMessage = action.payload.message;
+      })
+      .addCase(post_blog.rejected, (state, action) => {
+        state.errorMessage = action.payload.error;
       });
   },
 });

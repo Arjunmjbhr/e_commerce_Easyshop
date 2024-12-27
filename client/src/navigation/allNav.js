@@ -113,10 +113,10 @@ export const allNav = [
   },
   {
     id: 6,
-    title: "Payments",
+    title: "Add Blog",
     icon: <MdOutlinePayment />,
     role: "seller",
-    path: "/seller/dashboard/payments",
+    path: "/seller/dashboard/blog",
   },
 
   {
