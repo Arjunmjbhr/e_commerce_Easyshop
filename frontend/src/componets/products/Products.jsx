@@ -92,7 +92,7 @@ const Products = ({ title, products }) => {
                           ₹{price}
                         </span>
                         <span className="">
-                          ₹{" "}
+                          ₹
                           {discountOrOffer
                             ? price -
                               Math.floor((price * discountOrOffer) / 100)

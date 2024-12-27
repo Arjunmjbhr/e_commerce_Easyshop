@@ -71,7 +71,7 @@ const CategoryShop = () => {
         />
       </div>
       {/* filter layout and product side layout */}
-      <section className="py-16  overflow-x-hidden ">
+      <section className="mt-3  overflow-x-hidden ">
         <div className="w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto">
           {/* button for filter in the medium screen responsive */}
           <div className={` md:block hidden ${!filter ? "mb-6" : "mb-0"} `}>

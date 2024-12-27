@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaList } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
@@ -6,7 +6,7 @@ import { MdShoppingCart } from "react-icons/md";
 import { useSelector } from "react-redux";
 import HeaderSidebar from "./Header/HeaderSidebar";
 import HeaderSearchAndCategory from "./Header/HeaderSearchAndCategory";
-import HeaderTop from "./Header/HeaderTop";
+import { FaUser, FaLock } from "react-icons/fa";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -42,22 +42,22 @@ const Header = () => {
     }
   };
   return (
-    <div className="w-full bg-white relative">
+    <div className="w-full   relative">
       {/* first header */}
-      <div className="header-top bg-green-300 md-lg:hidden ">
+      {/* <div className="header-top bg-green-300 md-lg:hidden ">
         <div>
           <HeaderTop userInfo={userInfo} />
         </div>
-      </div>
+      </div> */}
       {/* second layer of header */}
-      <div className="">
+      <div className="bg-green-200">
         <div className=" w-[85%] lg:w-[90%] mx-auto  ">
           <div className="h-[80px] md-lg:[100px] flex justify-between items-center ">
             {/* logo */}
             <div className="flex justify-between items-center w-3/12 md-lg:w-full  ">
               <Link to="/">
                 <img
-                  className="h-[60px]"
+                  className="h-[60px] rounded-full"
                   src="http://localhost:3000/images/logo.png"
                   alt=""
                 />
@@ -92,49 +92,81 @@ const Header = () => {
                       Shop
                     </li>
                   </Link>
-                  <li
-                    className={`cursor-pointer px-3 py-2 rounded-md ${
-                      pathname === "/blog" ? "bg-blue-700 text-white" : ""
-                    } `}
-                  >
-                    Blog
-                  </li>
-                  <li
-                    className={`cursor-pointer px-3 py-2 rounded-md ${
-                      pathname === "/contact" ? "bg-blue-700 text-white" : ""
-                    } `}
-                  >
-                    Contact Us
-                  </li>
+                  <Link to="/blog">
+                    <li
+                      className={`cursor-pointer px-3 py-2 rounded-md ${
+                        pathname === "/blog" ? "bg-blue-700 text-white" : ""
+                      } `}
+                    >
+                      Blog
+                    </li>
+                  </Link>
+                  <Link to="/contact-us">
+                    <li
+                      className={`cursor-pointer px-3 py-2 rounded-md ${
+                        pathname === "/contact-us"
+                          ? "bg-blue-700 text-white"
+                          : ""
+                      } `}
+                    >
+                      Contact Us
+                    </li>
+                  </Link>
                 </ul>
               </div>
             </div>
-            {/* cart & wishlist */}
-            <div className="md-lg:hidden flex justify-center items-center gap-6 ">
-              {/* wishlist */}
-              <div
-                onClick={() => redirect_wishlist_page()}
-                className="relative"
-              >
-                <span className="text-green-600 w-[30px] cursor-pointer h-[30px] rounded-full bg-slate-200 flex justify-center items-center text-lg ">
-                  <FaHeart />
-                </span>
-                {wishlist_count !== 0 && (
-                  <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
-                    {wishlist_count}
-                  </div>
-                )}
+            <div className="flex gap-8">
+              {/* cart & wishlist */}
+              <div className="md-lg:hidden flex justify-center items-center gap-6 ">
+                {/* wishlist */}
+                <div
+                  onClick={() => redirect_wishlist_page()}
+                  className="relative"
+                >
+                  <span className="text-green-600 w-[30px] cursor-pointer h-[30px] rounded-full bg-slate-200 shadow-md flex justify-center items-center text-lg ">
+                    <FaHeart />
+                  </span>
+                  {wishlist_count !== 0 && (
+                    <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
+                      {wishlist_count}
+                    </div>
+                  )}
+                </div>
+                {/* cart*/}
+                <div onClick={redirect_cart_page} className="relative">
+                  <span className="text-green-600 w-[30px] h-[30px] cursor-pointer rounded-full bg-slate-200 shadow-md  flex justify-center items-center text-xl ">
+                    <MdShoppingCart />
+                  </span>
+                  {cart_product_count !== 0 && (
+                    <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
+                      {cart_product_count}
+                    </div>
+                  )}
+                </div>
               </div>
-              {/* cart*/}
-              <div onClick={redirect_cart_page} className="relative">
-                <span className="text-green-600 w-[30px] h-[30px] cursor-pointer rounded-full bg-slate-200 flex justify-center items-center text-xl ">
-                  <MdShoppingCart />
-                </span>
-                {cart_product_count !== 0 && (
-                  <div className="text-white text-[10px]  absolute w-[17px] h-[17px] -top-[5px] -right-[5px] bg-red-600 rounded-full flex justify-center items-center">
-                    {cart_product_count}
-                  </div>
-                )}
+              {/* login */}
+              <div>
+                <div className="flex flex-row w-[100px]">
+                  {userInfo ? (
+                    <Link
+                      to="/dashboard"
+                      className="flex flex-row justify-end items-center gap-2 font-semibold"
+                    >
+                      <FaUser />
+                      <span className="overflow-hidden w-[130px]">
+                        {userInfo.name}
+                      </span>
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="flex flex-row justify-center items-center gap-2 font-semibold"
+                    >
+                      <FaLock />
+                      <span>Login</span>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -166,7 +198,7 @@ const Header = () => {
         </div>
       </div>
       {/* third layer of header */}
-      <div className="w-[85%] lg:w-[90%] mx-auto  ">
+      <div className="w-[85%] lg:w-[90%] mx-auto py-5  ">
         <HeaderSearchAndCategory
           setShowCategory={setShowCategory}
           showCategory={showCategory}

@@ -1,5 +1,6 @@
 const wishlistModel = require("../../model/wishlistModel");
 const { responseReturn } = require("../../utils/response");
+const mongoose = require("mongoose");
 
 class wishlistController {
   // adding offer filed in the product
@@ -76,10 +77,73 @@ class wishlistController {
     const { userId } = req.params;
 
     try {
+      const currentDate = new Date(); // Define the current date once
+
       // Fetch all wishlist items for the user and populate product details
-      const wishlist = await wishlistModel
-        .find({ userId })
-        .populate("productId");
+      const wishlistWithOffers = await wishlistModel.aggregate([
+        {
+          $match: { userId: new mongoose.Types.ObjectId(userId) },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "productId",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        {
+          $unwind: "$product",
+        },
+        {
+          $lookup: {
+            from: "categoryoffers",
+            localField: "product.category",
+            foreignField: "offerCategory",
+            as: "offer",
+          },
+        },
+        {
+          $unwind: { path: "$offer", preserveNullAndEmptyArrays: true },
+        },
+        {
+          $addFields: {
+            "offer.isActiveOfferAvailable": {
+              $and: [
+                { $gte: ["$offer.startingDate", new Date()] }, // Current date >= startingDate
+                { $lte: ["$offer.expirationDate", new Date()] }, // Current date <= expirationDate
+                { $eq: ["$offer.isActive", true] }, // Explicitly check for true
+              ],
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            userId: 1,
+            product: {
+              _id: "$product._id",
+              name: "$product.name",
+              price: "$product.price",
+              categoryId: "$product.category",
+              images: "$product.images",
+              discount: "$product.discount",
+              rating: "$product.rating",
+              slug: "$product.slug",
+            },
+            ValidOffer: "$offer", // Include full offer document for debugging
+            validOfferPercentage: {
+              $cond: {
+                if: "$offer.isActiveOfferAvailable",
+                then: "$offer.offerPercentage",
+                else: null,
+              },
+            },
+          },
+        },
+      ]);
+
+      console.log(wishlistWithOffers);
 
       // Count the total number of wishlist items
       const wishlist_count = await wishlistModel.countDocuments({ userId });
@@ -87,10 +151,13 @@ class wishlistController {
       // Return the response
       return responseReturn(res, 200, {
         wishlist_count: wishlist_count || 0,
-        wishlist,
+        wishlist: wishlistWithOffers,
       });
     } catch (error) {
-      console.error("Error in get_wishlist_product:", error.message);
+      console.error(
+        `Error in get_wishlist_product for userId ${userId}:`,
+        error.message
+      );
 
       // Handle and return the error
       return responseReturn(res, 500, {
@@ -98,6 +165,7 @@ class wishlistController {
       });
     }
   };
+
   // End Method
   delete_wishlist_product = async (req, res) => {
     console.log("In the wishlist controller");

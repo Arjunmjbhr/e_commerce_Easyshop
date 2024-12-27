@@ -22,6 +22,8 @@ import UserProfile from "./pages/UserProfile";
 import ResetPassword from "./componets/login_register/ResetPassword";
 import Wishlist from "./pages/Wishlist";
 import Wallet from "./componets/wallet/Wallet";
+import ContactUs from "./pages/ContactUs";
+import BlogPage from "./pages/BlogPage";
 
 function App() {
   // for category details for header
@@ -37,6 +39,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/shops" element={<Shops />} />
+        <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/blog" element={<BlogPage />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/product/details/:slug" element={<Details />} />

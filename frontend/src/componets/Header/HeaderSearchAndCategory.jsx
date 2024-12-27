@@ -16,7 +16,7 @@ const HeaderSearchAndCategory = ({
       <div className="flex flex-wrap md-lg:gap-8 justify-center">
         {/* category list icon */}
         <div className="w-3/12 md-lg:w-full">
-          <div className="bg-white relative">
+          <div className=" relative">
             {/* category button */}
             <div
               onClick={() => setShowCategory(!showCategory)}
@@ -65,7 +65,7 @@ const HeaderSearchAndCategory = ({
           </div>
         </div>
         {/* search feature */}
-        <div className="w-6/12 md-lg:w-full mx-3 ">
+        <div className="w-6/12 md-lg:w-full mx-3 bg-white ">
           <div className="flex  border-2 py-2 h-[50px] justify-start items-center gap-2">
             {/* select category */}
             <div className="px-2 w-3/12 md:hidden">

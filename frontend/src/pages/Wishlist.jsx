@@ -46,12 +46,8 @@ const Wishlist = () => {
   return (
     <div>
       <div className="grid grid-cols-3 md-lg:grid-cols-2 lg:grid-cols-2 md:grid-cols-1 ">
-        {wishlist.map((product) => (
-          <WishlistProductCard
-            product={product}
-            key={product._id}
-            userInfo={userInfo}
-          />
+        {wishlist.map((pro) => (
+          <WishlistProductCard pro={pro} key={pro._id} userInfo={userInfo} />
         ))}
       </div>
     </div>

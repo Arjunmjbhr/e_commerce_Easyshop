@@ -7,21 +7,20 @@ import { delete_wishlist_products } from "../../store/reducers/wishlistReducer";
 import { useDispatch } from "react-redux";
 import { add_to_cart } from "./../../store/reducers/cartReducer";
 
-const WishlistProductCard = ({ product, userInfo }) => {
-  const productId = product?.productId || {};
+const WishlistProductCard = ({ pro, userInfo }) => {
+  const product = pro?.product || {};
   const dispatch = useDispatch();
-
+  const validOfferPercentage = pro.validOfferPercentage;
   const {
     discount = 0,
-    stock = 0,
-    slug = "",
     images = [],
-    name = "Unknown Product",
+    name = "",
     price = 0,
     rating = 0,
+    slug = "",
     _id = "",
-  } = productId;
-  const wishlistId = product._id;
+  } = product;
+  const wishlistId = pro._id;
 
   const delete_wishlist = (wishlistId) => {
     dispatch(delete_wishlist_products(wishlistId));
