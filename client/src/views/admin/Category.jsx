@@ -20,6 +20,7 @@ import { toast } from "react-hot-toast";
 import Search from "../../components/Search";
 import { Cropper } from "react-cropper";
 import "cropperjs/dist/cropper.css";
+import ConfirmModal from "./../../components/ConfirmModal";
 
 const Category = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -37,6 +38,8 @@ const Category = () => {
   const [isCropping, setIsCropping] = useState(false); // Toggle cropping modal
   const [images, setImages] = useState(); // Final cropped images
   const [imageShow, setImageShow] = useState(); // Images to display
+  const [modalClose, setModalClose] = useState(true);
+  const [deleteItem, setDeleteItem] = useState("");
 
   const dispatch = useDispatch();
 
@@ -118,15 +121,8 @@ const Category = () => {
     setIsEdit(true);
     setShow(true);
   };
-  const handleDelete = (categoryDetails) => {
-    if (
-      window.confirm(
-        `Are you sure want to delete ${categoryDetails.categoryName} category ?`
-      )
-    ) {
-      console.log("the deleted item is", categoryDetails._id);
-      dispatch(deleteCategory(categoryDetails._id));
-    }
+  const handleDelete = () => {
+    dispatch(deleteCategory(deleteItem._id));
   };
 
   return (
@@ -191,7 +187,10 @@ const Category = () => {
                         </Link>
                         <Link
                           to="#"
-                          onClick={() => handleDelete(item)}
+                          onClick={() => {
+                            setDeleteItem(item);
+                            setModalClose(false);
+                          }}
                           className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
                         >
                           <MdAutoDelete />
@@ -202,6 +201,15 @@ const Category = () => {
                 ))}
               </tbody>
             </table>
+            {!modalClose && (
+              <div>
+                <ConfirmModal
+                  message="Are you sure want to delete"
+                  SetModalClose={setModalClose}
+                  confimFunction={handleDelete}
+                />
+              </div>
+            )}
             {/* pagination */}
             <div className="w-full flex justify-end mt-4 bottom-4 right-4">
               <Pagination
