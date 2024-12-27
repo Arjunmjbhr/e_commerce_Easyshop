@@ -4,6 +4,9 @@ const productModel = require("../../model/productModel");
 const sellerModel = require("../../model/sellerModel");
 const { responseReturn } = require("../../utils/response");
 const { ObjectId } = require("mongoose").Types;
+const formidable = require("formidable");
+const cloudinary = require("cloudinary").v2;
+const blogModel = require("../../model/blogModel");
 
 class adminSellerDashboardController {
   get_admin_sales_data = async (req, res) => {
@@ -372,6 +375,83 @@ class adminSellerDashboardController {
       );
     }
   };
+  // End Method
+  post_blog = async (req, res, next) => {
+    try {
+      const form = new formidable.IncomingForm();
+
+      // Use a promise to handle form parsing asynchronously
+      form.parse(req, async (err, fields, files) => {
+        if (err) {
+          return next(err); // If there's an error parsing the form, pass it to the error handler
+        }
+
+        console.log("Form Fields:", fields);
+        console.log("Uploaded Files:", files);
+
+        // Validate Cloudinary configuration
+        if (
+          !process.env.CLOUD_NAME ||
+          !process.env.API_KEY ||
+          !process.env.API_SECRET
+        ) {
+          console.error("Missing Cloudinary configuration");
+          return responseReturn(res, 500, {
+            error: "Cloudinary configuration missing",
+          });
+        }
+
+        cloudinary.config({
+          cloud_name: process.env.CLOUD_NAME,
+          api_key: process.env.API_KEY,
+          api_secret: process.env.API_SECRET,
+          secure: true,
+        });
+
+        const image = files.image;
+
+        if (!image) {
+          return responseReturn(res, 400, { error: "No image file provided" });
+        }
+
+        try {
+          // Upload image to Cloudinary
+          const result = await cloudinary.uploader.upload(image.filepath, {
+            folder: "blog", // Specify folder in Cloudinary
+          });
+
+          if (!result || !result.url) {
+            return responseReturn(res, 400, { error: "Image upload failed" });
+          }
+
+          console.log("Image uploaded to Cloudinary:", result.url);
+
+          // Create blog post data object
+          const blogPost = {
+            heading: fields.heading,
+            bloggerName: fields.bloggerName,
+            content: fields.content,
+            imageUrl: result.url,
+          };
+
+          // Save blog post to database
+          await blogModel.create(blogPost);
+
+          // Send a success response
+          res.status(200).json({
+            message: "Blog submitted successfully!",
+          });
+        } catch (uploadErr) {
+          console.error("Error uploading image:", uploadErr);
+          return responseReturn(res, 500, { error: "Image upload failed" });
+        }
+      });
+    } catch (error) {
+      console.error("Error during blog submission:", error);
+      return responseReturn(res, 500, { error: "Failed to submit blog" });
+    }
+  };
+
   // End Method
 }
 

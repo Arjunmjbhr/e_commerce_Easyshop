@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 
 const BlogAddingPage = () => {
   const [image, setImage] = useState(null);
+  const [showImage, setShowImage] = useState(null);
   const [heading, setHeading] = useState("");
   const [bloggerName, setBloggerName] = useState("");
   const [content, setContent] = useState("");
@@ -17,7 +18,8 @@ const BlogAddingPage = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      setImage(file);
+      setShowImage(URL.createObjectURL(file));
     }
   };
 
@@ -120,10 +122,10 @@ const BlogAddingPage = () => {
             accept="image/*"
             className="mt-2 w-full p-3 border border-gray-300 rounded-md"
           />
-          {image && (
+          {showImage && (
             <div className="mt-4">
               <img
-                src={image}
+                src={showImage}
                 alt="Preview"
                 className="w-40 h-40 object-cover rounded-md"
               />

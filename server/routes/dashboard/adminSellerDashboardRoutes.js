@@ -17,5 +17,6 @@ router.get(
   "/admin/get-seller-dashboard-data/:sellerId",
   adminSellerDashboardController.get_seller_dashboard_data
 );
+router.post("/seller/post-blog", adminSellerDashboardController.post_blog);
 
 module.exports = router;
