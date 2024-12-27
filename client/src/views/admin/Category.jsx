@@ -126,7 +126,7 @@ const Category = () => {
   };
 
   return (
-    <div className="px-4 lg:px-8 pt-5">
+    <div className="px-4 lg:px-8 pb-5">
       {/* toggle button for add category small screen */}
       <div
         className="flex justify-start items-center my-3 gap-3 font-bold cursor-pointer lg:hidden"

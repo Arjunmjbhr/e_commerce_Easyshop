@@ -11,11 +11,14 @@ import {
 } from "../../store/Reducers/customerAdminReducer";
 import { TbLockFilled } from "react-icons/tb";
 import { toast } from "react-hot-toast";
+import ConfirmModal from "./../../components/ConfirmModal";
 
 const Customers = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const [modalClose, setModalClose] = useState(true);
+  const [blockItem, setblockItem] = useState("");
 
   const dispatch = useDispatch();
   const { successMessage, errorMessage, loader, customers, totalCustomers } =
@@ -30,20 +33,12 @@ const Customers = () => {
     };
 
     dispatch(get_customer(obj));
-  }, [perPage, currentPage, searchValue]);
+  }, [perPage, currentPage, searchValue, dispatch]);
 
   //block customer
-  const handleBlock = (customer) => {
-    if (
-      window.confirm(
-        `Are you sure want to ${
-          customer.isBlocked ? "unblock" : "block"
-        } customer name: ${customer.name} email ${customer.email} `
-      )
-    ) {
-      const customerId = customer._id;
-      dispatch(block_unblock_customer(customerId));
-    }
+  const handleBlock = () => {
+    const customerId = blockItem._id;
+    dispatch(block_unblock_customer(customerId));
   };
 
   useEffect(() => {
@@ -55,7 +50,7 @@ const Customers = () => {
       toast.success(errorMessage);
       dispatch(messageClear());
     }
-  }, [successMessage, errorMessage]);
+  }, [successMessage, errorMessage, dispatch]);
 
   return (
     <div className="px-2 lg:pr-7">
@@ -130,7 +125,10 @@ const Customers = () => {
                   <td className="border border-gray-300 px-4 py-2">
                     <div className="flex justify-center gap-3">
                       <div
-                        onClick={() => handleBlock(item)}
+                        onClick={() => {
+                          setblockItem(item);
+                          setModalClose(false);
+                        }}
                         className="px-3 py-2 rounded-full hover:bg-blue-200 text-lg"
                       >
                         {item.isBlocked ? <TbLockFilled /> : <TbLockOpen2 />}
@@ -141,6 +139,16 @@ const Customers = () => {
               ))}
             </tbody>
           </table>
+          {/* confirmation modal */}
+          {!modalClose && (
+            <div>
+              <ConfirmModal
+                message="Are you sure want block user"
+                SetModalClose={setModalClose}
+                confimFunction={handleBlock}
+              />
+            </div>
+          )}
           {/* pagination */}
           <div className="w-full flex justify-end mt-4 bottom-4 right-4">
             <Pagination

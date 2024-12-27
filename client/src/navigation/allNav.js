@@ -52,13 +52,7 @@ export const allNav = [
     role: "admin",
     path: "/admin/dashboard/sellers",
   },
-  {
-    id: 5,
-    title: "Payment Request",
-    icon: <MdPayment />,
-    role: "admin",
-    path: "/admin/dashboard/payment-request",
-  },
+
   {
     id: 6,
     title: "Customers",
