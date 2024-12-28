@@ -45,6 +45,11 @@ const BlogAddingPage = () => {
   useEffect(() => {
     if (successMessage) {
       toast.success(successMessage);
+      setImage("");
+      setHeading("");
+      setBloggerName("");
+      setContent("");
+      setShowImage("");
       dispatch(messageClear());
     }
     if (errorMessage) {

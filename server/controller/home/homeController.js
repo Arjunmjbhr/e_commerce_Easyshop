@@ -3,6 +3,7 @@ const productModel = require("../../model/productModel");
 const { responseReturn } = require("../../utils/response");
 const reviewModel = require("../../model/reviewModel");
 const { ObjectId } = require("mongoose").Types;
+const blogModel = require("../../model/blogModel");
 
 class homeController {
   // adding offer filed in the product
@@ -469,7 +470,22 @@ class homeController {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   };
-
+  // end method
+  get_blog = async (req, res) => {
+    console.log("in the get blog controller");
+    try {
+      const blog = await blogModel.find().sort({ createdAt: -1 });
+      if (!blog.length) {
+        return res
+          .status(404)
+          .json({ success: false, message: "No blogs found" });
+      }
+      return res.status(200).json({ success: true, blog });
+    } catch (error) {
+      console.error("Error in the get blog controller:", error.message);
+      return res.status(500).json({ success: false, message: "Server error" });
+    }
+  };
   // end method
 }
 

@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../componets/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { get_blog } from "../store/reducers/homeReducer";
 
 const BlogPage = () => {
+  const dispatch = useDispatch();
+  const { blog } = useSelector((store) => store.home);
   // Sample blog posts data
   const blogPosts = [
     {
@@ -32,6 +36,9 @@ const BlogPage = () => {
       seller: "AudioPro Solutions",
     },
   ];
+  useEffect(() => {
+    dispatch(get_blog());
+  }, [dispatch]);
 
   return (
     <div>
@@ -41,41 +48,53 @@ const BlogPage = () => {
       <section>
         <div className="min-h-screen bg-gradient-to-br from-green-50  to-green-100">
           {/* Main Content */}
+
           <main className="py-12">
             <div className="max-w-7xl mx-auto px-6 lg:px-12">
               <div className="space-y-8">
-                {blogPosts.map((post) => (
-                  <article
-                    key={post.id}
-                    className="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-4"
-                  >
-                    {/* Left: Image */}
-                    <div className="w-48 h-48 flex-shrink-0">
-                      <img
-                        src={post.image}
-                        alt={post.title}
-                        className="w-full h-full object-cover rounded-md"
-                      />
-                    </div>
+                {blog.map((post) => {
+                  const {
+                    heading,
+                    _id,
+                    bloggerName,
+                    content,
+                    imageUrl,
+                    createdAt,
+                  } = post;
+                  return (
+                    <article
+                      key={_id}
+                      className="bg-white shadow-md rounded-lg overflow-hidden flex items-center p-4"
+                    >
+                      {/* Left: Image */}
+                      <div className="w-32 h-32 flex-shrink-0">
+                        <img
+                          src={imageUrl}
+                          alt={heading}
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      </div>
 
-                    {/* Right: Content */}
-                    <div className="ml-6 flex-grow">
-                      <h2 className="text-2xl font-semibold text-blue-800">
-                        {post.title}
-                      </h2>
-                      <p className="text-sm text-gray-500 mb-2">
-                        By {post.seller} | {post.date}
-                      </p>
-                      <p className="text-gray-700 mb-4">{post.description}</p>
-                      <a
-                        href="#"
-                        className="text-blue-600 font-semibold hover:underline"
-                      >
-                        Read More →
-                      </a>
-                    </div>
-                  </article>
-                ))}
+                      {/* Right: Content */}
+                      <div className="ml-6 flex-grow">
+                        <h2 className="text-2xl font-semibold text-blue-800">
+                          {heading}
+                        </h2>
+                        <p className="text-sm text-gray-500 mb-2">
+                          By {bloggerName} |{" "}
+                          {new Date(createdAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-gray-700 mb-4">{content}</p>
+                        <a
+                          href="#"
+                          className="text-blue-600 font-semibold hover:underline"
+                        >
+                          Read More →
+                        </a>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           </main>

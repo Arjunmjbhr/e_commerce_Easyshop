@@ -80,6 +80,17 @@ export const get_reviews = createAsyncThunk(
     }
   }
 );
+export const get_blog = createAsyncThunk(
+  "home/get_blog",
+  async (_, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/home/get-blog`);
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const homeReducer = createSlice({
   name: "home",
@@ -103,6 +114,7 @@ const homeReducer = createSlice({
     reviews: [],
     rating_review: [],
     totalReviews: 0,
+    blog: [],
   },
   reducers: {},
 
@@ -141,6 +153,9 @@ const homeReducer = createSlice({
         state.reviews = payload.reviews;
         state.rating_review = payload.rating_review;
         state.totalReviews = payload.totalReviews;
+      })
+      .addCase(get_blog.fulfilled, (state, { payload }) => {
+        state.blog = payload.blog;
       });
   },
 });
