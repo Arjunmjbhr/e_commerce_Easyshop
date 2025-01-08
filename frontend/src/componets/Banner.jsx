@@ -39,7 +39,7 @@ const Banner = () => {
                 {[1, 2, 3, 4, 5, 6].map((img, index) => (
                   <Link key={index} to={`/banner/${img}`}>
                     <img
-                      src={`http://localhost:3000/images/banner/${img}.jpg`}
+                      src={`http://localhost:3001/images/banner/${img}.jpg`}
                       alt={`Banner ${img}`}
                       className="w-full object-cover"
                     />

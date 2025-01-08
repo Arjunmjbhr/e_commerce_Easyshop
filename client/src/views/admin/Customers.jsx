@@ -102,7 +102,7 @@ const Customers = () => {
                   <td className="border border-gray-300 px-4 py-2">
                     <img
                       src={
-                        item?.image || `http://localhost:3001/images/user.png`
+                        item?.image || `http://localhost:3002/images/user.png`
                       }
                       alt={item.name}
                       className="w-12 h-12 rounded-full mx-auto"

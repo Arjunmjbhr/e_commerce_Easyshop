@@ -1,7 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 const local = "http://localhost:5000";
-const production = "";
+const production = "http://localhost:5000";
 const api = axios.create({
   baseURL: `${local}/api`,
 });
@@ -19,7 +19,7 @@ api.interceptors.response.use(
       console.log("you are blocked");
       localStorage.removeItem("customerToken");
       toast.error("you are blocked by admin");
-      window.location.href = `http://localhost:3000/login`;
+      window.location.href = `http://localhost:3001/login`;
     }
     return Promise.reject(error);
   }

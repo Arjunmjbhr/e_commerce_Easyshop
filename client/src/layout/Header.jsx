@@ -33,7 +33,7 @@ const Header = ({ showSidebar, setShowSidebar }) => {
           <div className="w-10 h-10 ">
             <img
               className="rounded-full"
-              src="http://localhost:3000/images/admin.jpg"
+              src="http://localhost:3002/images/admin.jpg"
               alt=""
             />
           </div>

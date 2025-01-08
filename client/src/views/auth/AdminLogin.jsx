@@ -46,7 +46,7 @@ const AdminLogin = () => {
       <div className="max-w-sm w-full bg-white rounded-2xl shadow-md">
         <div className="p-6 shadow-xl ">
           <div className="flex justify-center w-[100px] mb-5">
-            <img src="http://localhost:3000/images/logo.png" alt="" />
+            <img src="http://localhost:3002/images/logo.png" alt="" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800 text-center">
             Admin Login
